@@ -1,0 +1,20 @@
+Generate a safety incident community report. Include key entities, relationships, and timeline information.
+
+Output JSON format:
+{{
+    "title": "<short specific title with entity names>",
+    "summary": "<overview of entities and relationships>",
+    "rating": <0-10 importance score>,
+    "rating_explanation": "<one sentence>",
+    "findings": [{{"summary":"<insight>", "explanation": "<details with data references>"}}, ...],
+    "date_range": ["YYYY-MM-DD", "YYYY-MM-DD"]
+}}
+
+Data references: [Data: <dataset> (id1, id2, +more)]
+Max 5 record IDs per reference.
+Max {max_report_length} words total.
+
+Text:
+{input_text}
+
+Output:

@@ -1,0 +1,19 @@
+Generate a safety incident community report from entities and relationships.
+
+JSON output:
+{{
+    "title": "<short specific title>",
+    "summary": "<overview of entities and relationships>",
+    "rating": <0-10 impact score>,
+    "rating_explanation": "<one sentence>",
+    "findings": [{{"summary":"<insight>", "explanation": "<details with data refs>"}}, ...]
+}}
+
+Data refs: [Data: <dataset> (id1, id2, +more)]
+Max 5 IDs per reference. Only include supported information.
+Max {max_report_length} words.
+
+Text:
+{input_text}
+
+Output:

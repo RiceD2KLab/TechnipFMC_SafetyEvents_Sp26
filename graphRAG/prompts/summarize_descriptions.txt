@@ -1,0 +1,5 @@
+Combine these descriptions of {entity_name} into one concise summary. Include all key facts. Third person. Max {max_length} words.
+
+Descriptions: {description_list}
+
+Summary:
