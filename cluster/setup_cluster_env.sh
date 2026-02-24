@@ -2,13 +2,16 @@
 # Setup Python virtual environment on Rice NOTS cluster.
 #
 # Run from a login node (ssh username@nots.rice.edu):
-#   bash cluster/setup_cluster_env.sh
+#   cd $WORK/TechnipFMC_SafetyEvents
+#   INSTALL_OLLAMA=1 bash cluster/setup_cluster_env.sh
 #
-# This script:
-#   1. Loads GCC + CUDA modules via the NOTS module system
-#   2. Creates a Python venv in $WORK (avoids $HOME quota)
-#   3. Installs PyTorch with CUDA support + project dependencies
-#   4. Optionally installs Ollama for L2 enrichment
+# NOTS storage rules:
+#   $WORK        → login nodes only, persistent, 2TB group quota
+#   $SHARED_SCRATCH → compute + login nodes, 14-day purge, no quota
+#   $HOME        → both, but 10GB quota (too small)
+#
+# This script builds the venv and Ollama on $SHARED_SCRATCH so compute
+# nodes can access them. If purged, re-run this script to rebuild.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -16,11 +19,14 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 cd "${REPO_ROOT}"
 
 # ── Configuration ────────────────────────────────────────────────────────
-VENV_DIR="${VENV_DIR:-${WORK:-.}/.venv_cluster}"
+SCRATCH_BASE="${SHARED_SCRATCH}/${USER}"
+VENV_DIR="${VENV_DIR:-${SCRATCH_BASE}/.venv_cluster}"
 TORCH_VERSION="${TORCH_VERSION:-2.10.0}"
 INSTALL_OLLAMA="${INSTALL_OLLAMA:-0}"
 
 echo "=== Rice NOTS Cluster Environment Setup ==="
+echo "REPO_ROOT:      ${REPO_ROOT}"
+echo "SCRATCH_BASE:   ${SCRATCH_BASE}"
 echo "VENV_DIR:       ${VENV_DIR}"
 echo "TORCH_VERSION:  ${TORCH_VERSION}"
 
@@ -32,7 +38,9 @@ module load Python/3.11.5
 echo "Loaded modules:"
 module list
 
-# ── Create venv ──────────────────────────────────────────────────────────
+# ── Create venv on $SHARED_SCRATCH ───────────────────────────────────────
+mkdir -p "${SCRATCH_BASE}"
+
 if [ -d "${VENV_DIR}" ]; then
   echo "Existing venv found at ${VENV_DIR}, reusing."
 else
@@ -69,19 +77,44 @@ PY
 
 # ── Optional: Install Ollama for L2 enrichment ──────────────────────────
 if [ "${INSTALL_OLLAMA}" = "1" ]; then
-  OLLAMA_DIR="${WORK:-$HOME}/bin"
+  OLLAMA_DIR="${SCRATCH_BASE}/bin"
   mkdir -p "${OLLAMA_DIR}"
-  if command -v "${OLLAMA_DIR}/ollama" &>/dev/null; then
+  if [ -x "${OLLAMA_DIR}/ollama" ]; then
     echo "Ollama already installed at ${OLLAMA_DIR}/ollama"
   else
     echo "Installing Ollama to ${OLLAMA_DIR}..."
     curl -fsSL https://ollama.com/download/ollama-linux-amd64 -o "${OLLAMA_DIR}/ollama"
     chmod +x "${OLLAMA_DIR}/ollama"
-    echo "Ollama installed. Add to PATH: export PATH=${OLLAMA_DIR}:\$PATH"
   fi
+  echo "Ollama: ${OLLAMA_DIR}/ollama"
 fi
+
+# ── Stage repo to $SHARED_SCRATCH ────────────────────────────────────────
+SCRATCH_REPO="${SCRATCH_BASE}/TechnipFMC_SafetyEvents"
+echo ""
+echo "Syncing repo to ${SCRATCH_REPO} (compute nodes need this)..."
+rsync -a --delete \
+  --exclude '.git' \
+  --exclude '.venv*' \
+  --exclude '__pycache__' \
+  --exclude '.codex_logs' \
+  "${REPO_ROOT}/" "${SCRATCH_REPO}/"
+echo "Repo staged: ${SCRATCH_REPO}"
 
 echo ""
 echo "=== Setup complete ==="
-echo "Activate with: source ${VENV_DIR}/bin/activate"
-echo "Submit jobs from: ${REPO_ROOT}/cluster/"
+echo ""
+echo "Paths for job submission (compute-visible):"
+echo "  PYTHON_BIN:  ${VENV_DIR}/bin/python"
+echo "  REPO:        ${SCRATCH_REPO}"
+echo "  OLLAMA:      ${SCRATCH_BASE}/bin/ollama"
+echo ""
+echo "To submit L2 enrichment:"
+echo "  cd ${SCRATCH_REPO}"
+echo "  NODES_CSV=pipeline_v2/outputs/entities.parquet \\"
+echo "  EDGES_CSV=pipeline_v2/outputs/relations.parquet \\"
+echo "  METADATA_CSV=pipeline_v2/outputs/metadata_parsed.parquet \\"
+echo "  sbatch cluster/submit_l2_enrichment.sbatch"
+echo ""
+echo "After jobs finish, copy results back to \$WORK:"
+echo "  cp -r ${SCRATCH_REPO}/output/l2 ${REPO_ROOT}/output/l2"

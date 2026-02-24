@@ -13,8 +13,11 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+# ── Paths ─────────────────────────────────────────────────────────────────
+# This script runs on a compute node. $WORK is NOT available here.
+# Everything must be on $SHARED_SCRATCH (staged by setup_cluster_env.sh).
+SCRATCH_BASE="${SHARED_SCRATCH}/${USER}"
+REPO_ROOT="${SCRATCH_BASE}/TechnipFMC_SafetyEvents"
 cd "${REPO_ROOT}"
 
 mkdir -p slurm_output
@@ -25,7 +28,7 @@ module load GCC/13.2.0
 module load CUDA/12.6.0
 
 # Ollama binary (installed by setup_cluster_env.sh with INSTALL_OLLAMA=1)
-export PATH="${WORK:-$HOME}/bin:${PATH}"
+export PATH="${SCRATCH_BASE}/bin:${PATH}"
 
 # ── Configuration ────────────────────────────────────────────────────────
 : "${NODES_CSV:?Set NODES_CSV to nodes CSV or Parquet path}"
@@ -40,8 +43,11 @@ TIMEOUT_SEC="${TIMEOUT_SEC:-120}"
 MAX_RETRIES="${MAX_RETRIES:-2}"
 NUM_SHARDS="${NUM_SHARDS:-4}"
 RESUME="${RESUME:-1}"
-PYTHON_BIN="${PYTHON_BIN:-${WORK:-.}/.venv_cluster/bin/python}"
+PYTHON_BIN="${PYTHON_BIN:-${SCRATCH_BASE}/.venv_cluster/bin/python}"
 OLLAMA_HOST="${OLLAMA_HOST:-http://127.0.0.1:11434}"
+OLLAMA_MODELS="${OLLAMA_MODELS:-${SCRATCH_BASE}/.ollama/models}"
+
+export OLLAMA_MODELS
 
 shard_index="${SLURM_ARRAY_TASK_ID:-0}"
 
@@ -54,6 +60,8 @@ is_truthy() {
 
 # ── Start Ollama server ─────────────────────────────────────────────────
 echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] Starting Ollama server..."
+echo "  OLLAMA_MODELS=${OLLAMA_MODELS}"
+echo "  GPU: $(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null || echo 'none')"
 ollama serve &
 OLLAMA_PID=$!
 
