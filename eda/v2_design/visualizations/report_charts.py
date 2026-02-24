@@ -150,18 +150,23 @@ print("✓ chart_benchmark_coverage.png")
 # ═══════════════════════════════════════════════════════════════════════════
 fig, ax = plt.subplots(figsize=(8, 8))
 
-labels = ["INCIDENT\n19,820", "EQUIPMENT\n15,158", "LOCATION\n12,810",
-          "ORGANIZATION\n9,310", "BODY_PART\n2,630", "INJURY_TYPE\n1,700",
-          "ROOT_CAUSE\n117"]
+labels = ["INCIDENT", "EQUIPMENT", "LOCATION",
+          "ORGANIZATION", "BODY_PART", "INJURY_TYPE",
+          "ROOT_CAUSE"]
 sizes = [19820, 15158, 12810, 9310, 2630, 1700, 117]
 colors = ["#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EF4444", "#EC4899", "#6B7280"]
 explode = (0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03)
 
 wedges, texts, autotexts = ax.pie(
-    sizes, labels=labels, colors=colors, explode=explode,
-    autopct=lambda p: f"{p:.1f}%" if p > 2 else "",
-    pctdistance=0.8, startangle=90, textprops={"fontsize": 10}
+    sizes, colors=colors, explode=explode,
+    autopct="", startangle=90, textprops={"fontsize": 10}
 )
+
+# Custom legend instead of overlapping labels
+legend_labels = [f"{l} ({s:,})" for l, s in zip(labels, sizes)]
+ax.legend(wedges, legend_labels, title="Entity Types", loc="center left",
+          bbox_to_anchor=(0.85, 0, 0.5, 1), fontsize=10, title_fontsize=11)
+
 # Donut hole
 centre = plt.Circle((0, 0), 0.55, fc="white")
 ax.add_artist(centre)
