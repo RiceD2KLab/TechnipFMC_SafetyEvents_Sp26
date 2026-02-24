@@ -29,6 +29,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from enrichment.ollama_client import call_ollama
+from enrichment.vllm_client import call_vllm
 from enrichment.prompts import (
     EXTRACTION_SCHEMA,
     PROMPT_VARIANTS,
@@ -135,6 +136,7 @@ def run_l2_enrichment(
     timeout_sec: int = 120,
     max_retries: int = 2,
     mock: bool = False,
+    backend: str = "ollama",
 ) -> pd.DataFrame:
     """Run Layer 2 causal enrichment on post-ER graph data.
 
@@ -215,7 +217,12 @@ def run_l2_enrichment(
     all_l2_edges: List[dict] = list(existing_records)
     stats = {"total": 0, "llm_calls": 0, "edges_produced": 0, "edges_rejected": 0, "errors": 0}
 
-    infer_fn = _mock_ollama if mock else call_ollama
+    if mock:
+        infer_fn = _mock_ollama
+    elif backend == "vllm":
+        infer_fn = call_vllm
+    else:
+        infer_fn = call_ollama
 
     for rno in tqdm(qualifying, desc="L2 enrichment", unit="record"):
         narrative = narratives[rno]
@@ -323,8 +330,10 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--edges-csv", required=True, help="Path to edges CSV or Parquet")
     parser.add_argument("--metadata-csv", required=True, help="Path to metadata CSV or Parquet (must contain narratives)")
     parser.add_argument("--output-dir", required=True, help="Output directory for L2 edges")
-    parser.add_argument("--model", default="qwen3:8b", help="Ollama model name")
-    parser.add_argument("--host", default="http://127.0.0.1:11434", help="Ollama host URL")
+    parser.add_argument("--model", default=None,
+                        help="Model name (default: qwen3:30b-a3b for ollama, Qwen/Qwen3-30B-A3B for vllm)")
+    parser.add_argument("--host", default=None,
+                        help="Server URL (default: localhost:11434 for ollama, localhost:8000 for vllm)")
     parser.add_argument("--temperature", type=float, default=0.1)
     parser.add_argument("--prompt-variant", choices=["full", "minimal", "cot"], default="full")
     parser.add_argument("--shard-index", type=int, default=0)
@@ -333,6 +342,8 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--max-retries", type=int, default=2)
     parser.add_argument("--resume", dest="resume", action="store_true", default=True)
     parser.add_argument("--no-resume", dest="resume", action="store_false")
+    parser.add_argument("--backend", choices=["ollama", "vllm"], default="ollama",
+                        help="LLM serving backend (ollama or vllm)")
     parser.add_argument("--mock", action="store_true", help="Use mock backend (dry-run)")
     parser.add_argument(
         "--ground-truth", default="",
@@ -344,6 +355,16 @@ def _parse_args() -> argparse.Namespace:
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     args = _parse_args()
+
+    # Resolve backend-specific defaults for model and host
+    _defaults = {
+        "ollama": {"model": "qwen3:30b-a3b", "host": "http://127.0.0.1:11434"},
+        "vllm":   {"model": "Qwen/Qwen3-30B-A3B", "host": "http://127.0.0.1:8000"},
+    }
+    if args.model is None:
+        args.model = _defaults[args.backend]["model"]
+    if args.host is None:
+        args.host = _defaults[args.backend]["host"]
 
     def _read_df(path: str) -> pd.DataFrame:
         if path.endswith(".parquet"):
@@ -374,6 +395,7 @@ def main() -> None:
         timeout_sec=args.timeout_sec,
         max_retries=args.max_retries,
         mock=args.mock,
+        backend=args.backend,
     )
     print(f"L2 enrichment produced {len(result_df)} edges")
 
