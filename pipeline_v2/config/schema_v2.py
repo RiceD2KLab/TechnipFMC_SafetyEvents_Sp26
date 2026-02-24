@@ -70,6 +70,45 @@ ALLOWED_RELATIONS = frozenset({
 CHUNK_MAX_TOKENS = 350   # subword tokens per chunk (< 384 model window limit)
 CHUNK_OVERLAP = 50       # token overlap between consecutive chunks
 
+# ── Layer 2: Causal Relation Types ───────────────────────────────────────
+# L2 edges are produced by LLM causal enrichment (post-ER, post-Gate 2).
+# They are validated separately via Gate 3, never mixed into L1 validation.
+
+L2_ENTITY_TYPES = frozenset({
+    "Incident", "Event", "Equipment", "Location",
+    "Person", "Injury", "Material", "Condition", "Action",
+})
+
+L2_RELATIONS = {
+    "CAUSED_BY": {
+        "description": "X was directly caused by Y (Y is root cause of X)",
+        "allowed_source_types": L2_ENTITY_TYPES,
+        "allowed_target_types": L2_ENTITY_TYPES,
+    },
+    "RESULTED_IN": {
+        "description": "X directly led to outcome Y",
+        "allowed_source_types": L2_ENTITY_TYPES,
+        "allowed_target_types": L2_ENTITY_TYPES,
+    },
+    "CONTRIBUTED_TO": {
+        "description": "X was a contributing factor to Y (not sole cause)",
+        "allowed_source_types": L2_ENTITY_TYPES,
+        "allowed_target_types": L2_ENTITY_TYPES,
+    },
+    "PRECEDED_BY": {
+        "description": "X happened after Y in the causal chain",
+        "allowed_source_types": L2_ENTITY_TYPES,
+        "allowed_target_types": L2_ENTITY_TYPES,
+    },
+    "FAILED_CONTROL": {
+        "description": "Control/barrier X failed to prevent Y",
+        "allowed_source_types": L2_ENTITY_TYPES,
+        "allowed_target_types": L2_ENTITY_TYPES,
+    },
+}
+
+L2_ALLOWED_RELATIONS = frozenset(L2_RELATIONS.keys())
+
 # ── REMOVED from v1 (DO NOT GENERATE) ────────────────────────────────────
 # "USED_IN"   — removed (100% EQUIPMENT→LOCATION rule artifacts)
 # "CAUSED_BY" — removed from L1 (90.5% broken semantics; L2-only)
