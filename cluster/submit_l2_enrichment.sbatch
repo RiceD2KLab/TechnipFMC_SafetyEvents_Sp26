@@ -8,7 +8,7 @@
 #SBATCH --mem=32G
 #SBATCH --time=08:00:00
 #SBATCH --partition=commons
-#SBATCH --gres=gpu:ampere:1
+#SBATCH --gres=gpu:lovelace:1
 #SBATCH --array=0-3
 
 set -euo pipefail
