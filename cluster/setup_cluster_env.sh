@@ -79,16 +79,23 @@ PY
 
 # ── Optional: Install Ollama for L2 enrichment ──────────────────────────
 if [ "${INSTALL_OLLAMA}" = "1" ]; then
-  OLLAMA_DIR="${SCRATCH_BASE}/bin"
-  mkdir -p "${OLLAMA_DIR}"
-  if [ -x "${OLLAMA_DIR}/ollama" ]; then
-    echo "Ollama already installed at ${OLLAMA_DIR}/ollama"
+  OLLAMA_DIR="${SCRATCH_BASE}/ollama"
+  mkdir -p "${OLLAMA_DIR}" "${SCRATCH_BASE}/bin"
+  if [ -x "${SCRATCH_BASE}/bin/ollama" ]; then
+    echo "Ollama already installed at ${SCRATCH_BASE}/bin/ollama"
   else
-    echo "Installing Ollama to ${OLLAMA_DIR}..."
-    curl -fsSL https://ollama.com/download/ollama-linux-amd64 -o "${OLLAMA_DIR}/ollama"
-    chmod +x "${OLLAMA_DIR}/ollama"
+    echo "Downloading Ollama..."
+    OLLAMA_TMP="${SCRATCH_BASE}/ollama_download.tar.zst"
+    curl -fsSL https://github.com/ollama/ollama/releases/download/v0.17.0/ollama-linux-amd64.tar.zst \
+      -o "${OLLAMA_TMP}"
+    echo "Extracting Ollama..."
+    tar --zstd -xf "${OLLAMA_TMP}" -C "${OLLAMA_DIR}"
+    # Link the binary to a predictable location
+    ln -sf "${OLLAMA_DIR}/bin/ollama" "${SCRATCH_BASE}/bin/ollama"
+    rm -f "${OLLAMA_TMP}"
   fi
-  echo "Ollama: ${OLLAMA_DIR}/ollama"
+  echo "Ollama: ${SCRATCH_BASE}/bin/ollama"
+  "${SCRATCH_BASE}/bin/ollama" --version
 fi
 
 echo ""
