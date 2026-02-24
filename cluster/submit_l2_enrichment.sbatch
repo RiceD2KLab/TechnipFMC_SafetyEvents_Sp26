@@ -35,7 +35,7 @@ export PATH="${SCRATCH_BASE}/bin:${PATH}"
 : "${EDGES_CSV:?Set EDGES_CSV to edges CSV or Parquet path}"
 : "${METADATA_CSV:?Set METADATA_CSV to metadata CSV or Parquet path (with narratives)}"
 
-MODEL="${MODEL:-qwen3:8b}"
+MODEL="${MODEL:-qwen3:30b-a3b}"
 PROMPT_VARIANT="${PROMPT_VARIANT:-full}"
 OUTPUT_DIR="${OUTPUT_DIR:-output/l2}"
 TEMPERATURE="${TEMPERATURE:-0.1}"
