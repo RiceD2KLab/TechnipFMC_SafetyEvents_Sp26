@@ -30,7 +30,7 @@ module load CUDA/12.6.0
 : "${EDGES_CSV:?Set EDGES_CSV to edges CSV or Parquet path}"
 : "${METADATA_CSV:?Set METADATA_CSV to metadata CSV or Parquet path (with narratives)}"
 
-MODEL="${MODEL:-Qwen/Qwen3-30B-A3B}"
+MODEL="${MODEL:-Qwen/Qwen3-30B-A3B-GPTQ-Int4}"
 PROMPT_VARIANT="${PROMPT_VARIANT:-full}"
 OUTPUT_DIR="${OUTPUT_DIR:-output/l2}"
 TEMPERATURE="${TEMPERATURE:-0.1}"

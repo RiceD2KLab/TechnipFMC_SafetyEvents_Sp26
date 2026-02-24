@@ -359,7 +359,7 @@ def main() -> None:
     # Resolve backend-specific defaults for model and host
     _defaults = {
         "ollama": {"model": "qwen3:30b-a3b", "host": "http://127.0.0.1:11434"},
-        "vllm":   {"model": "Qwen/Qwen3-30B-A3B", "host": "http://127.0.0.1:8000"},
+        "vllm":   {"model": "Qwen/Qwen3-30B-A3B-GPTQ-Int4", "host": "http://127.0.0.1:8000"},
     }
     if args.model is None:
         args.model = _defaults[args.backend]["model"]
