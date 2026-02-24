@@ -39,7 +39,7 @@ TIMEOUT_SEC="${TIMEOUT_SEC:-300}"
 MAX_RETRIES="${MAX_RETRIES:-2}"
 NUM_SHARDS="${NUM_SHARDS:-4}"
 RESUME="${RESUME:-1}"
-PYTHON_BIN="${PYTHON_BIN:-${SCRATCH_BASE}/.venv_cluster/bin/python}"
+PYTHON_BIN="${PYTHON_BIN:-${SCRATCH_BASE}/.venv_vllm/bin/python}"
 # Unique port per array task to avoid collisions when co-located
 VLLM_PORT="${VLLM_PORT:-$((8000 + ${SLURM_ARRAY_TASK_ID:-0}))}"
 VLLM_HOST="${VLLM_HOST:-http://127.0.0.1:${VLLM_PORT}}"
