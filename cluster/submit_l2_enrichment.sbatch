@@ -6,7 +6,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
-#SBATCH --time=08:00:00
+#SBATCH --time=24:00:00
 #SBATCH --partition=commons
 #SBATCH --gres=gpu:1
 #SBATCH --array=0-3
@@ -39,7 +39,7 @@ MODEL="${MODEL:-qwen3:8b}"
 PROMPT_VARIANT="${PROMPT_VARIANT:-full}"
 OUTPUT_DIR="${OUTPUT_DIR:-output/l2}"
 TEMPERATURE="${TEMPERATURE:-0.1}"
-TIMEOUT_SEC="${TIMEOUT_SEC:-120}"
+TIMEOUT_SEC="${TIMEOUT_SEC:-300}"
 MAX_RETRIES="${MAX_RETRIES:-2}"
 NUM_SHARDS="${NUM_SHARDS:-4}"
 RESUME="${RESUME:-1}"
