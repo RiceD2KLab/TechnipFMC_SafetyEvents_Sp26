@@ -7,8 +7,8 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
 #SBATCH --time=08:00:00
-#SBATCH --partition=gpu
-#SBATCH --gres=gpu:l40s:1
+#SBATCH --partition=commons
+#SBATCH --gres=gpu:ampere:1
 #SBATCH --array=0-3
 
 set -euo pipefail
@@ -19,10 +19,18 @@ cd "${REPO_ROOT}"
 
 mkdir -p slurm_output
 
+# ── Load modules ─────────────────────────────────────────────────────────
+module purge
+module load GCC/13.2.0
+module load CUDA/12.6.0
+
+# Ollama binary (installed by setup_cluster_env.sh with INSTALL_OLLAMA=1)
+export PATH="${WORK:-$HOME}/bin:${PATH}"
+
 # ── Configuration ────────────────────────────────────────────────────────
-: "${NODES_CSV:?Set NODES_CSV to post-ER nodes CSV path}"
-: "${EDGES_CSV:?Set EDGES_CSV to post-ER edges CSV path}"
-: "${METADATA_CSV:?Set METADATA_CSV to metadata CSV path (with narratives)}"
+: "${NODES_CSV:?Set NODES_CSV to nodes CSV or Parquet path}"
+: "${EDGES_CSV:?Set EDGES_CSV to edges CSV or Parquet path}"
+: "${METADATA_CSV:?Set METADATA_CSV to metadata CSV or Parquet path (with narratives)}"
 
 MODEL="${MODEL:-qwen3:8b}"
 PROMPT_VARIANT="${PROMPT_VARIANT:-full}"
@@ -32,7 +40,7 @@ TIMEOUT_SEC="${TIMEOUT_SEC:-120}"
 MAX_RETRIES="${MAX_RETRIES:-2}"
 NUM_SHARDS="${NUM_SHARDS:-4}"
 RESUME="${RESUME:-1}"
-PYTHON_BIN="${PYTHON_BIN:-.venv/bin/python}"
+PYTHON_BIN="${PYTHON_BIN:-${WORK:-.}/.venv_cluster/bin/python}"
 OLLAMA_HOST="${OLLAMA_HOST:-http://127.0.0.1:11434}"
 
 shard_index="${SLURM_ARRAY_TASK_ID:-0}"

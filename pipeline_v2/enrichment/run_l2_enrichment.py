@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """Layer 2 causal enrichment runner.
 
-Runs after entity resolution (Gates 1+2 passed). Reads post-ER nodes, edges,
-and metadata (narratives), calls a local LLM via Ollama to extract causal
-relationships, validates them, and outputs L2 edges as JSONL.
+Reads nodes, edges, and metadata (narratives) from CSV or Parquet, calls a
+local LLM via Ollama to extract causal relationships, validates them, and
+outputs L2 edges as JSONL. Can run on L1 outputs directly or post-ER data.
 
 Usage:
     python pipeline_v2/enrichment/run_l2_enrichment.py \
-        --nodes-csv output/nodes.csv \
-        --edges-csv output/edges.csv \
-        --metadata-csv output/metadata.csv \
+        --nodes-csv pipeline_v2/outputs/entities.parquet \
+        --edges-csv pipeline_v2/outputs/relations.parquet \
+        --metadata-csv pipeline_v2/outputs/metadata_parsed.parquet \
         --output-dir output/l2 \
         --model qwen3:8b
 """
@@ -319,9 +319,9 @@ def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Layer 2 causal enrichment runner.",
     )
-    parser.add_argument("--nodes-csv", required=True, help="Path to post-ER nodes CSV")
-    parser.add_argument("--edges-csv", required=True, help="Path to post-ER edges CSV")
-    parser.add_argument("--metadata-csv", required=True, help="Path to metadata CSV (must contain narratives)")
+    parser.add_argument("--nodes-csv", required=True, help="Path to nodes CSV or Parquet")
+    parser.add_argument("--edges-csv", required=True, help="Path to edges CSV or Parquet")
+    parser.add_argument("--metadata-csv", required=True, help="Path to metadata CSV or Parquet (must contain narratives)")
     parser.add_argument("--output-dir", required=True, help="Output directory for L2 edges")
     parser.add_argument("--model", default="qwen3:8b", help="Ollama model name")
     parser.add_argument("--host", default="http://127.0.0.1:11434", help="Ollama host URL")
@@ -345,9 +345,14 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     args = _parse_args()
 
-    nodes_df = pd.read_csv(args.nodes_csv, low_memory=False)
-    edges_df = pd.read_csv(args.edges_csv, low_memory=False)
-    metadata_df = pd.read_csv(args.metadata_csv, low_memory=False)
+    def _read_df(path: str) -> pd.DataFrame:
+        if path.endswith(".parquet"):
+            return pd.read_parquet(path)
+        return pd.read_csv(path, low_memory=False)
+
+    nodes_df = _read_df(args.nodes_csv)
+    edges_df = _read_df(args.edges_csv)
+    metadata_df = _read_df(args.metadata_csv)
 
     # Normalize record_no to string
     for df in (nodes_df, edges_df, metadata_df):
