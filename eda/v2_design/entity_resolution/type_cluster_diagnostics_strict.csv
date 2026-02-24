@@ -1,0 +1,6 @@
+type,nodes,clusters,clusters_gt1,entities_in_clusters_gt1,avg_cluster_size,median_cluster_size,max_cluster_size,merged_entities
+BODY_PART,77,35,35,77,2.2,2,3,42
+EQUIPMENT,641,305,305,641,2.101639344262295,2,18,336
+INJURY_TYPE,46,23,23,46,2.0,2,2,23
+LOCATION,527,207,207,527,2.5458937198067635,2,55,320
+ORGANIZATION,295,127,127,295,2.322834645669291,2,11,168

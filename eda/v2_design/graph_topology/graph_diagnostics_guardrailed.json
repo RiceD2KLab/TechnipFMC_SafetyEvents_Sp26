@@ -1,0 +1,103 @@
+{
+  "graph": {
+    "edges": 105521,
+    "nodes": 65233,
+    "avg_degree": 1.617601520702712,
+    "total_degree": 3.235203041405424,
+    "components": 430,
+    "largest_component": 63539,
+    "largest_component_pct": 97.40315484494045
+  },
+  "relations": {
+    "unique_types": 3380,
+    "rel_le_5": 3104,
+    "rel_le_10": 3214,
+    "entropy_pre_bits": 3.527190265329881,
+    "entropy_post_bits": 2.4729281345328866,
+    "mapped_types": 13
+  },
+  "entity_normalization": {
+    "nodes": 67766,
+    "clean_nodes": 67766,
+    "merged_count": 0
+  },
+  "schema_leakage": {
+    "unique_types": 7,
+    "allowed_nodes": 67766,
+    "non_allowed_nodes": 0,
+    "empty_type_nodes": 0
+  },
+  "incident_degree": {
+    "incident": {
+      "count": 23416,
+      "mean": 4.509437991117185,
+      "median": 4,
+      "p90": 7,
+      "p95": 9,
+      "p99": 14,
+      "min": 1,
+      "max": 129
+    },
+    "non_incident": {
+      "count": 41817,
+      "mean": 2.5216777865461415,
+      "median": 1,
+      "p90": 4,
+      "p95": 6,
+      "p99": 22,
+      "min": 1,
+      "max": 791
+    }
+  },
+  "hub_sensitivity": [
+    {
+      "percentile": 0.95,
+      "cutoff": 8,
+      "hub_nodes": 3562,
+      "components": 16901,
+      "largest_component": 24691,
+      "largest_component_pct": 40.03664607351916
+    },
+    {
+      "percentile": 0.975,
+      "cutoff": 11,
+      "hub_nodes": 1638,
+      "components": 9353,
+      "largest_component": 42204,
+      "largest_component_pct": 66.36370783866656
+    },
+    {
+      "percentile": 0.99,
+      "cutoff": 17,
+      "hub_nodes": 668,
+      "components": 4770,
+      "largest_component": 51706,
+      "largest_component_pct": 80.08363664524123
+    },
+    {
+      "percentile": 0.995,
+      "cutoff": 28,
+      "hub_nodes": 329,
+      "components": 2964,
+      "largest_component": 56106,
+      "largest_component_pct": 86.4445950942931
+    }
+  ],
+  "p99_component_summary": {
+    "top10_sizes": [
+      51706,
+      20,
+      20,
+      20,
+      19,
+      19,
+      18,
+      18,
+      18,
+      17
+    ],
+    "size_1": 1886,
+    "size_2": 984,
+    "size_le_5": 4307
+  }
+}

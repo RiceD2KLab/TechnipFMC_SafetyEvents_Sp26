@@ -1,0 +1,20 @@
+{
+  "pairs_total": 11381,
+  "pairs_used_for_merge": 11381,
+  "avg_degree_pre": 1.624498620741072,
+  "avg_degree_post": 1.6635767474642233,
+  "edges_pre": 108947,
+  "edges_post": 108575,
+  "nodes_pre": 67065,
+  "nodes_post": 65266,
+  "components_pre": {
+    "components": 437,
+    "largest_component": 65354,
+    "largest_component_pct": 97.44874375605755
+  },
+  "components_post": {
+    "components": 387,
+    "largest_component": 63760,
+    "largest_component_pct": 97.69251984187785
+  }
+}

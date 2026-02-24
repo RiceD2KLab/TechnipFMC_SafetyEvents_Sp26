@@ -1,0 +1,34 @@
+{
+  "sample_size": 10000,
+  "labels_used": 28,
+  "thresholds": [
+    0.9,
+    0.8
+  ],
+  "results": {
+    "0.9": {
+      "pairwise_predictions": 11145,
+      "cluster_stats": {
+        "clusters": 8067,
+        "clusters_gt1": 437,
+        "entities_in_clusters_gt1": 2370,
+        "avg_cluster_size": 1.2396181975951408,
+        "median_cluster_size": 1,
+        "max_cluster_size": 1048,
+        "merged_entities": 1933
+      }
+    },
+    "0.8": {
+      "pairwise_predictions": 11145,
+      "cluster_stats": {
+        "clusters": 8067,
+        "clusters_gt1": 437,
+        "entities_in_clusters_gt1": 2370,
+        "avg_cluster_size": 1.2396181975951408,
+        "median_cluster_size": 1,
+        "max_cluster_size": 1048,
+        "merged_entities": 1933
+      }
+    }
+  }
+}

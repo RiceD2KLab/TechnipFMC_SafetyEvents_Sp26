@@ -1,0 +1,52 @@
+{
+  "BODY_PART": {
+    "nodes": 101,
+    "clusters": 39,
+    "clusters_gt1": 39,
+    "entities_in_clusters_gt1": 101,
+    "avg_cluster_size": 2.58974358974359,
+    "median_cluster_size": 2,
+    "max_cluster_size": 15,
+    "merged_entities": 62
+  },
+  "EQUIPMENT": {
+    "nodes": 838,
+    "clusters": 392,
+    "clusters_gt1": 392,
+    "entities_in_clusters_gt1": 838,
+    "avg_cluster_size": 2.1377551020408165,
+    "median_cluster_size": 2,
+    "max_cluster_size": 18,
+    "merged_entities": 446
+  },
+  "INJURY_TYPE": {
+    "nodes": 59,
+    "clusters": 29,
+    "clusters_gt1": 29,
+    "entities_in_clusters_gt1": 59,
+    "avg_cluster_size": 2.0344827586206895,
+    "median_cluster_size": 2,
+    "max_cluster_size": 3,
+    "merged_entities": 30
+  },
+  "LOCATION": {
+    "nodes": 677,
+    "clusters": 259,
+    "clusters_gt1": 259,
+    "entities_in_clusters_gt1": 677,
+    "avg_cluster_size": 2.613899613899614,
+    "median_cluster_size": 2,
+    "max_cluster_size": 55,
+    "merged_entities": 418
+  },
+  "ORGANIZATION": {
+    "nodes": 343,
+    "clusters": 148,
+    "clusters_gt1": 148,
+    "entities_in_clusters_gt1": 343,
+    "avg_cluster_size": 2.3175675675675675,
+    "median_cluster_size": 2,
+    "max_cluster_size": 11,
+    "merged_entities": 195
+  }
+}

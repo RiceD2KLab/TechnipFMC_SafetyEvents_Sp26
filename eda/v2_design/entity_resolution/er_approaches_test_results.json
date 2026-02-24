@@ -1,0 +1,48 @@
+{
+  "transitive_closure": {
+    "direct_pairs": 1027,
+    "merges": 889,
+    "clusters": 697,
+    "multi_clusters": 697,
+    "max_cluster": 55,
+    "transitive_pairs": 2787
+  },
+  "candidate_quality": {
+    "total": 11381,
+    "unknown_matches": 162,
+    "location_generic_specific": 167,
+    "org_suffix_diff": 2,
+    "equip_diff_nums": 9252,
+    "clean_candidates": 1967
+  },
+  "cooccurrence": {
+    "pairs_checked": 11381,
+    "zero_cooccur": 4533,
+    "one_plus_cooccur": 6848,
+    "three_plus_cooccur": 2,
+    "five_plus_cooccur": 1
+  },
+  "org_normalization": {
+    "org_pairs": 445,
+    "exact_after_norm": 58
+  },
+  "location_structure": {
+    "loc_pairs": 913,
+    "unique_locs": 956,
+    "structured": 275,
+    "unknown_locs": 119,
+    "coded_locs": 0,
+    "same_country": 152,
+    "diff_country": 21
+  },
+  "realistic_impact": {
+    "current_nodes": 83414,
+    "current_edges": 155621,
+    "current_degree": 1.8656460546191287,
+    "safe_merges": 515,
+    "projected_nodes": 82899,
+    "projected_degree": 1.877236154839021,
+    "improvement_pct": 0.6212378918925482,
+    "merges_needed_for_4": 44508.75
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "sample_size": 10000,
+  "labels_used": 28,
+  "thresholds": [
+    0.9
+  ],
+  "results": {
+    "0.9": {
+      "pairwise_predictions": 11128,
+      "cluster_stats": {
+        "clusters": 8079,
+        "clusters_gt1": 428,
+        "entities_in_clusters_gt1": 2349,
+        "avg_cluster_size": 1.2377769525931428,
+        "median_cluster_size": 1,
+        "max_cluster_size": 1048,
+        "merged_entities": 1921
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+variant_id,variant_name,uses_classifier,uses_enrichment_llm,relation_precision,relation_recall,retrieval_precision_at5,retrieval_recall_at5,avg_degree,components_reduction_pct,evidence_coverage,json_validity,total_runtime_hours,estimated_cost_usd,overmerge_rate,max_cluster_size,schema_violations
+baseline,GLiNER+Splink baseline,0,0,NA,NA,NA,NA,NA,NA,0.00,1.00,NA,0.00,NA,NA,0
+classifier_only,Baseline+Classifier,1,0,NA,NA,NA,NA,NA,NA,0.00,1.00,NA,NA,NA,NA,0
+llm_only,Baseline+Enrichment LLM,0,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,0
+classifier_plus_llm,Baseline+Classifier+Enrichment LLM,1,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,0

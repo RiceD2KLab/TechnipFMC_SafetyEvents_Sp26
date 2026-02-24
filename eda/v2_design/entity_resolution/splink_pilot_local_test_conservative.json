@@ -1,0 +1,30 @@
+{
+  "sample_size": 5000,
+  "unique_types": 7,
+  "blocking_all": false,
+  "thresholds": [
+    0.9
+  ],
+  "results": {
+    "0.9": {
+      "pairwise_predictions": 0,
+      "cluster_stats": {
+        "clusters": 5000,
+        "clusters_gt1": 0,
+        "entities_in_clusters_gt1": 0,
+        "avg_cluster_size": 1.0,
+        "median_cluster_size": 1,
+        "max_cluster_size": 1,
+        "merged_entities": 0
+      },
+      "degree_lift_sample": {
+        "edges_pre": 553,
+        "nodes_pre": 858,
+        "avg_degree_pre": 0.6445221445221445,
+        "edges_post": 551,
+        "nodes_post": 5000,
+        "avg_degree_post": 0.1102
+      }
+    }
+  }
+}

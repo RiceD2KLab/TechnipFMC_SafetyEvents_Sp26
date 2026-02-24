@@ -1,0 +1,51 @@
+{
+  "sample_size": 2000,
+  "unique_types": 7,
+  "blocking_all": true,
+  "thresholds": [
+    0.5,
+    0.3
+  ],
+  "results": {
+    "0.5": {
+      "pairwise_predictions": 0,
+      "cluster_stats": {
+        "clusters": 2000,
+        "clusters_gt1": 0,
+        "entities_in_clusters_gt1": 0,
+        "avg_cluster_size": 1.0,
+        "median_cluster_size": 1,
+        "max_cluster_size": 1,
+        "merged_entities": 0
+      },
+      "degree_lift_sample": {
+        "edges_pre": 104,
+        "nodes_pre": 169,
+        "avg_degree_pre": 0.6153846153846154,
+        "edges_post": 103,
+        "nodes_post": 2000,
+        "avg_degree_post": 0.0515
+      }
+    },
+    "0.3": {
+      "pairwise_predictions": 64,
+      "cluster_stats": {
+        "clusters": 1944,
+        "clusters_gt1": 36,
+        "entities_in_clusters_gt1": 92,
+        "avg_cluster_size": 1.02880658436214,
+        "median_cluster_size": 1,
+        "max_cluster_size": 7,
+        "merged_entities": 56
+      },
+      "degree_lift_sample": {
+        "edges_pre": 104,
+        "nodes_pre": 169,
+        "avg_degree_pre": 0.6153846153846154,
+        "edges_post": 103,
+        "nodes_post": 1944,
+        "avg_degree_post": 0.05298353909465021
+      }
+    }
+  }
+}
