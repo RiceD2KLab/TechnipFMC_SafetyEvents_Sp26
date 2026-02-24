@@ -3,6 +3,8 @@ data/
 
 # Slurm output
 slurm_output/
+runs/
+transfer_bundles/
 
 
 # --- Python ---
@@ -15,6 +17,7 @@ build/
 dist/
 *.egg-info/
 .venv/
+.venv_*/
 venv/
 env/
 pip-wheel-metadata/
@@ -49,6 +52,9 @@ KG_Plumber/**
 !KG_Plumber/output/**
 !KG_Plumber/get_plumber.sh
 
+
+# Benchmark snapshots (generated)
+benchmark_snapshot.json
 
 # GraphRAG
 graphRAG/cache/*

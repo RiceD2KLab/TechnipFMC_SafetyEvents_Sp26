@@ -1,5 +1,6 @@
 """Report generation for benchmark results."""
 
+import json
 from collections import Counter, defaultdict
 from datetime import date
 from pathlib import Path
@@ -27,16 +28,19 @@ def generate_report(results, G, entities_df, metadata_df, output_path):
     lines.append("## 1. Summary Table")
     lines.append("")
     lines.append(
-        "| ID | Query | Type | Coverage | Result | Diagnosis |")
+        "| ID | Query | Type | Coverage | Result | Diagnosis "
+        "| Validation |")
     lines.append(
-        "|------|-------|------|:--------:|--------|-----------|")
+        "|------|-------|------|:--------:|--------|-----------|"
+        ":----------:|")
 
     for qid in sorted(results.keys()):
         r = results[qid]
+        validation = r.get("validation", "—")
         lines.append(
             f"| {qid} | {r['name']} | {r['type']} | "
             f"{r['coverage']} | {r['result_summary']} | "
-            f"{r['diagnosis']} |")
+            f"{r['diagnosis']} | {validation} |")
     lines.append("")
 
     # ── Coverage summary ─────────────────────────────────────────────
@@ -57,6 +61,17 @@ def generate_report(results, G, entities_df, metadata_df, output_path):
     for diag, cnt in diag_counts.most_common():
         lines.append(f"- {diag}: {cnt}")
     lines.append("")
+
+    # ── Validation summary ────────────────────────────────────────────
+    val_counts = Counter(
+        r.get("validation", "—") for r in results.values())
+    has_validation = any(v != "—" for v in val_counts)
+    if has_validation:
+        lines.append("**Ground truth validation:**")
+        for label in ["VALIDATED", "CLOSE", "DRIFT", "—"]:
+            if label in val_counts:
+                lines.append(f"- {label}: {val_counts[label]}")
+        lines.append("")
 
     # ── Per-Query Detail ─────────────────────────────────────────────
     lines.append("## 2. Per-Query Details")
@@ -156,6 +171,63 @@ def generate_report(results, G, entities_df, metadata_df, output_path):
                 f"- **{qid}** ({r['name']}): "
                 "metadata coverage too low for reliable results")
     lines.append("")
+
+    # ── Regression Snapshot ────────────────────────────────────────────
+    snapshot_path = Path(output_path).parent / "benchmark_snapshot.json"
+    current_snapshot = {}
+    for qid, r in results.items():
+        current_snapshot[qid] = {
+            "name": r["name"],
+            "coverage": r["coverage"],
+            "diagnosis": r["diagnosis"],
+            "validation": r.get("validation", "—"),
+            "result_summary": r["result_summary"],
+        }
+
+    previous_snapshot = None
+    if snapshot_path.exists():
+        try:
+            previous_snapshot = json.loads(snapshot_path.read_text())
+        except (json.JSONDecodeError, OSError):
+            previous_snapshot = None
+
+    if previous_snapshot:
+        lines.append("## 5. Regression Diff (vs previous run)")
+        lines.append("")
+        changes = []
+        for qid in sorted(
+                set(current_snapshot) | set(previous_snapshot)):
+            prev = previous_snapshot.get(qid)
+            curr = current_snapshot.get(qid)
+            if curr and not prev:
+                changes.append(f"- **{qid}**: NEW")
+            elif prev and not curr:
+                changes.append(f"- **{qid}**: REMOVED")
+            elif prev and curr:
+                if prev["coverage"] != curr["coverage"]:
+                    changes.append(
+                        f"- **{qid}**: coverage "
+                        f"{prev['coverage']} → {curr['coverage']}")
+                if prev["diagnosis"] != curr["diagnosis"]:
+                    changes.append(
+                        f"- **{qid}**: diagnosis "
+                        f"{prev['diagnosis']} → {curr['diagnosis']}")
+                if prev.get("validation", "—") != curr.get(
+                        "validation", "—"):
+                    changes.append(
+                        f"- **{qid}**: validation "
+                        f"{prev.get('validation', '—')} → "
+                        f"{curr.get('validation', '—')}")
+        if changes:
+            lines.extend(changes)
+        else:
+            lines.append("No regressions detected — all results stable.")
+        lines.append("")
+
+    # Save current snapshot
+    snapshot_path.write_text(
+        json.dumps(current_snapshot, indent=2, ensure_ascii=False))
+    print(f"Snapshot written to {snapshot_path}")
 
     lines.append("---")
     lines.append(

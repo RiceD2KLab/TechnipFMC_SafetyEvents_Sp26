@@ -47,6 +47,7 @@ class QuerySpec:
     custom_fn: str
     ground_truth: set
     notes: str
+    expected_count: int         # ground truth count, or None if unknown
 
 
 # ── CSV parsing ──────────────────────────────────────────────────────────
@@ -131,6 +132,15 @@ def load_queries(csv_path):
             if gt_raw:
                 ground_truth = {g.strip().lower() for g in gt_raw.split("|")}
 
+            ec_raw = (row.get("expected_count") or "").strip()
+            expected_count = None
+            if ec_raw:
+                try:
+                    expected_count = int(ec_raw)
+                except ValueError:
+                    print(f"Warning: invalid expected_count "
+                          f"'{ec_raw}' for {row['query_id']}")
+
             specs.append(QuerySpec(
                 query_id=row["query_id"].strip(),
                 name=row["name"].strip(),
@@ -151,6 +161,7 @@ def load_queries(csv_path):
                 custom_fn=(row.get("custom_fn") or "").strip(),
                 ground_truth=ground_truth,
                 notes=(row.get("notes") or "").strip(),
+                expected_count=expected_count,
             ))
     return specs
 
@@ -408,6 +419,43 @@ def _determine_diagnosis(spec, entity_ids, output):
     return "CLEAN"
 
 
+def _score_validation(spec, output):
+    """Compare graph count vs expected ground truth count.
+
+    Returns:
+        str: VALIDATED (within 10%), CLOSE (within 25%), DRIFT (>25%),
+             or "—" if no expected_count.
+    """
+    if spec.expected_count is None:
+        return "—"
+    expected = spec.expected_count
+    # For count_incidents: use count directly
+    # For aggregate/count_by_year: use incident count from detail
+    actual = output.get("count", 0)
+    # Try to extract incident count from detail for aggregate modes
+    for line in output.get("detail_lines", []):
+        if line.startswith("Matching incidents:"):
+            try:
+                actual = int(line.split(":")[1].strip())
+            except (ValueError, IndexError):
+                pass
+            break
+        if line.startswith("Total incidents:"):
+            try:
+                actual = int(line.split(":")[1].strip())
+            except (ValueError, IndexError):
+                pass
+            break
+    if expected == 0:
+        return "VALIDATED" if actual == 0 else "DRIFT"
+    pct_diff = abs(actual - expected) / expected
+    if pct_diff <= 0.10:
+        return "VALIDATED"
+    if pct_diff <= 0.25:
+        return "CLOSE"
+    return "DRIFT"
+
+
 # ── Spot-check strategy ─────────────────────────────────────────────────
 
 def _execute_spot_check(spec, G, entities_df):
@@ -470,11 +518,13 @@ def execute_query(spec, G, entities_df, relations_df, metadata_df,
                     f"custom_fn '{spec.custom_fn}' not found",
                 "detail": f"Available: {available}",
             }
+        result["validation"] = "—"
         result["elapsed"] = f"{time.time() - t0:.1f}s"
         return result
 
     if spec.strategy == "spot_check":
         result = _execute_spot_check(spec, G, entities_df)
+        result["validation"] = "—"
         result["elapsed"] = f"{time.time() - t0:.1f}s"
         return result
 
@@ -489,6 +539,7 @@ def execute_query(spec, G, entities_df, relations_df, metadata_df,
             "diagnosis": diag,
             "result_summary": output["result_summary"],
             "detail": "\n".join(output["detail_lines"]),
+            "validation": _score_validation(spec, output),
         }
         result["elapsed"] = f"{time.time() - t0:.1f}s"
         return result
@@ -507,6 +558,7 @@ def execute_query(spec, G, entities_df, relations_df, metadata_df,
         "result_summary": output.get(
             "result_summary", f"{output.get('count', 0)} results"),
         "detail": "\n".join(output.get("detail_lines", [])),
+        "validation": _score_validation(spec, output),
     }
     result["elapsed"] = f"{time.time() - t0:.1f}s"
     return result
@@ -524,6 +576,8 @@ def run_all_queries(specs, G, entities_df, relations_df, metadata_df,
         result["name"] = spec.name
         result["type"] = spec.query_type
         results[spec.query_id] = result
+        validation = result.get('validation', '—')
         print(f"    -> {result['coverage']} | "
-              f"{result['diagnosis']} ({result['elapsed']})")
+              f"{result['diagnosis']} | {validation} "
+              f"({result['elapsed']})")
     return results

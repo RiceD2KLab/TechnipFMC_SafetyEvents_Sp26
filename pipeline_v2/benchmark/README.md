@@ -6,10 +6,12 @@ This is a CSV-driven benchmark system for the v2 safety knowledge graph. Adding 
 query means adding a row to `benchmark_queries.csv`. No Python changes are required
 unless the query logic cannot be expressed via CSV (see Section 5).
 
-**30 total queries:**
-- 22 are fully CSV-driven (strategies: entity_filter, meta_filter,
+**43 total queries:**
+- 35 are fully CSV-driven (strategies: entity_filter, meta_filter,
   narrative_filter, intersect, crosstab, spot_check)
 - 8 use custom Python functions registered in `custom_queries.py`
+- 9 metadata-verifiable queries have `expected_count` for ground truth validation
+- 13 spot-check queries verify per-record extraction quality (SC-01 through SC-09b)
 
 **Query types covered:** Single-hop, Aggregation, Multi-hop, Global, Conjunctive
 
@@ -165,6 +167,19 @@ The `granularity` filter in aggregate mode matches the `granularity` node attrib
 - Optional, free-form
 - Not used programmatically; for human annotation only
 - Example: `Pre-ER variants are separate`
+
+### `expected_count`
+- Optional
+- Integer ground truth count computed from `metadata_parsed.parquet` or manual verification
+- Used by the validation scoring engine to compare graph results against known answers
+- Scoring logic:
+  - Within 10% of expected: `VALIDATED`
+  - Within 25% of expected: `CLOSE` (acceptable for GLiNER-dependent queries)
+  - Over 25% divergence: `DRIFT` (indicates extraction or pipeline issue)
+  - No expected_count: `—` (not validated)
+- For metadata-verifiable queries (filters on year, severity, work_process), the expected
+  count is deterministic. For GLiNER-dependent queries, some drift is expected since the
+  NER model may extract more or fewer entities than a simple text grep.
 
 ---
 
@@ -333,16 +348,51 @@ The key must exactly match the `custom_fn` value in the CSV row.
 
 ---
 
-## 6. Output
+## 6. Spot-Check Queries
+
+Spot-check queries (SC-01 through SC-09b) verify extraction quality on individual
+incident records where the ground truth was determined by reading the narrative.
+
+Two categories:
+- **Equipment spot-checks** (SC-01 to SC-09): verify `EQUIPMENT:INVOLVED` extraction
+  against manually identified equipment in the narrative
+- **Body part spot-checks** (SC-04b, SC-06b, SC-07b, SC-09b): verify `BODY_PART:AFFECTED`
+  extraction against manually identified body parts
+
+These queries use the existing `spot_check` strategy. The `ground_truth` column contains
+pipe-separated expected values; the engine compares graph extractions against them and
+flags missing or extra entities.
+
+---
+
+## 7. Regression Snapshots
+
+Each benchmark run saves a `benchmark_snapshot.json` alongside the report. On the next
+run, the report includes a **Regression Diff** section comparing the current results
+against the previous snapshot.
+
+The diff reports:
+- Coverage changes (e.g., pass → fail)
+- Diagnosis changes
+- Validation changes
+- New or removed queries
+
+This enables detecting regressions after pipeline changes (schema updates, GLiNER model
+changes, data refreshes) without manual comparison.
+
+---
+
+## 8. Output
 
 Running the benchmark produces `pipeline_v2/benchmark/benchmark_results.md` with
-four sections:
+up to five sections:
 
-1. **Summary Table** — one row per query with coverage symbol, result summary, and
-   diagnosis label
+1. **Summary Table** — one row per query with coverage symbol, result summary,
+   diagnosis label, and validation status
 2. **Per-Query Details** — full output block for each query including counts, top-N
    lists, or crosstab tables
 3. **Ablation Prediction Table** — projects how many queries would pass after entity
    resolution (ER) and after Layer 2 causal enrichment, grouped by query type
 4. **Key Findings** — grouped lists of passing queries, ER-needed queries, L2-blocked
    queries, and data sparsity issues
+5. **Regression Diff** — (if a previous snapshot exists) changes since the last run
