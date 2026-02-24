@@ -14,10 +14,10 @@
 set -euo pipefail
 
 # ── Paths ─────────────────────────────────────────────────────────────────
-# This script runs on a compute node. $WORK is NOT available here.
-# Everything must be on $SHARED_SCRATCH (staged by setup_cluster_env.sh).
+# Repo lives on the team allocation (compute-visible + persistent).
+# Venv and Ollama live on $SHARED_SCRATCH (compute-visible, 14-day purge).
 SCRATCH_BASE="${SHARED_SCRATCH}/${USER}"
-REPO_ROOT="${SCRATCH_BASE}/TechnipFMC_SafetyEvents"
+REPO_ROOT="${SLURM_SUBMIT_DIR:-/rhf/allocations/dsci435/fmcsafetyevents_sp26/TechnipFMC_SafetyEvents}"
 cd "${REPO_ROOT}"
 
 mkdir -p slurm_output

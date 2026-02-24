@@ -2,16 +2,18 @@
 # Setup Python virtual environment on Rice NOTS cluster.
 #
 # Run from a login node (ssh username@nots.rice.edu):
-#   cd $WORK/TechnipFMC_SafetyEvents
+#   cd /rhf/allocations/dsci435/fmcsafetyevents_sp26/TechnipFMC_SafetyEvents
 #   INSTALL_OLLAMA=1 bash cluster/setup_cluster_env.sh
 #
-# NOTS storage rules:
-#   $WORK        → login nodes only, persistent, 2TB group quota
-#   $SHARED_SCRATCH → compute + login nodes, 14-day purge, no quota
-#   $HOME        → both, but 10GB quota (too small)
+# NOTS storage layout:
+#   /rhf/allocations/dsci435/fmcsafetyevents_sp26/  → team repo (compute-visible, persistent)
+#   $SHARED_SCRATCH/$USER/                          → venv, Ollama, model cache (compute-visible, 14-day purge)
+#   $HOME                                           → 10GB, too small for venv/models
+#   $WORK                                           → login-node only, not visible from compute
 #
-# This script builds the venv and Ollama on $SHARED_SCRATCH so compute
-# nodes can access them. If purged, re-run this script to rebuild.
+# The repo lives on the allocation (persistent + compute-visible).
+# Venv and Ollama go on $SHARED_SCRATCH (allocation is 98% full).
+# If scratch gets purged, re-run this script to rebuild.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -89,32 +91,17 @@ if [ "${INSTALL_OLLAMA}" = "1" ]; then
   echo "Ollama: ${OLLAMA_DIR}/ollama"
 fi
 
-# ── Stage repo to $SHARED_SCRATCH ────────────────────────────────────────
-SCRATCH_REPO="${SCRATCH_BASE}/TechnipFMC_SafetyEvents"
-echo ""
-echo "Syncing repo to ${SCRATCH_REPO} (compute nodes need this)..."
-rsync -a --delete \
-  --exclude '.git' \
-  --exclude '.venv*' \
-  --exclude '__pycache__' \
-  --exclude '.codex_logs' \
-  "${REPO_ROOT}/" "${SCRATCH_REPO}/"
-echo "Repo staged: ${SCRATCH_REPO}"
-
 echo ""
 echo "=== Setup complete ==="
 echo ""
-echo "Paths for job submission (compute-visible):"
+echo "Paths for job submission (all compute-visible):"
 echo "  PYTHON_BIN:  ${VENV_DIR}/bin/python"
-echo "  REPO:        ${SCRATCH_REPO}"
+echo "  REPO:        ${REPO_ROOT}"
 echo "  OLLAMA:      ${SCRATCH_BASE}/bin/ollama"
 echo ""
 echo "To submit L2 enrichment:"
-echo "  cd ${SCRATCH_REPO}"
+echo "  cd ${REPO_ROOT}"
 echo "  NODES_CSV=pipeline_v2/outputs/entities.parquet \\"
 echo "  EDGES_CSV=pipeline_v2/outputs/relations.parquet \\"
 echo "  METADATA_CSV=pipeline_v2/outputs/metadata_parsed.parquet \\"
 echo "  sbatch cluster/submit_l2_enrichment.sbatch"
-echo ""
-echo "After jobs finish, copy results back to \$WORK:"
-echo "  cp -r ${SCRATCH_REPO}/output/l2 ${REPO_ROOT}/output/l2"
