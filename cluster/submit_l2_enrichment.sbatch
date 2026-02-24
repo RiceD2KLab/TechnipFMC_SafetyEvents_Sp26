@@ -9,6 +9,7 @@
 #SBATCH --time=24:00:00
 #SBATCH --partition=commons
 #SBATCH --gres=gpu:1
+#SBATCH --exclusive
 #SBATCH --array=0-3
 
 set -euo pipefail
@@ -44,10 +45,13 @@ MAX_RETRIES="${MAX_RETRIES:-2}"
 NUM_SHARDS="${NUM_SHARDS:-4}"
 RESUME="${RESUME:-1}"
 PYTHON_BIN="${PYTHON_BIN:-${SCRATCH_BASE}/.venv_cluster/bin/python}"
-OLLAMA_HOST="${OLLAMA_HOST:-http://127.0.0.1:11434}"
+# Unique port per array task to avoid collisions when co-located
+OLLAMA_PORT="${OLLAMA_PORT:-$((11434 + ${SLURM_ARRAY_TASK_ID:-0}))}"
+OLLAMA_HOST="${OLLAMA_HOST:-http://127.0.0.1:${OLLAMA_PORT}}"
 OLLAMA_MODELS="${OLLAMA_MODELS:-${SCRATCH_BASE}/.ollama/models}"
 
 export OLLAMA_MODELS
+export OLLAMA_HOST
 
 shard_index="${SLURM_ARRAY_TASK_ID:-0}"
 
@@ -60,6 +64,7 @@ is_truthy() {
 
 # ── Start Ollama server ─────────────────────────────────────────────────
 echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] Starting Ollama server..."
+echo "  OLLAMA_HOST=${OLLAMA_HOST}"
 echo "  OLLAMA_MODELS=${OLLAMA_MODELS}"
 echo "  GPU: $(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null || echo 'none')"
 ollama serve &

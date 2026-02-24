@@ -73,6 +73,7 @@ def _build_entity_dict(
         try:
             row = nodes_df.loc[eid]
         except KeyError:
+            logger.debug("Entity ID %s not found in nodes_df", eid)
             continue
         etype = str(row.get("entity_type", ""))
         value = str(row.get("value", ""))
@@ -152,8 +153,19 @@ def run_l2_enrichment(
     if num_shards > 1:
         record_nos = record_nos[shard_index::num_shards]
 
+    # Validate required columns
+    required_node_cols = {"entity_id", "entity_type", "value"}
+    missing_node_cols = required_node_cols - set(nodes_df.columns)
+    if missing_node_cols:
+        raise ValueError(f"nodes_df missing required columns: {missing_node_cols}")
+    
+    required_edge_cols = {"source", "target", "relation"}
+    missing_edge_cols = required_edge_cols - set(edges_df.columns)
+    if missing_edge_cols:
+        raise ValueError(f"edges_df missing required columns: {missing_edge_cols}")
+
     # Build entity lookup (nodes_df indexed by entity_id for O(1) lookups)
-    nodes_indexed = nodes_df.set_index("entity_id", drop=False) if "entity_id" in nodes_df.columns else nodes_df
+    nodes_indexed = nodes_df.set_index("entity_id", drop=False)
     nodes_indexed = nodes_indexed[~nodes_indexed.index.duplicated(keep="first")]
 
     # Build narrative lookup from metadata

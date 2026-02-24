@@ -15,27 +15,47 @@ Start vLLM server before running:
 from __future__ import annotations
 
 import json
+import logging
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from typing import Any, Dict, Optional
+
+logger = logging.getLogger(__name__)
 
 
 def _extract_json_block(text: str) -> Optional[dict]:
     """Try to parse JSON from raw LLM output, handling markdown fences."""
     text = text.strip()
+    if not text:
+        return None
     try:
         return json.loads(text)
-    except Exception:
+    except json.JSONDecodeError:
         pass
+    except Exception as exc:
+        logger.debug("Unexpected error parsing JSON: %s", exc)
+        return None
     start = text.find("{")
     end = text.rfind("}")
     if start >= 0 and end > start:
         try:
             return json.loads(text[start : end + 1])
-        except Exception:
+        except json.JSONDecodeError:
+            logger.debug("Failed to parse JSON block from extracted substring")
+            return None
+        except Exception as exc:
+            logger.debug("Unexpected error parsing JSON block: %s", exc)
             return None
     return None
+
+
+def _validate_host(host: str) -> None:
+    """Validate host URL scheme."""
+    parsed = urllib.parse.urlparse(host)
+    if parsed.scheme not in ("http", "https"):
+        raise ValueError(f"Invalid scheme in host URL: {parsed.scheme}")
 
 
 def call_vllm(
@@ -56,7 +76,9 @@ def call_vllm(
     ``schema`` is provided.
 
     Raises ``RuntimeError`` after exhausting retries.
+    Raises ``ValueError`` if host URL is invalid or not localhost.
     """
+    _validate_host(host)
     url = host.rstrip("/") + "/v1/chat/completions"
     payload: Dict[str, Any] = {
         "model": model,

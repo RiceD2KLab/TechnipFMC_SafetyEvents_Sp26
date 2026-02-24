@@ -9,6 +9,7 @@
 #SBATCH --time=24:00:00
 #SBATCH --partition=commons
 #SBATCH --gres=gpu:1
+#SBATCH --exclusive
 #SBATCH --array=0-3
 
 set -euo pipefail
@@ -39,7 +40,9 @@ MAX_RETRIES="${MAX_RETRIES:-2}"
 NUM_SHARDS="${NUM_SHARDS:-4}"
 RESUME="${RESUME:-1}"
 PYTHON_BIN="${PYTHON_BIN:-${SCRATCH_BASE}/.venv_cluster/bin/python}"
-VLLM_HOST="${VLLM_HOST:-http://127.0.0.1:8000}"
+# Unique port per array task to avoid collisions when co-located
+VLLM_PORT="${VLLM_PORT:-$((8000 + ${SLURM_ARRAY_TASK_ID:-0}))}"
+VLLM_HOST="${VLLM_HOST:-http://127.0.0.1:${VLLM_PORT}}"
 VLLM_MAX_MODEL_LEN="${VLLM_MAX_MODEL_LEN:-4096}"
 VLLM_GPU_UTIL="${VLLM_GPU_UTIL:-0.90}"
 
@@ -54,6 +57,7 @@ is_truthy() {
 
 # ── Start vLLM server ────────────────────────────────────────────────────
 echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] Starting vLLM server..."
+echo "  VLLM_HOST=${VLLM_HOST}"
 echo "  MODEL=${MODEL}"
 echo "  MAX_MODEL_LEN=${VLLM_MAX_MODEL_LEN}"
 echo "  GPU_UTIL=${VLLM_GPU_UTIL}"
@@ -68,7 +72,7 @@ mkdir -p "${HF_HOME}"
   --max-model-len "${VLLM_MAX_MODEL_LEN}" \
   --gpu-memory-utilization "${VLLM_GPU_UTIL}" \
   --enable-reasoning --reasoning-parser qwen3 \
-  --port 8000 &
+  --port "${VLLM_PORT}" &
 VLLM_PID=$!
 
 # Health check: wait for vLLM to load model and start serving
