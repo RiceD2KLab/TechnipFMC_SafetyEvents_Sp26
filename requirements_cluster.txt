@@ -1,0 +1,23 @@
+# Minimal pinned dependencies for GLiNER cluster testing and ablation.
+# Install torch separately for your CUDA/CPU target before this file:
+#   python -m pip install torch==2.10.0 --index-url <pytorch index url>
+
+# Core extraction
+gliner==0.2.24
+transformers==4.57.3
+tokenizers==0.22.1
+accelerate==1.11.0
+
+# Data / artifact formats
+pandas==3.0.0
+pyarrow==23.0.0
+numpy==2.4.1
+tqdm==4.67.3
+
+# Metrics / reporting
+networkx==3.6.1
+matplotlib==3.10.8
+
+# ER / ablation
+splink==4.0.12
+duckdb==1.4.4
