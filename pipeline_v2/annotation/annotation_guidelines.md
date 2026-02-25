@@ -58,9 +58,11 @@ What happened step by step within the incident?
 ### Edge Cases
 
 **What if causal language spans multiple sentences?**
-Quote the minimal span that captures the relationship. If the relevant phrases
-are not contiguous, use "..." to bridge them — but always prefer a contiguous
-quote when possible. Do not paraphrase.
+Quote the minimal contiguous span that captures the relationship. Evidence must
+be an exact, unbroken substring of the narrative — do not bridge non-contiguous
+phrases with "..." or stitch together sentences from different parts of the text.
+If the causal relationship spans non-adjacent text, quote the single most
+informative contiguous portion. Do not paraphrase.
 
 **What if the narrative contradicts itself?**
 Annotate the most specific and detailed account. Add a note explaining the
@@ -113,14 +115,20 @@ entry represents one step: a triggering event and the outcome it produced.
 - For a chain A -> B -> C, use:
   - led_to_1_event = A, led_to_1_outcome = B
   - led_to_2_event = B, led_to_2_outcome = C
-- The event of step N+1 should match the outcome of step N. This keeps the
-  chain connected.
+- The event of step N+1 should describe the same event as the outcome of step N.
+  Exact wording is not required — semantic continuity is sufficient (e.g.,
+  outcome="sling broke" followed by event="breaking noise detected" is valid).
+  This keeps the chain connected.
 - Maximum 3 chain steps (led_to_1, led_to_2, led_to_3).
 - If the chain in the narrative has more than 3 steps, capture the 3 most
   significant steps. Prefer the initial trigger and the final outcome as
   anchors, and pick the most consequential intermediate step.
 - Do not repeat CAUSED_BY content in led_to_1. The LED_TO chain describes what
   happened after the incident began, not what caused it to start.
+  - WRONG: caused_by="sparks ignited the hose", led_to_1_event="sparks ignited
+    the hose" (restates the cause)
+  - RIGHT: caused_by="sparks ignited the hose", led_to_1_event="hose fire
+    spread to adjacent equipment" (describes the next event in the sequence)
 
 ---
 

@@ -43,11 +43,13 @@ Given an incident narrative and a list of pre-extracted entities, identify:
 
 RULES:
 - Only annotate what the narrative explicitly states. Do not infer from metadata.
-- Evidence must be a verbatim quote from the narrative (exact substring).
+- Evidence must be an exact, contiguous substring of the narrative. Do not bridge non-contiguous phrases with "..." or stitch together sentences from different parts of the text. If the causal relationship spans non-adjacent text, quote the single most informative contiguous portion.
 - Confidence: HIGH = explicit causal language ("caused by", "due to", "resulted in"), MEDIUM = strongly implied, LOW = ambiguous.
 - If no causal relationship is present, return empty arrays.
 - Do NOT paraphrase evidence -- copy exact text from the narrative.
 - Prefer fewer, high-confidence annotations over many speculative ones.
+- Do NOT repeat CAUSED_BY content in led_to step 1. LED_TO describes what happened AFTER the incident began, not what caused it to start. WRONG: caused_by="sparks ignited the hose", led_to step 1 event="sparks ignited the hose". RIGHT: caused_by="sparks ignited the hose", led_to step 1 event="hose fire spread to adjacent equipment".
+- LED_TO chain connectivity: the event of step N+1 should describe the same event as the outcome of step N. Exact wording is not required -- semantic continuity is sufficient.
 
 Return JSON with this structure:
 {
