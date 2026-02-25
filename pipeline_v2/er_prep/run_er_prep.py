@@ -439,6 +439,114 @@ else:
     pd.DataFrame().to_csv(OUT_DIR / "merge_priorities.csv", index=False)
 
 # =========================================================================
+# Part D: Pairwise Labeling Files for Human Annotation
+# =========================================================================
+print("\n=== Part D: Pairwise Labeling Files ===")
+
+import math
+
+
+def extract_nums(val):
+    """Extract all digit sequences from a string."""
+    return sorted(set(re.findall(r"\d+", str(val))))
+
+
+def num_jaccard(nums_a, nums_b):
+    """Jaccard similarity over extracted number sets."""
+    a, b = set(nums_a), set(nums_b)
+    if not a and not b:
+        return 1.0  # both have no numbers — not a distinguisher
+    if not a or not b:
+        return 0.0  # one has numbers, one doesn't
+    return len(a & b) / len(a | b)
+
+
+def risk_score(row):
+    """Higher = more impactful if mislabeled.
+
+    Components:
+      - log(combined_degree): high-degree pairs affect more edges
+      - ambiguity_bonus: mid-range similarity is harder to call
+      - num_mismatch_bonus: number disagreement is a critical signal
+    """
+    cd = row["entity_a_degree"] + row["entity_b_degree"]
+    degree_component = math.log1p(cd)
+
+    sim = row["similarity_score"]
+    # Peak ambiguity near 0.90 (our threshold zone)
+    ambiguity_bonus = 1.0 - abs(sim - 0.90) / 0.10
+    ambiguity_bonus = max(0.0, ambiguity_bonus)
+
+    nm = 2.0 if row["num_mismatch"] else 0.0
+
+    return round(degree_component + ambiguity_bonus + nm, 3)
+
+
+if len(merge_df) > 0:
+    pw = merge_df.copy()
+
+    # Compute number features
+    pw["nums_l"] = pw["entity_a_value"].apply(extract_nums)
+    pw["nums_r"] = pw["entity_b_value"].apply(extract_nums)
+    pw["num_jaccard"] = pw.apply(lambda r: num_jaccard(r["nums_l"], r["nums_r"]), axis=1)
+    pw["num_mismatch"] = pw.apply(
+        lambda r: bool(set(r["nums_l"]) and set(r["nums_r"]) and set(r["nums_l"]) != set(r["nums_r"])),
+        axis=1,
+    )
+    pw["risk_score"] = pw.apply(risk_score, axis=1)
+
+    # Format nums as comma-separated strings for CSV readability
+    pw["nums_l"] = pw["nums_l"].apply(lambda x: ",".join(x) if x else "")
+    pw["nums_r"] = pw["nums_r"].apply(lambda x: ",".join(x) if x else "")
+
+    # Build output with labeling-guide schema
+    out_cols = ["is_match", "type", "title_l", "title_r", "score",
+                "nums_l", "nums_r", "num_jaccard", "num_mismatch", "risk_score"]
+    pw["is_match"] = ""  # empty — annotator fills this
+    pw["type"] = pw["entity_type"]
+    pw["title_l"] = pw["entity_a_value"]
+    pw["title_r"] = pw["entity_b_value"]
+    pw["score"] = pw["similarity_score"]
+    pw["num_jaccard"] = pw["num_jaccard"].round(4)
+    pw_out = pw[out_cols].copy()
+
+    # Sort by risk descending for priority sampling
+    pw_out = pw_out.sort_values("risk_score", ascending=False).reset_index(drop=True)
+
+    # --- Full file: stratified 500 pairs ---
+    # Stratify by entity_type, proportional to type distribution
+    full_rows = []
+    type_counts = pw_out["type"].value_counts()
+    total = len(pw_out)
+    for etype, count in type_counts.items():
+        n_sample = max(5, round(500 * count / total))
+        type_pool = pw_out[pw_out["type"] == etype]
+        n_sample = min(n_sample, len(type_pool))
+        full_rows.append(type_pool.head(n_sample))
+
+    full_df = pd.concat(full_rows, ignore_index=True)
+    # Trim to exactly 500 if oversampled, or keep all if under
+    full_df = full_df.sort_values("risk_score", ascending=False).head(500).reset_index(drop=True)
+    full_df.to_csv(OUT_DIR / "pairwise_labels_review.csv", index=False)
+    print(f"  pairwise_labels_review.csv: {len(full_df)} pairs")
+    print(f"    Types: {full_df['type'].value_counts().to_dict()}")
+
+    # --- Priority file: top 200 by risk score from full file ---
+    priority_df = full_df.head(200).reset_index(drop=True)
+    priority_df.to_csv(OUT_DIR / "pairwise_labels_review_priority.csv", index=False)
+    print(f"  pairwise_labels_review_priority.csv: {len(priority_df)} pairs")
+    print(f"    Types: {priority_df['type'].value_counts().to_dict()}")
+
+    # Sanity checks
+    assert set(priority_df.columns) == set(out_cols), f"Column mismatch: {set(priority_df.columns)}"
+    assert (priority_df["is_match"] == "").all(), "is_match should be empty"
+    assert priority_df["risk_score"].is_monotonic_decreasing, "Priority file should be sorted by risk"
+    assert len(priority_df) == min(200, len(full_df)), f"Expected min(200, {len(full_df)}) priority pairs, got {len(priority_df)}"
+    print("  Sanity checks passed")
+else:
+    print("  No merge candidates — skipping pairwise files")
+
+# =========================================================================
 # Summary stats for reporting
 # =========================================================================
 print("\n=== Summary ===")
