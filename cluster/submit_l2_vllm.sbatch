@@ -77,13 +77,13 @@ VLLM_PID=$!
 
 # Health check: wait for vLLM to load model and start serving
 echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] Waiting for vLLM to load model..."
-for i in $(seq 1 120); do
+for i in $(seq 1 300); do
   if curl -sf "${VLLM_HOST}/v1/models" > /dev/null 2>&1; then
     echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] vLLM server ready (attempt ${i})"
     break
   fi
-  if [ "$i" -eq 120 ]; then
-    echo "ERROR: vLLM server failed to start after 120 attempts (4 min)" >&2
+  if [ "$i" -eq 300 ]; then
+    echo "ERROR: vLLM server failed to start after 300 attempts (10 min)" >&2
     kill "${VLLM_PID}" 2>/dev/null || true
     exit 1
   fi
