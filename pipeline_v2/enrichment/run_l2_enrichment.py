@@ -182,13 +182,19 @@ def run_l2_enrichment(
         rno = str(row["record_no"])
         narratives[rno] = str(row.get(narrative_col, ""))
 
-    # Resume support
+    # Resume support — track ALL attempted record_nos, not just those with edges
     jsonl_path = output_path / "l2_edges.jsonl"
+    progress_path = output_path / "progress.jsonl"
     processed_ids: Set[str] = set()
     existing_records: List[dict] = []
     if resume:
         existing_records = _load_existing_jsonl(jsonl_path)
         for rec in existing_records:
+            rid = str(rec.get("record_no", ""))
+            if rid:
+                processed_ids.add(rid)
+        # Also load progress file (records attempted but possibly no edges)
+        for rec in _load_existing_jsonl(progress_path):
             rid = str(rec.get("record_no", ""))
             if rid:
                 processed_ids.add(rid)
@@ -226,6 +232,7 @@ def run_l2_enrichment(
     )
 
     jsonl_mode = "a" if resume and jsonl_path.exists() else "w"
+    progress_mode = "a" if resume and progress_path.exists() else "w"
     all_l2_edges: List[dict] = list(existing_records)
     stats = {"total": 0, "llm_calls": 0, "edges_produced": 0, "edges_rejected": 0, "errors": 0}
 
@@ -262,6 +269,8 @@ def run_l2_enrichment(
         except Exception as exc:
             logger.warning("LLM call failed for record %s: %s", rno, exc)
             stats["errors"] += 1
+            _append_jsonl(progress_path, [{"record_no": rno, "status": "error"}], mode=progress_mode)
+            progress_mode = "a"
             continue
 
         call_seconds = time.time() - t0
@@ -308,6 +317,10 @@ def run_l2_enrichment(
         _append_jsonl(jsonl_path, batch_records, mode=jsonl_mode)
         jsonl_mode = "a"
         all_l2_edges.extend(batch_records)
+
+        # Track this record as processed (for resume even if 0 edges)
+        _append_jsonl(progress_path, [{"record_no": rno, "status": "ok", "edges": len(deduped)}], mode=progress_mode)
+        progress_mode = "a"
 
     # Write metrics
     metrics = {
