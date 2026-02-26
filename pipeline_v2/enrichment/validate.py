@@ -78,14 +78,14 @@ def validate_causal_edges(
             logger.debug("Invalid target_type '%s' for entity '%s'", target_type, target)
             continue
 
-        # Check source grounding (case-insensitive)
-        if source.lower() not in entity_lookup:
-            logger.debug("Source '%s' not in entity set", source)
+        # Check source grounding: entity set OR narrative substring
+        if source.lower() not in entity_lookup and source.lower() not in narrative_lower:
+            logger.debug("Source '%s' not in entity set or narrative", source)
             continue
 
-        # Check target grounding (case-insensitive)
-        if target.lower() not in entity_lookup:
-            logger.debug("Target '%s' not in entity set", target)
+        # Check target grounding: entity set OR narrative substring
+        if target.lower() not in entity_lookup and target.lower() not in narrative_lower:
+            logger.debug("Target '%s' not in entity set or narrative", target)
             continue
 
         # Check evidence grounding (case-insensitive substring match)
@@ -95,9 +95,9 @@ def validate_causal_edges(
 
         # Normalize: canonical entity casing, canonical type casing
         edge_clean = {
-            "source": entity_lookup[source.lower()],
+            "source": entity_lookup.get(source.lower(), source),
             "source_type": _VALID_ENTITY_TYPES_LOWER[source_type.lower()],
-            "target": entity_lookup[target.lower()],
+            "target": entity_lookup.get(target.lower(), target),
             "target_type": _VALID_ENTITY_TYPES_LOWER[target_type.lower()],
             "relation": relation,
             "evidence": evidence,
