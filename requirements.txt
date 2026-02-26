@@ -117,4 +117,6 @@ webencodings==0.5.1
 websocket-client==1.8.0
 widgetsnbextension==4.0.14
 wordcloud==1.9.4
+networkx>=3.1
+pyvis>=0.3.1
 zipp==3.23.0
