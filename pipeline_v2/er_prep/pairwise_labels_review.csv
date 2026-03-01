@@ -1,501 +1,501 @@
 is_match,type,title_l,title_r,score,nums_l,nums_r,num_jaccard,num_mismatch,risk_score
-,ORGANIZATION,TECHNIPFMC PLC,TechnipFMC UK,0.8696,,,1.0,False,8.528
-,ORGANIZATION,TECHNIPFMC PLC,Technip PMC,0.8571,,,1.0,False,8.403
-,ORGANIZATION,TECHNIPFMC PLC,TECHNIPFMC,1.0,,,1.0,False,8.376
-,ORGANIZATION,TECHNIPFMC PLC,TECHNIP FMC,0.9524,,,1.0,False,8.364
-,ORGANIZATION,TECHNIPFMC PLC,TechnpFMC,0.9474,,,1.0,False,8.358
-,ORGANIZATION,TECHNIPFMC,TechnipFMC UK,0.8696,,,1.0,False,8.204
-,LOCATION,Global 1201,Global 1200,0.9091,1201,1200,0.0,True,8.151
-,ORGANIZATION,TECHNIPFMC,Technip PMC,0.8571,,,1.0,False,8.079
-,ORGANIZATION,TECHNIPFMC,TECHNIP FMC,0.9524,,,1.0,False,8.06
-,ORGANIZATION,TECHNIPFMC,TechnpFMC,0.9474,,,1.0,False,8.034
-,ROOT_CAUSE_CATEGORY,"Falls, slips and trips on same level (without potential to fall to lower level)","Work environment - Falls, slips and trips on same level (without potential to fall to lower level)",0.8927,,,1.0,False,8.002
-,ROOT_CAUSE_CATEGORY,Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects),Mechanical - Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects),0.9333,,,1.0,False,7.961
-,ORGANIZATION,TECHNIPFMC PLC,TFMC,1.0,,,1.0,False,7.957
-,ROOT_CAUSE_CATEGORY,Hazardous liquids (exposure to / spill / loss of containment /pollution),Substances  - Hazardous liquids (exposure to / spill / loss of containment /pollution),0.9114,,,1.0,False,7.831
-,ORGANIZATION,FLEXI FRANCE,Flexi-France,0.9167,,,1.0,False,7.747
-,ORGANIZATION,TECHNIPFMC,TFMC,1.0,,,1.0,False,7.677
-,ORGANIZATION,FLEXI FRANCE,FLEXI FRANCE SAS,0.8571,,,1.0,False,7.495
-,EQUIPMENT,forklift,forklift 1,0.8889,,1,0.0,False,7.49
-,EQUIPMENT,forklift,forklift 2,0.8889,,2,0.0,False,7.49
-,ROOT_CAUSE_CATEGORY,Hazardous solids (exposure to / spill / loss of containment /pollution),Substances  - Hazardous liquids (exposure to / spill / loss of containment /pollution),0.879,,,1.0,False,7.414
-,ORGANIZATION,FLEXI FRANCE,FlexiFrance,0.9565,,,1.0,False,7.352
-,ROOT_CAUSE_CATEGORY,Stored energy (dropped objects),Mechanical - Stored energy (dropped objects),0.8267,,,1.0,False,7.324
-,EQUIPMENT,forklift,fork lift,0.9412,,,1.0,False,7.238
-,EQUIPMENT,forklift,fork-lift,0.9412,,,1.0,False,7.192
-,EQUIPMENT,forklift,Forklift1,0.9412,,1,0.0,False,7.189
-,EQUIPMENT,forklift,forkloift,0.9412,,,1.0,False,7.189
-,LOCATION,Train 2,Train 3,0.8571,2,3,0.0,True,7.176
-,LOCATION,Nusajaya Campus 2,Nusajaya Campus 1,0.9412,2,1,0.0,True,7.152
-,LOCATION,Train 2,Train 1,0.8571,2,1,0.0,True,6.875
-,ORGANIZATION,PETROBRAS,Petrobas,0.9412,,,1.0,False,6.848
-,LOCATION,main deck,main deckAl,0.9,,,1.0,False,6.781
-,ORGANIZATION,TECHNIP FMC,TFMC,0.9524,,,1.0,False,6.654
-,EQUIPMENT,forklift,forklifts,1.0,,,1.0,False,6.609
-,ORGANIZATION,TECHNIPFMC UMBILICALS LTD,Technip Umbilical,0.8947,,,1.0,False,6.592
-,ORGANIZATION,TECHNIPFMC UMBILICALS LTD,TechnipFMC Umbilicals (TU) Ltd,0.8936,,,1.0,False,6.581
-,LOCATION,Train 3,Train 1,0.8571,3,1,0.0,True,6.578
-,ORGANIZATION,TFMC,TechnipFMC UK,0.8696,,,1.0,False,6.519
-,LOCATION,floor,floors,0.9091,,,1.0,False,6.489
-,LOCATION,floor,Flor,0.8889,,,1.0,False,6.469
-,INJURY_TYPE,injuries,injures,0.9231,,,1.0,False,6.459
-,EQUIPMENT,crane,cranes,1.0,,,1.0,False,6.436
-,BODY_PART,left hand,hand,1.0,,,1.0,False,6.407
-,ORGANIZATION,TFMC,Technip PMC,0.8571,,,1.0,False,6.394
-,ORGANIZATION,Client,Cliente,0.9231,,,1.0,False,6.393
-,LOCATION,main deck,maindeck,0.9412,,,1.0,False,6.369
-,INJURY_TYPE,injuries,injuried,0.9333,,,1.0,False,6.357
-,LOCATION,ground,grounds,0.9231,,,1.0,False,6.356
-,ORGANIZATION,Client,Clients,0.9231,,,1.0,False,6.352
-,ORGANIZATION,TFMC,TechnpFMC,0.9474,,,1.0,False,6.349
-,ORGANIZATION,TECHNIPFMC UMBILICALS LTD,"TechnipFMC Umbilicals, Inc.",0.9767,,,1.0,False,6.294
-,BODY_PART,right hand,hand,1.0,,,1.0,False,6.293
-,INJURY_TYPE,injuries,injured,0.8571,,,1.0,False,6.281
-,EQUIPMENT,ROV,ROV’s,0.8571,,,1.0,False,6.216
-,EQUIPMENT,ROV,ROV's,0.8571,,,1.0,False,6.209
-,LOCATION,ground,ground 0,0.8571,,0,0.0,False,6.158
-,BODY_PART,left hand,hands,1.0,,,1.0,False,6.12
-,EQUIPMENT,palet,pallet,0.9091,,,1.0,False,6.062
-,BODY_PART,left hand,left  hand,1.0,,,1.0,False,6.052
-,BODY_PART,finger,fingeren,0.8571,,,1.0,False,5.992
-,ORGANIZATION,TECHNIP FMC,TechnpFMC,0.9,,,1.0,False,5.99
-,EQUIPMENT,train 2,Train 1,0.8571,2,1,0.0,True,5.972
-,BODY_PART,right hand,hands,1.0,,,1.0,False,5.966
-,BODY_PART,Knee,kneet,0.8889,,,1.0,False,5.945
-,LOCATION,Building 3,Building 6,0.9,3,6,0.0,True,5.944
-,LOCATION,station 1,station 4,0.8889,1,4,0.0,True,5.934
-,ORGANIZATION,TECHNIP FMC,Technip PMC,0.9091,,,1.0,False,5.899
-,EQUIPMENT,equipamento,equipment,0.9,,,1.0,False,5.89
-,BODY_PART,right hand,right  hand,1.0,,,1.0,False,5.889
-,ORGANIZATION,VELESSTROY,Velesstroi,0.9,,,1.0,False,5.883
-,BODY_PART,middle finger,finger,1.0,,,1.0,False,5.883
-,ORGANIZATION,WOODSIDE ENERGY LTD.,"WOODSIDE ENERGY, LTD.",0.9677,,,1.0,False,5.88
-,ORGANIZATION,EXXON MOBILE,EXXONMOBIL,0.9091,,,1.0,False,5.879
-,ORGANIZATION,VELESSTROY,Velestsroy,0.9,,,1.0,False,5.86
-,LOCATION,station 1,station 0,0.8889,1,0,0.0,True,5.833
-,LOCATION,station 1,Station 3,0.8889,1,3,0.0,True,5.833
-,LOCATION,station 1,station 6,0.8889,1,6,0.0,True,5.833
-,ORGANIZATION,EXXON MOBIL,EXXONMOBIL,0.9524,,,1.0,False,5.823
-,BODY_PART,finger,index finger,1.0,,,1.0,False,5.805
-,LOCATION,level 1,Level 2,0.8571,1,2,0.0,True,5.79
-,LOCATION,station 1,Station 9,0.8889,1,9,0.0,True,5.779
-,LOCATION,station 1,Station 2,0.8889,1,2,0.0,True,5.779
-,ORGANIZATION,PETRONAS,Petrogas,0.875,,,1.0,False,5.774
-,ORGANIZATION,PETRONAS,Petrobas,0.875,,,1.0,False,5.774
-,LOCATION,Building 3,Building 1,0.9,3,1,0.0,True,5.773
-,LOCATION,Area 1,Area 51,0.9231,1,51,0.0,True,5.765
-,ORGANIZATION,"TechnipFMC Umbilicals, Inc.",TechnipFMC Umbilicals (TU) Ltd,0.875,,,1.0,False,5.754
-,ORGANIZATION,"TECHNIPFMC USA, INC.","TECHNIP USA, INC.",0.8889,,,1.0,False,5.749
-,LOCATION,building 14,Building 15,0.9091,14,15,0.0,True,5.742
-,INJURY_TYPE,injuries,minor injuries,1.0,,,1.0,False,5.727
-,ORGANIZATION,"TechnipFMC Umbilicals, Inc.",Technip Umbilical,0.8718,,,1.0,False,5.722
-,LOCATION,station 1,station 5,0.8889,1,5,0.0,True,5.722
-,BODY_PART,left foot,foot,1.0,,,1.0,False,5.714
-,LOCATION,zObsolete - Greece,Greece,1.0,,,1.0,False,5.714
-,LOCATION,Area 81,Area 1,0.9231,81,1,0.0,True,5.713
-,LOCATION,workshop,Workshop 1,0.8889,,1,0.0,False,5.709
-,LOCATION,station 1,stations 10,0.9,1,10,0.0,True,5.708
-,LOCATION,station 1,station #16,0.9,1,16,0.0,True,5.708
-,LOCATION,Building 3,Building 7,0.9,3,7,0.0,True,5.708
-,LOCATION,level 3,level 1,0.8571,3,1,0.0,True,5.706
-,INJURY_TYPE,injuries,superficial injuries,1.0,,,1.0,False,5.697
-,LOCATION,workshop,Workshop-3,0.8889,,3,0.0,False,5.693
-,LOCATION,workshop,Workshop B,0.8889,,,1.0,False,5.693
-,LOCATION,workshop,workshop A,0.8889,,,1.0,False,5.693
-,LOCATION,workshop,Workshop 2,0.8889,,2,0.0,False,5.693
-,INJURY_TYPE,injuries,slight injuries,1.0,,,1.0,False,5.69
-,LOCATION,workshop,workshop F,0.8889,,,1.0,False,5.685
-,LOCATION,workshop,workshop 6,0.8889,,6,0.0,False,5.685
-,LOCATION,workshop,workshop H,0.8889,,,1.0,False,5.685
-,LOCATION,Building 71,Building 15,0.9091,71,15,0.0,True,5.682
-,LOCATION,Building 15,Building 16,0.9091,15,16,0.0,True,5.682
-,BODY_PART,eye,right eye,1.0,,,1.0,False,5.68
-,EQUIPMENT,ROV,ROVs,1.0,,,1.0,False,5.677
-,BODY_PART,right foot,foot,1.0,,,1.0,False,5.663
-,LOCATION,level 5,level 1,0.8571,5,1,0.0,True,5.662
-,LOCATION,station 1,station 8,0.8889,1,8,0.0,True,5.662
-,LOCATION,Building 3,Building 15,0.8571,3,15,0.0,True,5.662
-,EQUIPMENT,Train 1,Train 3,0.8571,1,3,0.0,True,5.662
-,LOCATION,Area 1,Area 19,0.9231,1,19,0.0,True,5.659
-,INJURY_TYPE,laceration,lacerating,0.9,,,1.0,False,5.644
-,BODY_PART,eye,left eye,1.0,,,1.0,False,5.642
-,LOCATION,quayside,quaysite,0.875,,,1.0,False,5.64
-,LOCATION,Building 3,Building 2,0.9,3,2,0.0,True,5.639
-,EQUIPMENT,ROV XLX 94,ROV XLX 93,0.9,94,93,0.0,True,5.639
-,BODY_PART,ring finger,finger,1.0,,,1.0,False,5.617
-,ORGANIZATION,"TECHNIPFMC USA, INC.",TechnipFMC Subsea,0.875,,,1.0,False,5.61
-,BODY_PART,finger,Right Index Finger,1.0,,,1.0,False,5.609
-,LOCATION,Area 1,Area 13,0.9231,1,13,0.0,True,5.602
-,LOCATION,Area 1,Area 31,0.9231,1,31,0.0,True,5.602
-,LOCATION,Area 1,Area 14,0.9231,1,14,0.0,True,5.602
-,BODY_PART,lower back,low back,0.8889,,,1.0,False,5.599
-,LOCATION,station 1,Station 7,0.8889,1,7,0.0,True,5.597
-,EQUIPMENT,ROV XLX94,ROV XLX74,0.8889,94,74,0.0,True,5.597
-,BODY_PART,finger,left index finger,1.0,,,1.0,False,5.595
-,ORGANIZATION,MIDDLE EAST OIL REFINERY - MIDOR,MIDDLE EAST OIL REFINERY (MIDOR),0.9375,,,1.0,False,5.595
-,BODY_PART,fingers,finger,1.0,,,1.0,False,5.583
-,LOCATION,level 4,level 1,0.8571,4,1,0.0,True,5.567
-,LOCATION,quayside,quay side,0.9412,,,1.0,False,5.551
-,ORGANIZATION,ASIAFLEX PRODUCTS SDN. BHD.,ASIAFLEX PRODUCTS SDN BHD,0.9615,,,1.0,False,5.55
-,LOCATION,area 2,area 72,0.9231,2,72,0.0,True,5.542
-,LOCATION,area 2,Area 20,0.9231,2,20,0.0,True,5.542
-,LOCATION,area 2,Area 23,0.9231,2,23,0.0,True,5.542
-,EQUIPMENT,ROV XLX94,ROV xlx93,0.8889,94,93,0.0,True,5.528
-,ORGANIZATION,"TECHNIPFMC USA, INC.",TechnipFMC HSEA,0.8667,,,1.0,False,5.527
-,EQUIPMENT,excavator,Excavator 07,0.8571,,07,0.0,False,5.527
-,EQUIPMENT,excavator,EXCAVATOR-01,0.8571,,01,0.0,False,5.527
-,BODY_PART,eye,eyes,1.0,,,1.0,False,5.521
-,BODY_PART,finger,left ring finger,1.0,,,1.0,False,5.521
-,EQUIPMENT,PPE,PPE’s,0.8571,,,1.0,False,5.52
-,LOCATION,level 3,Level 2,0.8571,3,2,0.0,True,5.515
-,LOCATION,level 0,level 1,0.8571,0,1,0.0,True,5.515
-,LOCATION,Area 105,Area 1,0.8571,105,1,0.0,True,5.515
-,BODY_PART,right middle finger,finger,1.0,,,1.0,False,5.509
-,BODY_PART,finger,left middle finger,1.0,,,1.0,False,5.505
-,LOCATION,warehouse,warehouse 2,0.9,,2,0.0,False,5.5
-,LOCATION,warehouse,warehouse 3,0.9,,3,0.0,False,5.489
-,BODY_PART,middle finger,index finger,1.0,,,1.0,False,5.489
-,ORGANIZATION,level 3 clinic,level 2 clinic,0.9286,3,2,0.0,True,5.487
-,LOCATION,Building 6,Building 1,0.9,6,1,0.0,True,5.485
-,BODY_PART,middle finger,fingeren,0.8571,,,1.0,False,5.484
-,BODY_PART,finger,right ring finger,1.0,,,1.0,False,5.476
-,LOCATION,building 85,Building 15,0.9091,85,15,0.0,True,5.474
-,LOCATION,Building 3,Building 113,0.9091,3,113,0.0,True,5.474
-,LOCATION,Building 15,building 11,0.9091,15,11,0.0,True,5.474
-,LOCATION,Bay 5,Bay 15,0.9091,5,15,0.0,True,5.474
-,LOCATION,Bay 5,Bay 57,0.9091,5,57,0.0,True,5.474
-,BODY_PART,Knee,right knee,1.0,,,1.0,False,5.472
-,LOCATION,station 1,station 10,0.9474,1,10,0.0,True,5.47
-,INJURY_TYPE,contusion,mild concusion,0.8889,,,1.0,False,5.464
-,INJURY_TYPE,contusion,confusion,0.8889,,,1.0,False,5.464
-,EQUIPMENT,crane 1,Crane 2,0.8571,1,2,0.0,True,5.461
-,LOCATION,Area P11,Area 1,0.8571,11,1,0.0,True,5.461
-,LOCATION,level 5,Level 2,0.8571,5,2,0.0,True,5.461
-,LOCATION,Building 3,building 14,0.8571,3,14,0.0,True,5.461
-,LOCATION,Building 15,Building 6,0.8571,15,6,0.0,True,5.461
-,BODY_PART,finger,left finger,1.0,,,1.0,False,5.46
-,BODY_PART,right finger,finger,1.0,,,1.0,False,5.46
-,BODY_PART,Knee,left knee,1.0,,,1.0,False,5.455
-,BODY_PART,ankle,right ankle,1.0,,,1.0,False,5.455
-,EQUIPMENT,ROV XLX94,ROV XLX43,0.8889,94,43,0.0,True,5.454
-,LOCATION,station 4,Station 3,0.8889,4,3,0.0,True,5.454
-,LOCATION,station 4,station 0,0.8889,4,0,0.0,True,5.454
-,LOCATION,station 6,station 4,0.8889,6,4,0.0,True,5.454
-,LOCATION,bridge,bride,0.9091,,,1.0,False,5.452
-,LOCATION,level 15,level 1,0.9333,15,1,0.0,True,5.44
-,ORGANIZATION,"TECHNIPFMC USA, INC.",TechnipFMC UK,0.8571,,,1.0,False,5.431
-,BODY_PART,finger,middle fingers,1.0,,,1.0,False,5.429
-,BODY_PART,finger,right finger ring,1.0,,,1.0,False,5.425
-,BODY_PART,finger,index fingers,1.0,,,1.0,False,5.425
-,BODY_PART,finger,Ring fingers,1.0,,,1.0,False,5.425
-,BODY_PART,finger,middle right finger,1.0,,,1.0,False,5.421
-,BODY_PART,finger,left fingers,1.0,,,1.0,False,5.421
-,BODY_PART,finger,Right index  finger,1.0,,,1.0,False,5.421
-,EQUIPMENT,train 2,Train 3,0.8571,2,3,0.0,True,5.404
-,LOCATION,Area 1,Area P16,0.8571,1,16,0.0,True,5.404
-,LOCATION,Building 3,Building 16,0.8571,3,16,0.0,True,5.404
-,LOCATION,Building 3,Building 71,0.8571,3,71,0.0,True,5.404
-,LOCATION,area 2,Area E02,0.8571,2,02,0.0,True,5.404
-,LOCATION,Level 6,level 1,0.8571,6,1,0.0,True,5.404
-,LOCATION,workshop,work shop,0.9412,,,1.0,False,5.4
-,LOCATION,Train 1 area,Train 2 area,0.9167,1,2,0.0,True,5.398
-,EQUIPMENT,ROV XLX 94,ROV XLX 84,0.9,94,84,0.0,True,5.398
-,LOCATION,Train 3 area,Train 2 area,0.9167,3,2,0.0,True,5.398
-,LOCATION,Building 7,Building 6,0.9,7,6,0.0,True,5.398
-,LOCATION,Train 3 area,Train 1 area,0.9167,3,1,0.0,True,5.398
-,LOCATION,zObsolete - Albania,Albania,1.0,,,1.0,False,5.398
-,LOCATION,Building 71,building 14,0.9091,71,14,0.0,True,5.394
-,LOCATION,Building 15,Building 13,0.9091,15,13,0.0,True,5.394
-,LOCATION,Building 15,building #1,0.9091,15,1,0.0,True,5.394
-,LOCATION,building 14,Building 16,0.9091,14,16,0.0,True,5.394
-,LOCATION,workshop,workshops,0.9412,,,1.0,False,5.392
-,BODY_PART,ankle,left ankle,1.0,,,1.0,False,5.389
-,LOCATION,station 4,Station 9,0.8889,4,9,0.0,True,5.374
-,LOCATION,station 4,Station 2,0.8889,4,2,0.0,True,5.374
-,BODY_PART,hand,hands,1.0,,,1.0,False,5.366
-,LOCATION,Module ESS-303,module ESS -300,0.8966,303,300,0.0,True,5.364
-,LOCATION,area,Area5,0.8889,,5,0.0,False,5.355
-,ORGANIZATION,Synergi,synergies,0.875,,,1.0,False,5.345
-,EQUIPMENT,machine,machinery,0.875,,,1.0,False,5.345
-,LOCATION,level 4,Level 2,0.8571,4,2,0.0,True,5.344
-,LOCATION,level 1,Level 9,0.8571,1,9,0.0,True,5.344
-,LOCATION,level 5,level 3,0.8571,5,3,0.0,True,5.344
-,BODY_PART,right knee,kneet,0.8889,,,1.0,False,5.343
-,LOCATION,Camp 4,Camp 04,0.9231,4,04,0.0,True,5.334
-,LOCATION,line 2,line 02,0.9231,2,02,0.0,True,5.334
-,EQUIPMENT,fire extinguisher,fire extinguisher box,0.8947,,,1.0,False,5.329
-,LOCATION,Mero 1 field,Mero 2 field,0.9167,1,2,0.0,True,5.318
-,EQUIPMENT,winch,winches,0.9091,,,1.0,False,5.316
-,EQUIPMENT,compressor,Compressor B,0.9091,,,1.0,False,5.316
-,BODY_PART,back,right back,1.0,,,1.0,False,5.313
-,LOCATION,Building 71,Building 16,0.9091,71,16,0.0,True,5.307
-,BODY_PART,back,middle left back,1.0,,,1.0,False,5.303
-,BODY_PART,back,left back,1.0,,,1.0,False,5.303
-,LOCATION,Building 6,Building 2,0.9,6,2,0.0,True,5.303
-,BODY_PART,left knee,kneet,0.8889,,,1.0,False,5.296
-,BODY_PART,leg,left leg,1.0,,,1.0,False,5.293
-,EQUIPMENT,compressor,compressor A,0.9091,,,1.0,False,5.291
-,EQUIPMENT,ROV XLX94,ROV XLX44,0.8889,94,44,0.0,True,5.287
-,EQUIPMENT,ROV XLX75,ROV XLX74,0.8889,75,74,0.0,True,5.287
-,EQUIPMENT,ROV XLX94,ROV XLX49,0.8889,94,49,0.0,True,5.287
-,LOCATION,station 4,station 5,0.8889,4,5,0.0,True,5.287
-,LOCATION,station 6,station 0,0.8889,6,0,0.0,True,5.287
-,LOCATION,area E-05,area E-02,0.8889,05,02,0.0,True,5.287
-,LOCATION,station 6,Station 3,0.8889,6,3,0.0,True,5.287
-,LOCATION,station 0,Station 3,0.8889,0,3,0.0,True,5.287
-,LOCATION,Building 15,building 15/16,0.88,15,"15,16",0.5,True,5.285
-,LOCATION,area 2,Area 260,0.8571,2,260,0.0,True,5.279
-,LOCATION,area 2,area 203,0.8571,2,203,0.0,True,5.279
-,LOCATION,level 0,Level 2,0.8571,0,2,0.0,True,5.279
-,BODY_PART,left shoulder,shoulder,1.0,,,1.0,False,5.268
-,BODY_PART,index finger,fingeren,0.8571,,,1.0,False,5.262
-,LOCATION,Building 3,building 7723,0.8696,3,7723,0.0,True,5.261
-,LOCATION,Building 3,building C318,0.8696,3,318,0.0,True,5.261
-,ORGANIZATION,CHEVRON USA INC,CHEVRON U.S.A. INC.,0.88,,,1.0,False,5.254
-,LOCATION,Building 3,building 30,0.9524,3,30,0.0,True,5.249
-,EQUIPMENT,pump,pumpe,0.8889,,,1.0,False,5.246
-,BODY_PART,leg,right leg,1.0,,,1.0,False,5.242
-,EQUIPMENT,crane #11,crane 1,0.875,11,1,0.0,True,5.235
-,LOCATION,Level 2,level 2.5,0.875,2,"2,5",0.5,True,5.235
-,LOCATION,station 1,station 11,0.9474,1,11,0.0,True,5.234
-,LOCATION,station 1,station 12,0.9474,1,12,0.0,True,5.234
-,EQUIPMENT,overhead crane,overhead frame,0.8571,,,1.0,False,5.234
-,LOCATION,station 1,station 18,0.9474,1,18,0.0,True,5.234
-,LOCATION,station 1,station 17,0.9474,1,17,0.0,True,5.234
-,LOCATION,station 1,station 21,0.9474,1,21,0.0,True,5.234
-,BODY_PART,hand,right  hand,1.0,,,1.0,False,5.22
-,BODY_PART,middle finger,ring finger,1.0,,,1.0,False,5.22
-,ORGANIZATION,TECHNIP ENERGIES INDIA LIMITED MUMBAI,TECHNIP ENERGIES INDIA LIMITED,0.8955,,,1.0,False,5.218
-,BODY_PART,shoulder,right shoulder,1.0,,,1.0,False,5.215
-,BODY_PART,left  hand,hand,1.0,,,1.0,False,5.215
-,INJURY_TYPE,laceration,laceranting injury,0.8571,,,1.0,False,5.215
-,LOCATION,KP 19,KP 195,0.9091,19,195,0.0,True,5.212
-,LOCATION,level 4,level 3,0.8571,4,3,0.0,True,5.21
-,LOCATION,Building 3,Building 44,0.8571,3,44,0.0,True,5.21
-,LOCATION,building 14,Building 6,0.8571,14,6,0.0,True,5.21
-,LOCATION,Building 15,Building 7,0.8571,15,7,0.0,True,5.21
-,LOCATION,Building 3,building 85,0.8571,3,85,0.0,True,5.21
-,LOCATION,Building 3,building 11,0.8571,3,11,0.0,True,5.21
-,BODY_PART,middle finger,Right Index Finger,1.0,,,1.0,False,5.209
-,ORGANIZATION,Synergi,Synergy,0.8571,,,1.0,False,5.206
-,LOCATION,level 2 clinic,level 3 clinic,0.9286,2,3,0.0,True,5.199
-,EQUIPMENT,ROV UHD 18,ROV UHD 58,0.9,18,58,0.0,True,5.197
-,ORGANIZATION,ANADARKO PETROLEUM COMPANY,ANADARKO PETROLEUM CORPORATION,0.8571,,,1.0,False,5.196
-,LOCATION,station 4,station 8,0.8889,4,8,0.0,True,5.192
-,LOCATION,station 0,Station 2,0.8889,0,2,0.0,True,5.192
-,LOCATION,area E-04,area E-05,0.8889,04,05,0.0,True,5.192
-,LOCATION,station 6,Station 9,0.8889,6,9,0.0,True,5.192
-,LOCATION,Station 3,Station 2,0.8889,3,2,0.0,True,5.192
-,LOCATION,Station 9,Station 3,0.8889,9,3,0.0,True,5.192
-,LOCATION,Station 9,station 0,0.8889,9,0,0.0,True,5.192
-,LOCATION,station 6,Station 2,0.8889,6,2,0.0,True,5.192
-,LOCATION,work area,working area,0.8571,,,1.0,False,5.186
-,LOCATION,Building 15,Building 1,0.9524,15,1,0.0,True,5.184
-,EQUIPMENT,pallet,pallets,1.0,,,1.0,False,5.182
-,LOCATION,Building 15,building 181,0.8696,15,181,0.0,True,5.181
-,LOCATION,Building 15,building 127,0.8696,15,127,0.0,True,5.181
-,LOCATION,Building 15,building S12,0.8696,15,12,0.0,True,5.181
-,LOCATION,Building 15,Building 113,0.8696,15,113,0.0,True,5.181
-,LOCATION,Building 15,building S11,0.8696,15,11,0.0,True,5.181
-,LOCATION,Building 15,building 100,0.8696,15,100,0.0,True,5.181
-,LOCATION,Building 15,building S01,0.8696,15,01,0.0,True,5.181
-,LOCATION,Area 5,Area 51,0.9231,5,51,0.0,True,5.167
-,EQUIPMENT,Scaffold,scaffolder,0.8889,,,1.0,False,5.152
-,LOCATION,office,offices,0.9231,,,1.0,False,5.138
-,LOCATION,Building 3,building 46,0.8571,3,46,0.0,True,5.136
-,LOCATION,Building 15,Building 2,0.8571,15,2,0.0,True,5.136
-,LOCATION,Building 3,building 94,0.8571,3,94,0.0,True,5.136
-,LOCATION,level 5,level 4,0.8571,5,4,0.0,True,5.136
-,LOCATION,Building 71,Building 6,0.8571,71,6,0.0,True,5.136
-,LOCATION,level 3,level 0,0.8571,3,0,0.0,True,5.136
-,LOCATION,Building 3,building #1,0.8571,3,1,0.0,True,5.136
-,LOCATION,Level 6,Level 2,0.8571,6,2,0.0,True,5.136
-,EQUIPMENT,fire extinguisher,fire extinguisher OP-5,0.8718,,5,0.0,False,5.112
-,LOCATION,Module ESS-303,Module ESS-300,0.9286,303,300,0.0,True,5.112
-,LOCATION,Module ESS-303,Module ESS-301,0.9286,303,301,0.0,True,5.112
-,LOCATION,location,Location H,0.8889,,,1.0,False,5.109
-,LOCATION,KP 19,KP 190,0.9091,19,190,0.0,True,5.106
-,LOCATION,building 14,building 11,0.9091,14,11,0.0,True,5.106
-,LOCATION,building 14,Building 44,0.9091,14,44,0.0,True,5.106
-,LOCATION,bay 1,Bay 15,0.9091,1,15,0.0,True,5.106
-,LOCATION,bay 1,bay 14,0.9091,1,14,0.0,True,5.106
-,ORGANIZATION,SOGAZ 2nd Level clinic,SOGAZ 3rd level clinic,0.9091,2,3,0.0,True,5.106
-,LOCATION,zObsolete - Clairmont,Claremont,0.8889,,,1.0,False,5.094
-,LOCATION,station 6,station 5,0.8889,6,5,0.0,True,5.086
-,LOCATION,Station 9,Station 2,0.8889,9,2,0.0,True,5.086
-,LOCATION,station 4,Station 7,0.8889,4,7,0.0,True,5.086
-,LOCATION,Station 3,station 5,0.8889,3,5,0.0,True,5.086
-,LOCATION,platform 1700,plateform 1000,0.8889,1700,1000,0.0,True,5.086
-,LOCATION,area E-05,area E-01,0.8889,05,01,0.0,True,5.086
-,LOCATION,station 0,station 5,0.8889,0,5,0.0,True,5.086
-,EQUIPMENT,ROV XLX43,ROV XLX74,0.8889,43,74,0.0,True,5.086
-,LOCATION,Building 7,Building 1,0.9,7,1,0.0,True,5.079
-,EQUIPMENT,Thruster 5,thruster 1,0.9,5,1,0.0,True,5.079
-,EQUIPMENT,Thruster 5,Thruster 6,0.9,5,6,0.0,True,5.079
-,EQUIPMENT,Thruster 5,Thruster 7,0.9,5,7,0.0,True,5.079
-,EQUIPMENT,crane 1,crane 14,0.9333,1,14,0.0,True,5.065
-,LOCATION,warehouse,Warehouse #2,0.8571,,2,0.0,False,5.06
-,LOCATION,warehouse,Warehouse #5,0.8571,,5,0.0,False,5.06
-,LOCATION,Level 9,Level 2,0.8571,9,2,0.0,True,5.056
-,LOCATION,Building 6,building 30,0.8571,6,30,0.0,True,5.056
-,LOCATION,level 5,level 0,0.8571,5,0,0.0,True,5.056
-,LOCATION,STR 500,STR 700,0.8571,500,700,0.0,True,5.056
-,LOCATION,STR 500,STR 600,0.8571,500,600,0.0,True,5.056
-,LOCATION,area E-05,area E5,0.875,05,5,0.0,True,5.053
-,LOCATION,Test Cell,Test cell 2,0.9,,2,0.0,False,5.043
-,LOCATION,Test Cell,test cell#5,0.9,,5,0.0,False,5.043
-,LOCATION,Test Cell,test cell 1,0.9,,1,0.0,False,5.043
-,LOCATION,Test Cell,Test Cell 6,0.9,,6,0.0,False,5.043
-,LOCATION,Test Cell,test cell 4,0.9,,4,0.0,False,5.043
-,LOCATION,Building 3,Building 13,0.9524,3,13,0.0,True,5.041
-,LOCATION,Building 6,Building 16,0.9524,6,16,0.0,True,5.041
-,EQUIPMENT,man lift,manlift,0.9333,,,1.0,False,5.036
-,EQUIPMENT,compressor,compressor 3,0.9091,,3,0.0,False,5.036
-,EQUIPMENT,overhead crane,over head crane,0.9655,,,1.0,False,5.036
-,EQUIPMENT,compressor,compress,0.8889,,,1.0,False,5.016
-,INJURY_TYPE,minor laceration,laceration,1.0,,,1.0,False,5.011
-,LOCATION,KP 19,KP 149,0.9091,19,149,0.0,True,4.988
-,LOCATION,KP 19,KP 179,0.9091,19,179,0.0,True,4.988
-,LOCATION,KP 19,KP 169,0.9091,19,169,0.0,True,4.988
-,LOCATION,KP 19,KP 139,0.9091,19,139,0.0,True,4.988
-,LOCATION,KP 109,KP 19,0.9091,109,19,0.0,True,4.988
-,EQUIPMENT,PPE,PPEs,1.0,,,1.0,False,4.977
-,EQUIPMENT,crane 1,crane 3,0.8571,1,3,0.0,True,4.969
-,EQUIPMENT,ROV XLX74,ROV XLX70,0.8889,74,70,0.0,True,4.968
-,EQUIPMENT,ROV XLX75,ROV XLX70,0.8889,75,70,0.0,True,4.968
-,EQUIPMENT,ROV xlx93,ROV XLX43,0.8889,93,43,0.0,True,4.968
-,EQUIPMENT,excavator,excavators,1.0,,,1.0,False,4.963
-,EQUIPMENT,Thruster 5,Thruster 3,0.9,5,3,0.0,True,4.946
-,EQUIPMENT,safety glasses,safety glass,0.96,,,1.0,False,4.943
-,EQUIPMENT,SP17 machine,SP18 machine,0.9167,17,18,0.0,True,4.912
-,EQUIPMENT,trailer,trainers,0.8571,,,1.0,False,4.902
-,INJURY_TYPE,minor cut,cut,1.0,,,1.0,False,4.898
-,INJURY_TYPE,minor laceration,lacerating,0.9,,,1.0,False,4.892
-,EQUIPMENT,fire extinguisher,Fire extinguisher point,0.85,,,1.0,False,4.882
-,INJURY_TYPE,pain,severe pain,1.0,,,1.0,False,4.875
-,EQUIPMENT,Crane 2,crane 3,0.8571,2,3,0.0,True,4.874
-,EQUIPMENT,ROV XLX 94,ROV TXLX 43,0.8571,94,43,0.0,True,4.874
-,EQUIPMENT,compressor,"Compressor ""A",0.8696,,,1.0,False,4.855
-,INJURY_TYPE,pain,minor pain,1.0,,,1.0,False,4.852
-,EQUIPMENT,generator,generator 1,0.9,,1,0.0,False,4.85
-,INJURY_TYPE,pain,slight pain,1.0,,,1.0,False,4.844
-,EQUIPMENT,manlift,man-lift,0.9333,,,1.0,False,4.841
-,EQUIPMENT,ROV XLX74,ROV XLX49,0.8889,74,49,0.0,True,4.835
-,EQUIPMENT,ROV XLX74,ROV XLX44,0.8889,74,44,0.0,True,4.835
-,EQUIPMENT,Crane #2,crane #1,0.875,2,1,0.0,True,4.829
-,EQUIPMENT,crane #7,Crane #2,0.875,7,2,0.0,True,4.829
-,EQUIPMENT,class 4 torque tool,class 7 torque tool,0.9474,4,7,0.0,True,4.829
-,EQUIPMENT,generator,Generator 5,0.9,,5,0.0,False,4.829
-,EQUIPMENT,compressor,"compressor ""B",0.8696,,,1.0,False,4.823
-,INJURY_TYPE,small cut,cut,1.0,,,1.0,False,4.812
-,INJURY_TYPE,pain,small pain,1.0,,,1.0,False,4.812
-,INJURY_TYPE,pain,pains,1.0,,,1.0,False,4.812
-,INJURY_TYPE,pain,mild pains,1.0,,,1.0,False,4.812
-,INJURY_TYPE,pain,mild pain,1.0,,,1.0,False,4.812
-,EQUIPMENT,generator,Generator 6,0.9,,6,0.0,False,4.807
-,EQUIPMENT,generator,Generator 4,0.9,,4,0.0,False,4.807
-,INJURY_TYPE,laceration,small laceration,1.0,,,1.0,False,4.796
-,INJURY_TYPE,laceration,lacerations,1.0,,,1.0,False,4.796
-,EQUIPMENT,man lift,man-lift,0.875,,,1.0,False,4.793
-,EQUIPMENT,SP17 machine,SP10 machine,0.9167,17,10,0.0,True,4.779
-,EQUIPMENT,SP17 machine,SP13 machine,0.9167,17,13,0.0,True,4.779
-,INJURY_TYPE,cut,minor cut injury,1.0,,,1.0,False,4.771
-,EQUIPMENT,XLX 126,XLX 127,0.8571,126,127,0.0,True,4.768
-,INJURY_TYPE,fracture,fractured,0.9412,,,1.0,False,4.762
-,INJURY_TYPE,closed fracture,Closure fracture,0.9032,,,1.0,False,4.752
-,INJURY_TYPE,laceration,laceration injury,1.0,,,1.0,False,4.736
-,EQUIPMENT,generator 1,Generator 5,0.9091,1,5,0.0,True,4.701
-,INJURY_TYPE,injury,minor injury,1.0,,,1.0,False,4.691
-,EQUIPMENT,overhead crane,overhead cranes,1.0,,,1.0,False,4.691
-,INJURY_TYPE,laceration,superficial laceration,1.0,,,1.0,False,4.682
-,EQUIPMENT,ROV xlx93,ROV XLX49,0.8889,93,49,0.0,True,4.681
-,INJURY_TYPE,contusion,minor contusion,1.0,,,1.0,False,4.673
-,EQUIPMENT,fire extinguisher,fire extinguish-er,0.9714,,,1.0,False,4.668
-,INJURY_TYPE,laceration,deep laceration,1.0,,,1.0,False,4.663
-,INJURY_TYPE,laceration,minor lacerations,1.0,,,1.0,False,4.654
-,EQUIPMENT,XLX 126,XLX 106,0.8571,126,106,0.0,True,4.65
-,INJURY_TYPE,laceration,minor superficial laceration,1.0,,,1.0,False,4.644
-,INJURY_TYPE,minor cut,small cut,1.0,,,1.0,False,4.644
-,INJURY_TYPE,contusion,contusions,1.0,,,1.0,False,4.644
-,INJURY_TYPE,laceration,mild superficial laceration,1.0,,,1.0,False,4.644
-,INJURY_TYPE,laceration,small laceration injury,1.0,,,1.0,False,4.644
-,EQUIPMENT,fork lift,fork-lift,0.8889,,,1.0,False,4.627
-,EQUIPMENT,fire extinguisher,Fire extinguishers,1.0,,,1.0,False,4.625
-,EQUIPMENT,reel,reels,1.0,,,1.0,False,4.615
-,EQUIPMENT,Thruster 7,Thruster 6,0.9,7,6,0.0,True,4.609
-,EQUIPMENT,ROV UHD 18,ROV UHD 61,0.9,18,61,0.0,True,4.609
-,EQUIPMENT,thruster 1,Thruster 6,0.9,1,6,0.0,True,4.609
-,EQUIPMENT,Thruster 7,thruster 1,0.9,7,1,0.0,True,4.609
-,EQUIPMENT,class 4 torque tool,class 6 Torque tool,0.9474,4,6,0.0,True,4.605
-,INJURY_TYPE,minor cut,minor cut injury,1.0,,,1.0,False,4.595
-,INJURY_TYPE,contusion,contusion injury,1.0,,,1.0,False,4.585
-,INJURY_TYPE,contusion,severe contusion,1.0,,,1.0,False,4.585
-,EQUIPMENT,fork lift,Forklift1,0.8889,,1,0.0,False,4.578
-,EQUIPMENT,fork lift,forkloift,0.8889,,,1.0,False,4.578
-,INJURY_TYPE,bruise,Bruised,0.9231,,,1.0,False,4.576
-,INJURY_TYPE,contusion,slight contusion,1.0,,,1.0,False,4.575
-,INJURY_TYPE,contusion,Minor contusions,1.0,,,1.0,False,4.575
-,INJURY_TYPE,injury,superficial injury,1.0,,,1.0,False,4.575
-,INJURY_TYPE,contusion,small contusion,1.0,,,1.0,False,4.575
-,EQUIPMENT,forks,fork,1.0,,,1.0,False,4.575
-,EQUIPMENT,manlift,man –lift,0.875,,,1.0,False,4.557
-,EQUIPMENT,sling,slings,1.0,,,1.0,False,4.554
-,EQUIPMENT,compressor A,Compressor B,0.9167,,,1.0,False,4.547
-,EQUIPMENT,gloves,glove,1.0,,,1.0,False,4.533
-,INJURY_TYPE,superficial cut,cut,1.0,,,1.0,False,4.533
-,EQUIPMENT,generator 1,Generator 6,0.9091,1,6,0.0,True,4.518
-,EQUIPMENT,generator 1,Generator 4,0.9091,1,4,0.0,True,4.518
-,EQUIPMENT,ROV XLX 117,ROV XLX 116,0.9091,117,116,0.0,True,4.518
-,EQUIPMENT,ROV XLX 93,ROV TXLX 43,0.8571,93,43,0.0,True,4.517
-,EQUIPMENT,Thruster 5,Thruster #1,0.8571,5,1,0.0,True,4.517
-,EQUIPMENT,man lift,Man Lifter,0.8889,,,1.0,False,4.5
-,INJURY_TYPE,injury,severe injury,1.0,,,1.0,False,4.5
-,EQUIPMENT,ROV XLX43,ROV XLX49,0.8889,43,49,0.0,True,4.498
-,EQUIPMENT,ROV XLX43,ROV XLX44,0.8889,43,44,0.0,True,4.498
-,EQUIPMENT,XLX74 ROV,XLX75 ROV,0.8889,74,75,0.0,True,4.498
-,INJURY_TYPE,cut,cut injury,1.0,,,1.0,False,4.489
-,INJURY_TYPE,injury,small injury,1.0,,,1.0,False,4.489
-,INJURY_TYPE,small cut,minor cut injury,1.0,,,1.0,False,4.477
-,INJURY_TYPE,injury,slight injury,1.0,,,1.0,False,4.477
-,INJURY_TYPE,injury,small superficial injury,1.0,,,1.0,False,4.477
-,INJURY_TYPE,minor laceration,laceranting injury,0.8571,,,1.0,False,4.463
-,EQUIPMENT,trolley,trolly,0.9231,,,1.0,False,4.433
-,INJURY_TYPE,cut,cuts,1.0,,,1.0,False,4.431
-,INJURY_TYPE,cut,small cut injury,1.0,,,1.0,False,4.419
-,EQUIPMENT,pump,pumps,1.0,,,1.0,False,4.419
-,EQUIPMENT,fork lift,forklifts,0.9412,,,1.0,False,4.417
-,EQUIPMENT,pipe,pipet,0.8889,,,1.0,False,4.415
-,EQUIPMENT,generator 1047,generator 1,0.88,1047,1,0.0,True,4.409
-,EQUIPMENT,cherry picker,cheery picker,0.9231,,,1.0,False,4.407
-,EQUIPMENT,cable tray,cable track,0.8571,,,1.0,False,4.4
-,EQUIPMENT,ROV XLX 85,ROV XLX 84,0.9,85,84,0.0,True,4.386
-,EQUIPMENT,ROV XLX106,ROV XLX107,0.9,106,107,0.0,True,4.386
-,EQUIPMENT,Train 3 compressor B,Train 1 Compressor A,0.9,3,1,0.0,True,4.386
-,EQUIPMENT,ROV XLX16,ROV XLX 116,0.9,16,116,0.0,True,4.386
-,EQUIPMENT,Train 2 Compressor A,Train 3 compressor B,0.9,2,3,0.0,True,4.386
-,EQUIPMENT,Thruster 3,thruster 1,0.9,3,1,0.0,True,4.386
-,EQUIPMENT,side-boom,side boom,0.8889,,,1.0,False,4.386
-,EQUIPMENT,Thruster 7,Thruster 3,0.9,7,3,0.0,True,4.386
-,EQUIPMENT,ROV XLX107,ROV XLX127,0.9,107,127,0.0,True,4.386
-,EQUIPMENT,ROV XLX 117,ROV XLX11,0.9,117,11,0.0,True,4.386
-,EQUIPMENT,Thruster 3,Thruster 6,0.9,3,6,0.0,True,4.386
-,EQUIPMENT,ROV XLX116,ROV XLX106,0.9,116,106,0.0,True,4.386
-,EQUIPMENT,ROV XLX11,ROV XLX 116,0.9,11,116,0.0,True,4.386
-,EQUIPMENT,truck,trucks,1.0,,,1.0,False,4.382
-,EQUIPMENT,crane_x000D_,crane 2_x000D_,0.9231,000,"000,2",0.5,True,4.378
-,EQUIPMENT,hose,hoses,1.0,,,1.0,False,4.369
-,EQUIPMENT,XLX 126,XLX 116,0.8571,126,116,0.0,True,4.363
-,EQUIPMENT,XLX 127,XLX 107,0.8571,127,107,0.0,True,4.363
-,EQUIPMENT,crane #7,crane #1,0.875,7,1,0.0,True,4.359
-,EQUIPMENT,cable tray,cable try,0.9474,,,1.0,False,4.355
-,EQUIPMENT,ROV Supporter 3,ROV Supporter 29,0.9032,3,29,0.0,True,4.354
-,EQUIPMENT,Mobil DTA 10 Excel 68,Mobil DTE 10 Excel 46,0.9048,"10,68","10,46",0.3333,True,4.338
-,EQUIPMENT,scaffold pipe,scaffolding pipe,0.8966,,,1.0,False,4.333
-,EQUIPMENT,HPU,HPU’s,0.8571,,,1.0,False,4.332
-,EQUIPMENT,HPU,HPU1,0.8571,,1,0.0,False,4.332
-,EQUIPMENT,hard hat,hardhat,0.9333,,,1.0,False,4.331
-,EQUIPMENT,spreader bar,spreader beam,0.88,,,1.0,False,4.326
-,EQUIPMENT,Scaffold,scaffolds,1.0,,,1.0,False,4.317
-,EQUIPMENT,spreader bar,spread bar,0.9091,,,1.0,False,4.31
-,EQUIPMENT,ice pack,icepack,0.9333,,,1.0,False,4.305
-,EQUIPMENT,dump truck,dump-trucks,0.9,,,1.0,False,4.296
+1,ORGANIZATION,TECHNIPFMC PLC,TechnipFMC UK,0.8696,,,1,FALSE,8.528
+1,ORGANIZATION,TECHNIPFMC PLC,Technip PMC,0.8571,,,1,FALSE,8.403
+1,ORGANIZATION,TECHNIPFMC PLC,TECHNIPFMC,1,,,1,FALSE,8.376
+1,ORGANIZATION,TECHNIPFMC PLC,TECHNIP FMC,0.9524,,,1,FALSE,8.364
+1,ORGANIZATION,TECHNIPFMC PLC,TechnpFMC,0.9474,,,1,FALSE,8.358
+1,ORGANIZATION,TECHNIPFMC,TechnipFMC UK,0.8696,,,1,FALSE,8.204
+0,LOCATION,Global 1201,Global 1200,0.9091,1201,1200,0,TRUE,8.151
+1,ORGANIZATION,TECHNIPFMC,Technip PMC,0.8571,,,1,FALSE,8.079
+1,ORGANIZATION,TECHNIPFMC,TECHNIP FMC,0.9524,,,1,FALSE,8.06
+1,ORGANIZATION,TECHNIPFMC,TechnpFMC,0.9474,,,1,FALSE,8.034
+1,ROOT_CAUSE_CATEGORY,"Falls, slips and trips on same level (without potential to fall to lower level)","Work environment - Falls, slips and trips on same level (without potential to fall to lower level)",0.8927,,,1,FALSE,8.002
+1,ROOT_CAUSE_CATEGORY,Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects),Mechanical - Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects),0.9333,,,1,FALSE,7.961
+1,ORGANIZATION,TECHNIPFMC PLC,TFMC,1,,,1,FALSE,7.957
+1,ROOT_CAUSE_CATEGORY,Hazardous liquids (exposure to / spill / loss of containment /pollution),Substances  - Hazardous liquids (exposure to / spill / loss of containment /pollution),0.9114,,,1,FALSE,7.831
+1,ORGANIZATION,FLEXI FRANCE,Flexi-France,0.9167,,,1,FALSE,7.747
+1,ORGANIZATION,TECHNIPFMC,TFMC,1,,,1,FALSE,7.677
+1,ORGANIZATION,FLEXI FRANCE,FLEXI FRANCE SAS,0.8571,,,1,FALSE,7.495
+1,EQUIPMENT,forklift,forklift 1,0.8889,,1,0,FALSE,7.49
+1,EQUIPMENT,forklift,forklift 2,0.8889,,2,0,FALSE,7.49
+0,ROOT_CAUSE_CATEGORY,Hazardous solids (exposure to / spill / loss of containment /pollution),Substances  - Hazardous liquids (exposure to / spill / loss of containment /pollution),0.879,,,1,FALSE,7.414
+1,ORGANIZATION,FLEXI FRANCE,FlexiFrance,0.9565,,,1,FALSE,7.352
+1,ROOT_CAUSE_CATEGORY,Stored energy (dropped objects),Mechanical - Stored energy (dropped objects),0.8267,,,1,FALSE,7.324
+1,EQUIPMENT,forklift,fork lift,0.9412,,,1,FALSE,7.238
+1,EQUIPMENT,forklift,fork-lift,0.9412,,,1,FALSE,7.192
+1,EQUIPMENT,forklift,Forklift1,0.9412,,1,0,FALSE,7.189
+1,EQUIPMENT,forklift,forkloift,0.9412,,,1,FALSE,7.189
+0,LOCATION,Train 2,Train 3,0.8571,2,3,0,TRUE,7.176
+0,LOCATION,Nusajaya Campus 2,Nusajaya Campus 1,0.9412,2,1,0,TRUE,7.152
+0,LOCATION,Train 2,Train 1,0.8571,2,1,0,TRUE,6.875
+1,ORGANIZATION,PETROBRAS,Petrobas,0.9412,,,1,FALSE,6.848
+1,LOCATION,main deck,main deckAl,0.9,,,1,FALSE,6.781
+1,ORGANIZATION,TECHNIP FMC,TFMC,0.9524,,,1,FALSE,6.654
+0,EQUIPMENT,forklift,forklifts,1,,,1,FALSE,6.609
+1,ORGANIZATION,TECHNIPFMC UMBILICALS LTD,Technip Umbilical,0.8947,,,1,FALSE,6.592
+1,ORGANIZATION,TECHNIPFMC UMBILICALS LTD,TechnipFMC Umbilicals (TU) Ltd,0.8936,,,1,FALSE,6.581
+0,LOCATION,Train 3,Train 1,0.8571,3,1,0,TRUE,6.578
+1,ORGANIZATION,TFMC,TechnipFMC UK,0.8696,,,1,FALSE,6.519
+0,LOCATION,floor,floors,0.9091,,,1,FALSE,6.489
+1,LOCATION,floor,Flor,0.8889,,,1,FALSE,6.469
+1,INJURY_TYPE,injuries,injures,0.9231,,,1,FALSE,6.459
+0,EQUIPMENT,crane,cranes,1,,,1,FALSE,6.436
+1,BODY_PART,left hand,hand,1,,,1,FALSE,6.407
+1,ORGANIZATION,TFMC,Technip PMC,0.8571,,,1,FALSE,6.394
+1,ORGANIZATION,Client,Cliente,0.9231,,,1,FALSE,6.393
+1,LOCATION,main deck,maindeck,0.9412,,,1,FALSE,6.369
+0,INJURY_TYPE,injuries,injuried,0.9333,,,1,FALSE,6.357
+0,LOCATION,ground,grounds,0.9231,,,1,FALSE,6.356
+1,ORGANIZATION,Client,Clients,0.9231,,,1,FALSE,6.352
+1,ORGANIZATION,TFMC,TechnpFMC,0.9474,,,1,FALSE,6.349
+1,ORGANIZATION,TECHNIPFMC UMBILICALS LTD,"TechnipFMC Umbilicals, Inc.",0.9767,,,1,FALSE,6.294
+1,BODY_PART,right hand,hand,1,,,1,FALSE,6.293
+0,INJURY_TYPE,injuries,injured,0.8571,,,1,FALSE,6.281
+1,EQUIPMENT,ROV,ROV’s,0.8571,,,1,FALSE,6.216
+1,EQUIPMENT,ROV,ROV's,0.8571,,,1,FALSE,6.209
+0,LOCATION,ground,ground 0,0.8571,,0,0,FALSE,6.158
+0,BODY_PART,left hand,hands,1,,,1,FALSE,6.12
+1,EQUIPMENT,palet,pallet,0.9091,,,1,FALSE,6.062
+1,BODY_PART,left hand,left  hand,1,,,1,FALSE,6.052
+1,BODY_PART,finger,fingeren,0.8571,,,1,FALSE,5.992
+1,ORGANIZATION,TECHNIP FMC,TechnpFMC,0.9,,,1,FALSE,5.99
+0,EQUIPMENT,train 2,Train 1,0.8571,2,1,0,TRUE,5.972
+0,BODY_PART,right hand,hands,1,,,1,FALSE,5.966
+1,BODY_PART,Knee,kneet,0.8889,,,1,FALSE,5.945
+0,LOCATION,Building 3,Building 6,0.9,3,6,0,TRUE,5.944
+0,LOCATION,station 1,station 4,0.8889,1,4,0,TRUE,5.934
+1,ORGANIZATION,TECHNIP FMC,Technip PMC,0.9091,,,1,FALSE,5.899
+1,EQUIPMENT,equipamento,equipment,0.9,,,1,FALSE,5.89
+1,BODY_PART,right hand,right  hand,1,,,1,FALSE,5.889
+1,ORGANIZATION,VELESSTROY,Velesstroi,0.9,,,1,FALSE,5.883
+1,BODY_PART,middle finger,finger,1,,,1,FALSE,5.883
+1,ORGANIZATION,WOODSIDE ENERGY LTD.,"WOODSIDE ENERGY, LTD.",0.9677,,,1,FALSE,5.88
+1,ORGANIZATION,EXXON MOBILE,EXXONMOBIL,0.9091,,,1,FALSE,5.879
+1,ORGANIZATION,VELESSTROY,Velestsroy,0.9,,,1,FALSE,5.86
+0,LOCATION,station 1,station 0,0.8889,1,0,0,TRUE,5.833
+0,LOCATION,station 1,Station 3,0.8889,1,3,0,TRUE,5.833
+0,LOCATION,station 1,station 6,0.8889,1,6,0,TRUE,5.833
+1,ORGANIZATION,EXXON MOBIL,EXXONMOBIL,0.9524,,,1,FALSE,5.823
+1,BODY_PART,finger,index finger,1,,,1,FALSE,5.805
+0,LOCATION,level 1,Level 2,0.8571,1,2,0,TRUE,5.79
+0,LOCATION,station 1,Station 9,0.8889,1,9,0,TRUE,5.779
+0,LOCATION,station 1,Station 2,0.8889,1,2,0,TRUE,5.779
+1,ORGANIZATION,PETRONAS,Petrogas,0.875,,,1,FALSE,5.774
+1,ORGANIZATION,PETRONAS,Petrobas,0.875,,,1,FALSE,5.774
+0,LOCATION,Building 3,Building 1,0.9,3,1,0,TRUE,5.773
+0,LOCATION,Area 1,Area 51,0.9231,1,51,0,TRUE,5.765
+1,ORGANIZATION,"TechnipFMC Umbilicals, Inc.",TechnipFMC Umbilicals (TU) Ltd,0.875,,,1,FALSE,5.754
+1,ORGANIZATION,"TECHNIPFMC USA, INC.","TECHNIP USA, INC.",0.8889,,,1,FALSE,5.749
+0,LOCATION,building 14,Building 15,0.9091,14,15,0,TRUE,5.742
+1,INJURY_TYPE,injuries,minor injuries,1,,,1,FALSE,5.727
+1,ORGANIZATION,"TechnipFMC Umbilicals, Inc.",Technip Umbilical,0.8718,,,1,FALSE,5.722
+0,LOCATION,station 1,station 5,0.8889,1,5,0,TRUE,5.722
+1,BODY_PART,left foot,foot,1,,,1,FALSE,5.714
+1,LOCATION,zObsolete - Greece,Greece,1,,,1,FALSE,5.714
+0,LOCATION,Area 81,Area 1,0.9231,81,1,0,TRUE,5.713
+0,LOCATION,workshop,Workshop 1,0.8889,,1,0,FALSE,5.709
+0,LOCATION,station 1,stations 10,0.9,1,10,0,TRUE,5.708
+0,LOCATION,station 1,station #16,0.9,1,16,0,TRUE,5.708
+0,LOCATION,Building 3,Building 7,0.9,3,7,0,TRUE,5.708
+0,LOCATION,level 3,level 1,0.8571,3,1,0,TRUE,5.706
+1,INJURY_TYPE,injuries,superficial injuries,1,,,1,FALSE,5.697
+0,LOCATION,workshop,Workshop-3,0.8889,,3,0,FALSE,5.693
+0,LOCATION,workshop,Workshop B,0.8889,,,1,FALSE,5.693
+0,LOCATION,workshop,workshop A,0.8889,,,1,FALSE,5.693
+0,LOCATION,workshop,Workshop 2,0.8889,,2,0,FALSE,5.693
+1,INJURY_TYPE,injuries,slight injuries,1,,,1,FALSE,5.69
+0,LOCATION,workshop,workshop F,0.8889,,,1,FALSE,5.685
+0,LOCATION,workshop,workshop 6,0.8889,,6,0,FALSE,5.685
+0,LOCATION,workshop,workshop H,0.8889,,,1,FALSE,5.685
+0,LOCATION,Building 71,Building 15,0.9091,71,15,0,TRUE,5.682
+0,LOCATION,Building 15,Building 16,0.9091,15,16,0,TRUE,5.682
+1,BODY_PART,eye,right eye,1,,,1,FALSE,5.68
+0,EQUIPMENT,ROV,ROVs,1,,,1,FALSE,5.677
+1,BODY_PART,right foot,foot,1,,,1,FALSE,5.663
+0,LOCATION,level 5,level 1,0.8571,5,1,0,TRUE,5.662
+0,LOCATION,station 1,station 8,0.8889,1,8,0,TRUE,5.662
+0,LOCATION,Building 3,Building 15,0.8571,3,15,0,TRUE,5.662
+0,EQUIPMENT,Train 1,Train 3,0.8571,1,3,0,TRUE,5.662
+0,LOCATION,Area 1,Area 19,0.9231,1,19,0,TRUE,5.659
+0,INJURY_TYPE,laceration,lacerating,0.9,,,1,FALSE,5.644
+1,BODY_PART,eye,left eye,1,,,1,FALSE,5.642
+1,LOCATION,quayside,quaysite,0.875,,,1,FALSE,5.64
+0,LOCATION,Building 3,Building 2,0.9,3,2,0,TRUE,5.639
+0,EQUIPMENT,ROV XLX 94,ROV XLX 93,0.9,94,93,0,TRUE,5.639
+1,BODY_PART,ring finger,finger,1,,,1,FALSE,5.617
+1,ORGANIZATION,"TECHNIPFMC USA, INC.",TechnipFMC Subsea,0.875,,,1,FALSE,5.61
+1,BODY_PART,finger,Right Index Finger,1,,,1,FALSE,5.609
+0,LOCATION,Area 1,Area 13,0.9231,1,13,0,TRUE,5.602
+0,LOCATION,Area 1,Area 31,0.9231,1,31,0,TRUE,5.602
+0,LOCATION,Area 1,Area 14,0.9231,1,14,0,TRUE,5.602
+1,BODY_PART,lower back,low back,0.8889,,,1,FALSE,5.599
+0,LOCATION,station 1,Station 7,0.8889,1,7,0,TRUE,5.597
+0,EQUIPMENT,ROV XLX94,ROV XLX74,0.8889,94,74,0,TRUE,5.597
+1,BODY_PART,finger,left index finger,1,,,1,FALSE,5.595
+1,ORGANIZATION,MIDDLE EAST OIL REFINERY - MIDOR,MIDDLE EAST OIL REFINERY (MIDOR),0.9375,,,1,FALSE,5.595
+0,BODY_PART,fingers,finger,1,,,1,FALSE,5.583
+0,LOCATION,level 4,level 1,0.8571,4,1,0,TRUE,5.567
+1,LOCATION,quayside,quay side,0.9412,,,1,FALSE,5.551
+1,ORGANIZATION,ASIAFLEX PRODUCTS SDN. BHD.,ASIAFLEX PRODUCTS SDN BHD,0.9615,,,1,FALSE,5.55
+0,LOCATION,area 2,area 72,0.9231,2,72,0,TRUE,5.542
+0,LOCATION,area 2,Area 20,0.9231,2,20,0,TRUE,5.542
+0,LOCATION,area 2,Area 23,0.9231,2,23,0,TRUE,5.542
+0,EQUIPMENT,ROV XLX94,ROV xlx93,0.8889,94,93,0,TRUE,5.528
+1,ORGANIZATION,"TECHNIPFMC USA, INC.",TechnipFMC HSEA,0.8667,,,1,FALSE,5.527
+0,EQUIPMENT,excavator,Excavator 07,0.8571,,07,0,FALSE,5.527
+0,EQUIPMENT,excavator,EXCAVATOR-01,0.8571,,01,0,FALSE,5.527
+0,BODY_PART,eye,eyes,1,,,1,FALSE,5.521
+1,BODY_PART,finger,left ring finger,1,,,1,FALSE,5.521
+1,EQUIPMENT,PPE,PPE’s,0.8571,,,1,FALSE,5.52
+0,LOCATION,level 3,Level 2,0.8571,3,2,0,TRUE,5.515
+0,LOCATION,level 0,level 1,0.8571,0,1,0,TRUE,5.515
+0,LOCATION,Area 105,Area 1,0.8571,105,1,0,TRUE,5.515
+1,BODY_PART,right middle finger,finger,1,,,1,FALSE,5.509
+1,BODY_PART,finger,left middle finger,1,,,1,FALSE,5.505
+0,LOCATION,warehouse,warehouse 2,0.9,,2,0,FALSE,5.5
+0,LOCATION,warehouse,warehouse 3,0.9,,3,0,FALSE,5.489
+0,BODY_PART,middle finger,index finger,1,,,1,FALSE,5.489
+0,ORGANIZATION,level 3 clinic,level 2 clinic,0.9286,3,2,0,TRUE,5.487
+0,LOCATION,Building 6,Building 1,0.9,6,1,0,TRUE,5.485
+1,BODY_PART,middle finger,fingeren,0.8571,,,1,FALSE,5.484
+1,BODY_PART,finger,right ring finger,1,,,1,FALSE,5.476
+0,LOCATION,building 85,Building 15,0.9091,85,15,0,TRUE,5.474
+0,LOCATION,Building 3,Building 113,0.9091,3,113,0,TRUE,5.474
+0,LOCATION,Building 15,building 11,0.9091,15,11,0,TRUE,5.474
+0,LOCATION,Bay 5,Bay 15,0.9091,5,15,0,TRUE,5.474
+0,LOCATION,Bay 5,Bay 57,0.9091,5,57,0,TRUE,5.474
+1,BODY_PART,Knee,right knee,1,,,1,FALSE,5.472
+0,LOCATION,station 1,station 10,0.9474,1,10,0,TRUE,5.47
+0,INJURY_TYPE,contusion,mild concusion,0.8889,,,1,FALSE,5.464
+0,INJURY_TYPE,contusion,confusion,0.8889,,,1,FALSE,5.464
+0,EQUIPMENT,crane 1,Crane 2,0.8571,1,2,0,TRUE,5.461
+0,LOCATION,Area P11,Area 1,0.8571,11,1,0,TRUE,5.461
+0,LOCATION,level 5,Level 2,0.8571,5,2,0,TRUE,5.461
+0,LOCATION,Building 3,building 14,0.8571,3,14,0,TRUE,5.461
+0,LOCATION,Building 15,Building 6,0.8571,15,6,0,TRUE,5.461
+1,BODY_PART,finger,left finger,1,,,1,FALSE,5.46
+1,BODY_PART,right finger,finger,1,,,1,FALSE,5.46
+1,BODY_PART,Knee,left knee,1,,,1,FALSE,5.455
+1,BODY_PART,ankle,right ankle,1,,,1,FALSE,5.455
+0,EQUIPMENT,ROV XLX94,ROV XLX43,0.8889,94,43,0,TRUE,5.454
+0,LOCATION,station 4,Station 3,0.8889,4,3,0,TRUE,5.454
+0,LOCATION,station 4,station 0,0.8889,4,0,0,TRUE,5.454
+0,LOCATION,station 6,station 4,0.8889,6,4,0,TRUE,5.454
+0,LOCATION,bridge,bride,0.9091,,,1,FALSE,5.452
+0,LOCATION,level 15,level 1,0.9333,15,1,0,TRUE,5.44
+1,ORGANIZATION,"TECHNIPFMC USA, INC.",TechnipFMC UK,0.8571,,,1,FALSE,5.431
+0,BODY_PART,finger,middle fingers,1,,,1,FALSE,5.429
+1,BODY_PART,finger,right finger ring,1,,,1,FALSE,5.425
+0,BODY_PART,finger,index fingers,1,,,1,FALSE,5.425
+0,BODY_PART,finger,Ring fingers,1,,,1,FALSE,5.425
+1,BODY_PART,finger,middle right finger,1,,,1,FALSE,5.421
+0,BODY_PART,finger,left fingers,1,,,1,FALSE,5.421
+0,BODY_PART,finger,Right index  finger,1,,,1,FALSE,5.421
+0,EQUIPMENT,train 2,Train 3,0.8571,2,3,0,TRUE,5.404
+0,LOCATION,Area 1,Area P16,0.8571,1,16,0,TRUE,5.404
+0,LOCATION,Building 3,Building 16,0.8571,3,16,0,TRUE,5.404
+0,LOCATION,Building 3,Building 71,0.8571,3,71,0,TRUE,5.404
+0,LOCATION,area 2,Area E02,0.8571,2,02,0,TRUE,5.404
+0,LOCATION,Level 6,level 1,0.8571,6,1,0,TRUE,5.404
+1,LOCATION,workshop,work shop,0.9412,,,1,FALSE,5.4
+0,LOCATION,Train 1 area,Train 2 area,0.9167,1,2,0,TRUE,5.398
+0,EQUIPMENT,ROV XLX 94,ROV XLX 84,0.9,94,84,0,TRUE,5.398
+0,LOCATION,Train 3 area,Train 2 area,0.9167,3,2,0,TRUE,5.398
+0,LOCATION,Building 7,Building 6,0.9,7,6,0,TRUE,5.398
+0,LOCATION,Train 3 area,Train 1 area,0.9167,3,1,0,TRUE,5.398
+1,LOCATION,zObsolete - Albania,Albania,1,,,1,FALSE,5.398
+0,LOCATION,Building 71,building 14,0.9091,71,14,0,TRUE,5.394
+0,LOCATION,Building 15,Building 13,0.9091,15,13,0,TRUE,5.394
+0,LOCATION,Building 15,building #1,0.9091,15,1,0,TRUE,5.394
+0,LOCATION,building 14,Building 16,0.9091,14,16,0,TRUE,5.394
+0,LOCATION,workshop,workshops,0.9412,,,1,FALSE,5.392
+1,BODY_PART,ankle,left ankle,1,,,1,FALSE,5.389
+0,LOCATION,station 4,Station 9,0.8889,4,9,0,TRUE,5.374
+0,LOCATION,station 4,Station 2,0.8889,4,2,0,TRUE,5.374
+0,BODY_PART,hand,hands,1,,,1,FALSE,5.366
+0,LOCATION,Module ESS-303,module ESS -300,0.8966,303,300,0,TRUE,5.364
+0,LOCATION,area,Area5,0.8889,,5,0,FALSE,5.355
+1,ORGANIZATION,Synergi,synergies,0.875,,,1,FALSE,5.345
+1,EQUIPMENT,machine,machinery,0.875,,,1,FALSE,5.345
+0,LOCATION,level 4,Level 2,0.8571,4,2,0,TRUE,5.344
+0,LOCATION,level 1,Level 9,0.8571,1,9,0,TRUE,5.344
+0,LOCATION,level 5,level 3,0.8571,5,3,0,TRUE,5.344
+1,BODY_PART,right knee,kneet,0.8889,,,1,FALSE,5.343
+1,LOCATION,Camp 4,Camp 04,0.9231,4,04,0,TRUE,5.334
+1,LOCATION,line 2,line 02,0.9231,2,02,0,TRUE,5.334
+1,EQUIPMENT,fire extinguisher,fire extinguisher box,0.8947,,,1,FALSE,5.329
+0,LOCATION,Mero 1 field,Mero 2 field,0.9167,1,2,0,TRUE,5.318
+1,EQUIPMENT,winch,winches,0.9091,,,1,FALSE,5.316
+0,EQUIPMENT,compressor,Compressor B,0.9091,,,1,FALSE,5.316
+1,BODY_PART,back,right back,1,,,1,FALSE,5.313
+0,LOCATION,Building 71,Building 16,0.9091,71,16,0,TRUE,5.307
+1,BODY_PART,back,middle left back,1,,,1,FALSE,5.303
+1,BODY_PART,back,left back,1,,,1,FALSE,5.303
+0,LOCATION,Building 6,Building 2,0.9,6,2,0,TRUE,5.303
+1,BODY_PART,left knee,kneet,0.8889,,,1,FALSE,5.296
+1,BODY_PART,leg,left leg,1,,,1,FALSE,5.293
+0,EQUIPMENT,compressor,compressor A,0.9091,,,1,FALSE,5.291
+0,EQUIPMENT,ROV XLX94,ROV XLX44,0.8889,94,44,0,TRUE,5.287
+0,EQUIPMENT,ROV XLX75,ROV XLX74,0.8889,75,74,0,TRUE,5.287
+0,EQUIPMENT,ROV XLX94,ROV XLX49,0.8889,94,49,0,TRUE,5.287
+0,LOCATION,station 4,station 5,0.8889,4,5,0,TRUE,5.287
+0,LOCATION,station 6,station 0,0.8889,6,0,0,TRUE,5.287
+0,LOCATION,area E-05,area E-02,0.8889,05,02,0,TRUE,5.287
+0,LOCATION,station 6,Station 3,0.8889,6,3,0,TRUE,5.287
+0,LOCATION,station 0,Station 3,0.8889,0,3,0,TRUE,5.287
+1,LOCATION,Building 15,building 15/16,0.88,15,"15,16",0.5,TRUE,5.285
+0,LOCATION,area 2,Area 260,0.8571,2,260,0,TRUE,5.279
+0,LOCATION,area 2,area 203,0.8571,2,203,0,TRUE,5.279
+0,LOCATION,level 0,Level 2,0.8571,0,2,0,TRUE,5.279
+1,BODY_PART,left shoulder,shoulder,1,,,1,FALSE,5.268
+1,BODY_PART,index finger,fingeren,0.8571,,,1,FALSE,5.262
+0,LOCATION,Building 3,building 7723,0.8696,3,7723,0,TRUE,5.261
+0,LOCATION,Building 3,building C318,0.8696,3,318,0,TRUE,5.261
+1,ORGANIZATION,CHEVRON USA INC,CHEVRON U.S.A. INC.,0.88,,,1,FALSE,5.254
+0,LOCATION,Building 3,building 30,0.9524,3,30,0,TRUE,5.249
+1,EQUIPMENT,pump,pumpe,0.8889,,,1,FALSE,5.246
+1,BODY_PART,leg,right leg,1,,,1,FALSE,5.242
+0,EQUIPMENT,crane #11,crane 1,0.875,11,1,0,TRUE,5.235
+0,LOCATION,Level 2,level 2.5,0.875,2,"2,5",0.5,TRUE,5.235
+0,LOCATION,station 1,station 11,0.9474,1,11,0,TRUE,5.234
+0,LOCATION,station 1,station 12,0.9474,1,12,0,TRUE,5.234
+0,EQUIPMENT,overhead crane,overhead frame,0.8571,,,1,FALSE,5.234
+0,LOCATION,station 1,station 18,0.9474,1,18,0,TRUE,5.234
+0,LOCATION,station 1,station 17,0.9474,1,17,0,TRUE,5.234
+0,LOCATION,station 1,station 21,0.9474,1,21,0,TRUE,5.234
+1,BODY_PART,hand,right  hand,1,,,1,FALSE,5.22
+0,BODY_PART,middle finger,ring finger,1,,,1,FALSE,5.22
+1,ORGANIZATION,TECHNIP ENERGIES INDIA LIMITED MUMBAI,TECHNIP ENERGIES INDIA LIMITED,0.8955,,,1,FALSE,5.218
+1,BODY_PART,shoulder,right shoulder,1,,,1,FALSE,5.215
+1,BODY_PART,left  hand,hand,1,,,1,FALSE,5.215
+1,INJURY_TYPE,laceration,laceranting injury,0.8571,,,1,FALSE,5.215
+0,LOCATION,KP 19,KP 195,0.9091,19,195,0,TRUE,5.212
+0,LOCATION,level 4,level 3,0.8571,4,3,0,TRUE,5.21
+0,LOCATION,Building 3,Building 44,0.8571,3,44,0,TRUE,5.21
+0,LOCATION,building 14,Building 6,0.8571,14,6,0,TRUE,5.21
+0,LOCATION,Building 15,Building 7,0.8571,15,7,0,TRUE,5.21
+0,LOCATION,Building 3,building 85,0.8571,3,85,0,TRUE,5.21
+0,LOCATION,Building 3,building 11,0.8571,3,11,0,TRUE,5.21
+0,BODY_PART,middle finger,Right Index Finger,1,,,1,FALSE,5.209
+1,ORGANIZATION,Synergi,Synergy,0.8571,,,1,FALSE,5.206
+0,LOCATION,level 2 clinic,level 3 clinic,0.9286,2,3,0,TRUE,5.199
+0,EQUIPMENT,ROV UHD 18,ROV UHD 58,0.9,18,58,0,TRUE,5.197
+1,ORGANIZATION,ANADARKO PETROLEUM COMPANY,ANADARKO PETROLEUM CORPORATION,0.8571,,,1,FALSE,5.196
+0,LOCATION,station 4,station 8,0.8889,4,8,0,TRUE,5.192
+0,LOCATION,station 0,Station 2,0.8889,0,2,0,TRUE,5.192
+0,LOCATION,area E-04,area E-05,0.8889,04,05,0,TRUE,5.192
+0,LOCATION,station 6,Station 9,0.8889,6,9,0,TRUE,5.192
+0,LOCATION,Station 3,Station 2,0.8889,3,2,0,TRUE,5.192
+0,LOCATION,Station 9,Station 3,0.8889,9,3,0,TRUE,5.192
+0,LOCATION,Station 9,station 0,0.8889,9,0,0,TRUE,5.192
+0,LOCATION,station 6,Station 2,0.8889,6,2,0,TRUE,5.192
+1,LOCATION,work area,working area,0.8571,,,1,FALSE,5.186
+0,LOCATION,Building 15,Building 1,0.9524,15,1,0,TRUE,5.184
+1,EQUIPMENT,pallet,pallets,1,,,1,FALSE,5.182
+0,LOCATION,Building 15,building 181,0.8696,15,181,0,TRUE,5.181
+0,LOCATION,Building 15,building 127,0.8696,15,127,0,TRUE,5.181
+0,LOCATION,Building 15,building S12,0.8696,15,12,0,TRUE,5.181
+0,LOCATION,Building 15,Building 113,0.8696,15,113,0,TRUE,5.181
+0,LOCATION,Building 15,building S11,0.8696,15,11,0,TRUE,5.181
+0,LOCATION,Building 15,building 100,0.8696,15,100,0,TRUE,5.181
+0,LOCATION,Building 15,building S01,0.8696,15,01,0,TRUE,5.181
+0,LOCATION,Area 5,Area 51,0.9231,5,51,0,TRUE,5.167
+1,EQUIPMENT,Scaffold,scaffolder,0.8889,,,1,FALSE,5.152
+1,LOCATION,office,offices,0.9231,,,1,FALSE,5.138
+0,LOCATION,Building 3,building 46,0.8571,3,46,0,TRUE,5.136
+0,LOCATION,Building 15,Building 2,0.8571,15,2,0,TRUE,5.136
+0,LOCATION,Building 3,building 94,0.8571,3,94,0,TRUE,5.136
+0,LOCATION,level 5,level 4,0.8571,5,4,0,TRUE,5.136
+0,LOCATION,Building 71,Building 6,0.8571,71,6,0,TRUE,5.136
+0,LOCATION,level 3,level 0,0.8571,3,0,0,TRUE,5.136
+0,LOCATION,Building 3,building #1,0.8571,3,1,0,TRUE,5.136
+0,LOCATION,Level 6,Level 2,0.8571,6,2,0,TRUE,5.136
+1,EQUIPMENT,fire extinguisher,fire extinguisher OP-5,0.8718,,5,0,FALSE,5.112
+0,LOCATION,Module ESS-303,Module ESS-300,0.9286,303,300,0,TRUE,5.112
+0,LOCATION,Module ESS-303,Module ESS-301,0.9286,303,301,0,TRUE,5.112
+0,LOCATION,location,Location H,0.8889,,,1,FALSE,5.109
+0,LOCATION,KP 19,KP 190,0.9091,19,190,0,TRUE,5.106
+0,LOCATION,building 14,building 11,0.9091,14,11,0,TRUE,5.106
+0,LOCATION,building 14,Building 44,0.9091,14,44,0,TRUE,5.106
+0,LOCATION,bay 1,Bay 15,0.9091,1,15,0,TRUE,5.106
+0,LOCATION,bay 1,bay 14,0.9091,1,14,0,TRUE,5.106
+0,ORGANIZATION,SOGAZ 2nd Level clinic,SOGAZ 3rd level clinic,0.9091,2,3,0,TRUE,5.106
+1,LOCATION,zObsolete - Clairmont,Claremont,0.8889,,,1,FALSE,5.094
+0,LOCATION,station 6,station 5,0.8889,6,5,0,TRUE,5.086
+0,LOCATION,Station 9,Station 2,0.8889,9,2,0,TRUE,5.086
+0,LOCATION,station 4,Station 7,0.8889,4,7,0,TRUE,5.086
+0,LOCATION,Station 3,station 5,0.8889,3,5,0,TRUE,5.086
+0,LOCATION,platform 1700,plateform 1000,0.8889,1700,1000,0,TRUE,5.086
+0,LOCATION,area E-05,area E-01,0.8889,05,01,0,TRUE,5.086
+0,LOCATION,station 0,station 5,0.8889,0,5,0,TRUE,5.086
+0,EQUIPMENT,ROV XLX43,ROV XLX74,0.8889,43,74,0,TRUE,5.086
+0,LOCATION,Building 7,Building 1,0.9,7,1,0,TRUE,5.079
+0,EQUIPMENT,Thruster 5,thruster 1,0.9,5,1,0,TRUE,5.079
+0,EQUIPMENT,Thruster 5,Thruster 6,0.9,5,6,0,TRUE,5.079
+0,EQUIPMENT,Thruster 5,Thruster 7,0.9,5,7,0,TRUE,5.079
+0,EQUIPMENT,crane 1,crane 14,0.9333,1,14,0,TRUE,5.065
+0,LOCATION,warehouse,Warehouse #2,0.8571,,2,0,FALSE,5.06
+0,LOCATION,warehouse,Warehouse #5,0.8571,,5,0,FALSE,5.06
+0,LOCATION,Level 9,Level 2,0.8571,9,2,0,TRUE,5.056
+0,LOCATION,Building 6,building 30,0.8571,6,30,0,TRUE,5.056
+0,LOCATION,level 5,level 0,0.8571,5,0,0,TRUE,5.056
+0,LOCATION,STR 500,STR 700,0.8571,500,700,0,TRUE,5.056
+0,LOCATION,STR 500,STR 600,0.8571,500,600,0,TRUE,5.056
+0,LOCATION,area E-05,area E5,0.875,05,5,0,TRUE,5.053
+0,LOCATION,Test Cell,Test cell 2,0.9,,2,0,FALSE,5.043
+0,LOCATION,Test Cell,test cell#5,0.9,,5,0,FALSE,5.043
+0,LOCATION,Test Cell,test cell 1,0.9,,1,0,FALSE,5.043
+0,LOCATION,Test Cell,Test Cell 6,0.9,,6,0,FALSE,5.043
+0,LOCATION,Test Cell,test cell 4,0.9,,4,0,FALSE,5.043
+0,LOCATION,Building 3,Building 13,0.9524,3,13,0,TRUE,5.041
+0,LOCATION,Building 6,Building 16,0.9524,6,16,0,TRUE,5.041
+1,EQUIPMENT,man lift,manlift,0.9333,,,1,FALSE,5.036
+0,EQUIPMENT,compressor,compressor 3,0.9091,,3,0,FALSE,5.036
+1,EQUIPMENT,overhead crane,over head crane,0.9655,,,1,FALSE,5.036
+1,EQUIPMENT,compressor,compress,0.8889,,,1,FALSE,5.016
+1,INJURY_TYPE,minor laceration,laceration,1,,,1,FALSE,5.011
+0,LOCATION,KP 19,KP 149,0.9091,19,149,0,TRUE,4.988
+0,LOCATION,KP 19,KP 179,0.9091,19,179,0,TRUE,4.988
+0,LOCATION,KP 19,KP 169,0.9091,19,169,0,TRUE,4.988
+0,LOCATION,KP 19,KP 139,0.9091,19,139,0,TRUE,4.988
+0,LOCATION,KP 109,KP 19,0.9091,109,19,0,TRUE,4.988
+1,EQUIPMENT,PPE,PPEs,1,,,1,FALSE,4.977
+0,EQUIPMENT,crane 1,crane 3,0.8571,1,3,0,TRUE,4.969
+0,EQUIPMENT,ROV XLX74,ROV XLX70,0.8889,74,70,0,TRUE,4.968
+0,EQUIPMENT,ROV XLX75,ROV XLX70,0.8889,75,70,0,TRUE,4.968
+0,EQUIPMENT,ROV xlx93,ROV XLX43,0.8889,93,43,0,TRUE,4.968
+1,EQUIPMENT,excavator,excavators,1,,,1,FALSE,4.963
+0,EQUIPMENT,Thruster 5,Thruster 3,0.9,5,3,0,TRUE,4.946
+1,EQUIPMENT,safety glasses,safety glass,0.96,,,1,FALSE,4.943
+0,EQUIPMENT,SP17 machine,SP18 machine,0.9167,17,18,0,TRUE,4.912
+0,EQUIPMENT,trailer,trainers,0.8571,,,1,FALSE,4.902
+0,INJURY_TYPE,minor cut,cut,1,,,1,FALSE,4.898
+0,INJURY_TYPE,minor laceration,lacerating,0.9,,,1,FALSE,4.892
+0,EQUIPMENT,fire extinguisher,Fire extinguisher point,0.85,,,1,FALSE,4.882
+0,INJURY_TYPE,pain,severe pain,1,,,1,FALSE,4.875
+0,EQUIPMENT,Crane 2,crane 3,0.8571,2,3,0,TRUE,4.874
+0,EQUIPMENT,ROV XLX 94,ROV TXLX 43,0.8571,94,43,0,TRUE,4.874
+0,EQUIPMENT,compressor,"Compressor ""A",0.8696,,,1,FALSE,4.855
+0,INJURY_TYPE,pain,minor pain,1,,,1,FALSE,4.852
+0,EQUIPMENT,generator,generator 1,0.9,,1,0,FALSE,4.85
+0,INJURY_TYPE,pain,slight pain,1,,,1,FALSE,4.844
+1,EQUIPMENT,manlift,man-lift,0.9333,,,1,FALSE,4.841
+0,EQUIPMENT,ROV XLX74,ROV XLX49,0.8889,74,49,0,TRUE,4.835
+0,EQUIPMENT,ROV XLX74,ROV XLX44,0.8889,74,44,0,TRUE,4.835
+0,EQUIPMENT,Crane #2,crane #1,0.875,2,1,0,TRUE,4.829
+0,EQUIPMENT,crane #7,Crane #2,0.875,7,2,0,TRUE,4.829
+0,EQUIPMENT,class 4 torque tool,class 7 torque tool,0.9474,4,7,0,TRUE,4.829
+0,EQUIPMENT,generator,Generator 5,0.9,,5,0,FALSE,4.829
+0,EQUIPMENT,compressor,"compressor ""B",0.8696,,,1,FALSE,4.823
+0,INJURY_TYPE,small cut,cut,1,,,1,FALSE,4.812
+0,INJURY_TYPE,pain,small pain,1,,,1,FALSE,4.812
+1,INJURY_TYPE,pain,pains,1,,,1,FALSE,4.812
+1,INJURY_TYPE,pain,mild pains,1,,,1,FALSE,4.812
+1,INJURY_TYPE,pain,mild pain,1,,,1,FALSE,4.812
+0,EQUIPMENT,generator,Generator 6,0.9,,6,0,FALSE,4.807
+0,EQUIPMENT,generator,Generator 4,0.9,,4,0,FALSE,4.807
+0,INJURY_TYPE,laceration,small laceration,1,,,1,FALSE,4.796
+1,INJURY_TYPE,laceration,lacerations,1,,,1,FALSE,4.796
+1,EQUIPMENT,man lift,man-lift,0.875,,,1,FALSE,4.793
+0,EQUIPMENT,SP17 machine,SP10 machine,0.9167,17,10,0,TRUE,4.779
+0,EQUIPMENT,SP17 machine,SP13 machine,0.9167,17,13,0,TRUE,4.779
+0,INJURY_TYPE,cut,minor cut injury,1,,,1,FALSE,4.771
+0,EQUIPMENT,XLX 126,XLX 127,0.8571,126,127,0,TRUE,4.768
+1,INJURY_TYPE,fracture,fractured,0.9412,,,1,FALSE,4.762
+1,INJURY_TYPE,closed fracture,Closure fracture,0.9032,,,1,FALSE,4.752
+1,INJURY_TYPE,laceration,laceration injury,1,,,1,FALSE,4.736
+0,EQUIPMENT,generator 1,Generator 5,0.9091,1,5,0,TRUE,4.701
+0,INJURY_TYPE,injury,minor injury,1,,,1,FALSE,4.691
+1,EQUIPMENT,overhead crane,overhead cranes,1,,,1,FALSE,4.691
+0,INJURY_TYPE,laceration,superficial laceration,1,,,1,FALSE,4.682
+0,EQUIPMENT,ROV xlx93,ROV XLX49,0.8889,93,49,0,TRUE,4.681
+0,INJURY_TYPE,contusion,minor contusion,1,,,1,FALSE,4.673
+1,EQUIPMENT,fire extinguisher,fire extinguish-er,0.9714,,,1,FALSE,4.668
+0,INJURY_TYPE,laceration,deep laceration,1,,,1,FALSE,4.663
+0,INJURY_TYPE,laceration,minor lacerations,1,,,1,FALSE,4.654
+0,EQUIPMENT,XLX 126,XLX 106,0.8571,126,106,0,TRUE,4.65
+0,INJURY_TYPE,laceration,minor superficial laceration,1,,,1,FALSE,4.644
+1,INJURY_TYPE,minor cut,small cut,1,,,1,FALSE,4.644
+1,INJURY_TYPE,contusion,contusions,1,,,1,FALSE,4.644
+0,INJURY_TYPE,laceration,mild superficial laceration,1,,,1,FALSE,4.644
+0,INJURY_TYPE,laceration,small laceration injury,1,,,1,FALSE,4.644
+1,EQUIPMENT,fork lift,fork-lift,0.8889,,,1,FALSE,4.627
+1,EQUIPMENT,fire extinguisher,Fire extinguishers,1,,,1,FALSE,4.625
+0,EQUIPMENT,reel,reels,1,,,1,FALSE,4.615
+0,EQUIPMENT,Thruster 7,Thruster 6,0.9,7,6,0,TRUE,4.609
+0,EQUIPMENT,ROV UHD 18,ROV UHD 61,0.9,18,61,0,TRUE,4.609
+0,EQUIPMENT,thruster 1,Thruster 6,0.9,1,6,0,TRUE,4.609
+0,EQUIPMENT,Thruster 7,thruster 1,0.9,7,1,0,TRUE,4.609
+0,EQUIPMENT,class 4 torque tool,class 6 Torque tool,0.9474,4,6,0,TRUE,4.605
+1,INJURY_TYPE,minor cut,minor cut injury,1,,,1,FALSE,4.595
+1,INJURY_TYPE,contusion,contusion injury,1,,,1,FALSE,4.585
+0,INJURY_TYPE,contusion,severe contusion,1,,,1,FALSE,4.585
+0,EQUIPMENT,fork lift,Forklift1,0.8889,,1,0,FALSE,4.578
+0,EQUIPMENT,fork lift,forkloift,0.8889,,,1,FALSE,4.578
+1,INJURY_TYPE,bruise,Bruised,0.9231,,,1,FALSE,4.576
+0,INJURY_TYPE,contusion,slight contusion,1,,,1,FALSE,4.575
+0,INJURY_TYPE,contusion,Minor contusions,1,,,1,FALSE,4.575
+0,INJURY_TYPE,injury,superficial injury,1,,,1,FALSE,4.575
+0,INJURY_TYPE,contusion,small contusion,1,,,1,FALSE,4.575
+1,EQUIPMENT,forks,fork,1,,,1,FALSE,4.575
+1,EQUIPMENT,manlift,man –lift,0.875,,,1,FALSE,4.557
+1,EQUIPMENT,sling,slings,1,,,1,FALSE,4.554
+0,EQUIPMENT,compressor A,Compressor B,0.9167,,,1,FALSE,4.547
+1,EQUIPMENT,gloves,glove,1,,,1,FALSE,4.533
+0,INJURY_TYPE,superficial cut,cut,1,,,1,FALSE,4.533
+0,EQUIPMENT,generator 1,Generator 6,0.9091,1,6,0,TRUE,4.518
+0,EQUIPMENT,generator 1,Generator 4,0.9091,1,4,0,TRUE,4.518
+0,EQUIPMENT,ROV XLX 117,ROV XLX 116,0.9091,117,116,0,TRUE,4.518
+0,EQUIPMENT,ROV XLX 93,ROV TXLX 43,0.8571,93,43,0,TRUE,4.517
+0,EQUIPMENT,Thruster 5,Thruster #1,0.8571,5,1,0,TRUE,4.517
+1,EQUIPMENT,man lift,Man Lifter,0.8889,,,1,FALSE,4.5
+0,INJURY_TYPE,injury,severe injury,1,,,1,FALSE,4.5
+0,EQUIPMENT,ROV XLX43,ROV XLX49,0.8889,43,49,0,TRUE,4.498
+0,EQUIPMENT,ROV XLX43,ROV XLX44,0.8889,43,44,0,TRUE,4.498
+0,EQUIPMENT,XLX74 ROV,XLX75 ROV,0.8889,74,75,0,TRUE,4.498
+1,INJURY_TYPE,cut,cut injury,1,,,1,FALSE,4.489
+0,INJURY_TYPE,injury,small injury,1,,,1,FALSE,4.489
+1,INJURY_TYPE,small cut,minor cut injury,1,,,1,FALSE,4.477
+0,INJURY_TYPE,injury,slight injury,1,,,1,FALSE,4.477
+0,INJURY_TYPE,injury,small superficial injury,1,,,1,FALSE,4.477
+0,INJURY_TYPE,minor laceration,laceranting injury,0.8571,,,1,FALSE,4.463
+1,EQUIPMENT,trolley,trolly,0.9231,,,1,FALSE,4.433
+1,INJURY_TYPE,cut,cuts,1,,,1,FALSE,4.431
+0,INJURY_TYPE,cut,small cut injury,1,,,1,FALSE,4.419
+1,EQUIPMENT,pump,pumps,1,,,1,FALSE,4.419
+1,EQUIPMENT,fork lift,forklifts,0.9412,,,1,FALSE,4.417
+1,EQUIPMENT,pipe,pipet,0.8889,,,1,FALSE,4.415
+0,EQUIPMENT,generator 1047,generator 1,0.88,1047,1,0,TRUE,4.409
+1,EQUIPMENT,cherry picker,cheery picker,0.9231,,,1,FALSE,4.407
+1,EQUIPMENT,cable tray,cable track,0.8571,,,1,FALSE,4.4
+0,EQUIPMENT,ROV XLX 85,ROV XLX 84,0.9,85,84,0,TRUE,4.386
+0,EQUIPMENT,ROV XLX106,ROV XLX107,0.9,106,107,0,TRUE,4.386
+0,EQUIPMENT,Train 3 compressor B,Train 1 Compressor A,0.9,3,1,0,TRUE,4.386
+0,EQUIPMENT,ROV XLX16,ROV XLX 116,0.9,16,116,0,TRUE,4.386
+0,EQUIPMENT,Train 2 Compressor A,Train 3 compressor B,0.9,2,3,0,TRUE,4.386
+0,EQUIPMENT,Thruster 3,thruster 1,0.9,3,1,0,TRUE,4.386
+1,EQUIPMENT,side-boom,side boom,0.8889,,,1,FALSE,4.386
+0,EQUIPMENT,Thruster 7,Thruster 3,0.9,7,3,0,TRUE,4.386
+0,EQUIPMENT,ROV XLX107,ROV XLX127,0.9,107,127,0,TRUE,4.386
+0,EQUIPMENT,ROV XLX 117,ROV XLX11,0.9,117,11,0,TRUE,4.386
+0,EQUIPMENT,Thruster 3,Thruster 6,0.9,3,6,0,TRUE,4.386
+0,EQUIPMENT,ROV XLX116,ROV XLX106,0.9,116,106,0,TRUE,4.386
+0,EQUIPMENT,ROV XLX11,ROV XLX 116,0.9,11,116,0,TRUE,4.386
+1,EQUIPMENT,truck,trucks,1,,,1,FALSE,4.382
+0,EQUIPMENT,crane_x000D_,crane 2_x000D_,0.9231,000,"000,2",0.5,TRUE,4.378
+1,EQUIPMENT,hose,hoses,1,,,1,FALSE,4.369
+0,EQUIPMENT,XLX 126,XLX 116,0.8571,126,116,0,TRUE,4.363
+0,EQUIPMENT,XLX 127,XLX 107,0.8571,127,107,0,TRUE,4.363
+0,EQUIPMENT,crane #7,crane #1,0.875,7,1,0,TRUE,4.359
+1,EQUIPMENT,cable tray,cable try,0.9474,,,1,FALSE,4.355
+0,EQUIPMENT,ROV Supporter 3,ROV Supporter 29,0.9032,3,29,0,TRUE,4.354
+0,EQUIPMENT,Mobil DTA 10 Excel 68,Mobil DTE 10 Excel 46,0.9048,"10,68","10,46",0.3333,TRUE,4.338
+1,EQUIPMENT,scaffold pipe,scaffolding pipe,0.8966,,,1,FALSE,4.333
+1,EQUIPMENT,HPU,HPU’s,0.8571,,,1,FALSE,4.332
+0,EQUIPMENT,HPU,HPU1,0.8571,,1,0,FALSE,4.332
+1,EQUIPMENT,hard hat,hardhat,0.9333,,,1,FALSE,4.331
+1,EQUIPMENT,spreader bar,spreader beam,0.88,,,1,FALSE,4.326
+1,EQUIPMENT,Scaffold,scaffolds,1,,,1,FALSE,4.317
+1,EQUIPMENT,spreader bar,spread bar,0.9091,,,1,FALSE,4.31
+1,EQUIPMENT,ice pack,icepack,0.9333,,,1,FALSE,4.305
+1,EQUIPMENT,dump truck,dump-trucks,0.9,,,1,FALSE,4.296
