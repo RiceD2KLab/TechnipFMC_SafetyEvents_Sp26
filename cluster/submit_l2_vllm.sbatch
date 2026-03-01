@@ -35,7 +35,7 @@ MODEL="${MODEL:-Qwen/Qwen3-30B-A3B-GPTQ-Int4}"
 PROMPT_VARIANT="${PROMPT_VARIANT:-full}"
 OUTPUT_DIR="${OUTPUT_DIR:-output/l2_vllm}"
 TEMPERATURE="${TEMPERATURE:-0.1}"
-TIMEOUT_SEC="${TIMEOUT_SEC:-300}"
+TIMEOUT_SEC="${TIMEOUT_SEC:-120}"
 MAX_RETRIES="${MAX_RETRIES:-2}"
 NUM_SHARDS="${NUM_SHARDS:-4}"
 RESUME="${RESUME:-1}"
@@ -71,7 +71,6 @@ mkdir -p "${HF_HOME}"
   --model "${MODEL}" \
   --max-model-len "${VLLM_MAX_MODEL_LEN}" \
   --gpu-memory-utilization "${VLLM_GPU_UTIL}" \
-  --enable-reasoning --reasoning-parser qwen3 \
   --port "${VLLM_PORT}" &
 VLLM_PID=$!
 

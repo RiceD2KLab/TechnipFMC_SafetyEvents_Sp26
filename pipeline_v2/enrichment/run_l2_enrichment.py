@@ -59,12 +59,29 @@ def _count_sentences(text: str) -> int:
     return max(count, 1) if text.strip() else 0
 
 
+# Map L1 entity types (SCREAMING_CASE) to L2-compatible types (TitleCase)
+# so the prompt entity block matches the types the LLM is told to use.
+_L1_TO_L2_TYPE: Dict[str, str] = {
+    "EQUIPMENT": "Equipment",
+    "BODY_PART": "Injury",       # body parts are injury context
+    "INJURY_TYPE": "Injury",
+    "LOCATION": "Location",
+    "ORGANIZATION": "Person",    # closest L2 type (org = group of people)
+    "ROOT_CAUSE_CATEGORY": "Condition",
+    "INCIDENT": "Incident",
+}
+
+
 def _build_entity_dict(
     nodes_df: pd.DataFrame,
     record_no: str,
     edges_df: pd.DataFrame,
 ) -> Dict[str, List[str]]:
-    """Build {entity_type: [values]} for a single incident from its edges."""
+    """Build {entity_type: [values]} for a single incident from its edges.
+
+    Maps L1 entity types to L2-compatible types so the prompt entity block
+    uses the same type vocabulary as the LLM extraction schema.
+    """
     inc_id = f"INCIDENT::{record_no}"
     # Find all entity IDs connected to this incident
     connected = edges_df[edges_df["source"] == inc_id]["target"].tolist()
@@ -78,7 +95,9 @@ def _build_entity_dict(
         etype = str(row.get("entity_type", ""))
         value = str(row.get("value", ""))
         if etype and value and etype != "INCIDENT":
-            entities[etype].append(value)
+            # Map to L2 type; keep original if no mapping exists
+            l2_type = _L1_TO_L2_TYPE.get(etype, etype)
+            entities[l2_type].append(value)
     return dict(entities)
 
 
