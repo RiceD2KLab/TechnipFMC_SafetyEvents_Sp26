@@ -52,6 +52,7 @@ OLLAMA_MODELS="${OLLAMA_MODELS:-${SCRATCH_BASE}/.ollama/models}"
 
 export OLLAMA_MODELS
 export OLLAMA_HOST
+export OLLAMA_NUM_PARALLEL=1   # Prevent OOM: one request at a time on single GPU
 
 shard_index="${SLURM_ARRAY_TASK_ID:-0}"
 

@@ -75,8 +75,8 @@ def _word_in_narrative(word: str, narrative_words: Set[str]) -> bool:
     """Check if a word (or its stem prefix) appears in the narrative.
 
     Handles verb/noun form differences like failed/failure, leaked/leak
-    by checking if the word shares a 5+ character prefix with any
-    narrative word (increased from 4 to reduce false positives).
+    by checking if the word shares a 4-char prefix with any narrative
+    word (fail≠fals/fall/faul so 4 chars is precise enough).
     """
     word_clean = _WORD_BOUNDARY_PUNCT.sub('', word)
     if not word_clean:
