@@ -34,7 +34,7 @@ module load CUDA/12.6.0
 MODEL="${MODEL:-Qwen/Qwen3-30B-A3B-GPTQ-Int4}"
 PROMPT_VARIANT="${PROMPT_VARIANT:-full}"
 OUTPUT_DIR="${OUTPUT_DIR:-output/l2_vllm}"
-TEMPERATURE="${TEMPERATURE:-0.1}"
+TEMPERATURE="${TEMPERATURE:-0.3}"
 TIMEOUT_SEC="${TIMEOUT_SEC:-120}"
 MAX_RETRIES="${MAX_RETRIES:-2}"
 NUM_SHARDS="${NUM_SHARDS:-4}"
@@ -44,7 +44,7 @@ PYTHON_BIN="${PYTHON_BIN:-${SCRATCH_BASE}/.venv_vllm/bin/python}"
 VLLM_PORT="${VLLM_PORT:-$((8000 + ${SLURM_ARRAY_TASK_ID:-0}))}"
 VLLM_HOST="${VLLM_HOST:-http://127.0.0.1:${VLLM_PORT}}"
 VLLM_MAX_MODEL_LEN="${VLLM_MAX_MODEL_LEN:-4096}"
-VLLM_GPU_UTIL="${VLLM_GPU_UTIL:-0.90}"
+VLLM_GPU_UTIL="${VLLM_GPU_UTIL:-0.85}"
 
 shard_index="${SLURM_ARRAY_TASK_ID:-0}"
 
@@ -71,6 +71,7 @@ mkdir -p "${HF_HOME}"
   --model "${MODEL}" \
   --max-model-len "${VLLM_MAX_MODEL_LEN}" \
   --gpu-memory-utilization "${VLLM_GPU_UTIL}" \
+  --enforce-eager \
   --port "${VLLM_PORT}" &
 VLLM_PID=$!
 

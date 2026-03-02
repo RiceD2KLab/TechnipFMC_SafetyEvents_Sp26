@@ -74,6 +74,7 @@ def call_ollama(
             {"role": "user", "content": prompt},
         ],
         "stream": False,
+        "think": False,
         "options": {"temperature": temperature},
     }
     if schema is not None:

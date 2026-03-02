@@ -16,41 +16,35 @@ from __future__ import annotations
 
 SYSTEM_PROMPT = """You are a safety incident analyst extracting causal relationships from oil and gas safety incident reports at TechnipFMC.
 
-TASK: Given a short incident narrative and a list of entities already identified, extract causal edges that are explicitly supported by the text.
+TASK: Given an incident narrative and a list of pre-identified entities, extract causal edges supported by the text. Use the entity list as a starting point, but also extract entities and events described in the narrative even if they are not in the list.
 
 RELATIONS (use exactly these strings):
-- CAUSED_BY: direct cause of an event or injury
-- RESULTED_IN: direct outcome or consequence
-- CONTRIBUTED_TO: partial or enabling cause, not the primary cause
-- PRECEDED_BY: temporal sequence with implied causal link
-- FAILED_CONTROL: a safety barrier or control that did not prevent the incident
+- CAUSED_BY: direct cause of an event or injury (look for: "due to", "caused by", "because of", "as a result of")
+- RESULTED_IN: direct outcome or consequence (look for: "resulted in", "causing", "leading to", "which led to")
+- CONTRIBUTED_TO: partial or enabling cause (look for: "contributed to", "was a factor", "played a role")
+- PRECEDED_BY: temporal sequence with causal link (look for: "after", "following", "when")
+- FAILED_CONTROL: a safety barrier that failed (look for: "failed to", "did not prevent", "was not")
 
 ENTITY TYPES (source and target must be one of these):
 Incident, Event, Equipment, Location, Person, Injury, Material, Condition, Action
 
-RULES — follow these exactly:
-1. Only extract edges where you can quote a verbatim phrase from the narrative as evidence
-2. Evidence must be 20 words or fewer and must appear in the narrative
-3. Source and target must be specific named entities from the entity list or clearly named in the narrative — never generic categories like "the equipment" or "the worker"
-4. If the narrative is ambiguous, prefer no edge over a speculative edge
-5. A single incident can have 0 edges — do not force extraction
-6. Do not chain inferences: if A caused B and B caused C, extract A→B and B→C separately, not A→C directly unless stated
+RULES:
+1. Source and target should use descriptive phrases from the narrative (e.g., "short circuiting of wires for the heating element", not just "short circuit")
+2. Avoid generic entities like "the worker", "the equipment", or "the incident" — use the specific name from the text
+3. Evidence must be a phrase from the narrative (up to 25 words)
+4. Extract ALL causal relationships you can find — most incident narratives contain at least one
+5. Only return an empty list if the narrative has zero causal language (no "due to", "caused", "resulted", "failed", etc.)
+6. Do not chain inferences: extract A→B and B→C separately, not A→C
+7. Do not duplicate edges with different wording
 
-WHAT NOT TO EXTRACT:
-- Edges where causation is implied by general knowledge but not stated in the text
-- Edges where source or target cannot be grounded to a specific named entity
-- Duplicate edges with slightly different wording
-- Temporal sequences that have no causal language (e.g. "then", "after" alone is not enough)
-
-EXAMPLES OF CORRECT EXTRACTION:
+EXAMPLES:
 Narrative: "The pressure relief valve failed to open due to corrosion, causing a hydrocarbon release."
 → Equipment("pressure relief valve") CAUSED_BY Condition("corrosion") — evidence: "failed to open due to corrosion"
 → Event("hydrocarbon release") CAUSED_BY Equipment("pressure relief valve") — evidence: "causing a hydrocarbon release"
 
-EXAMPLES OF INCORRECT EXTRACTION (do not do this):
-Narrative: "Worker was near the pump when it malfunctioned."
-→ DO NOT extract: Person("worker") CAUSED_BY Equipment("pump") — no causal language, only proximity
-→ DO NOT extract: Injury RESULTED_IN Equipment("pump") — no injury mentioned
+Narrative: "Fire started in electrical panel due to short circuiting of wires. The smoke detector in the room was not functioning."
+→ Event("fire") CAUSED_BY Condition("short circuiting of wires") — evidence: "Fire started in electrical panel due to short circuiting of wires"
+→ Event("fire") FAILED_CONTROL Equipment("smoke detector") — evidence: "smoke detector in the room was not functioning"
 
 Respond only with valid JSON. No explanation outside the JSON."""
 
@@ -60,10 +54,10 @@ Respond only with valid JSON. No explanation outside the JSON."""
 USER_PROMPT_TEMPLATE = """NARRATIVE:
 {narrative}
 
-ENTITIES IDENTIFIED (use these exact strings as source/target where applicable):
+PRE-IDENTIFIED ENTITIES (use as source/target when relevant, but also extract new entities from the narrative):
 {entity_block}
 
-Extract causal edges supported by this narrative."""
+Extract all causal edges from this narrative. Most incidents have 1-3 causal relationships."""
 
 
 def format_entity_block(entities: dict[str, list[str]]) -> str:
@@ -131,7 +125,7 @@ EXTRACTION_SCHEMA = {
                     },
                     "evidence": {
                         "type": "string",
-                        "description": "Verbatim phrase from narrative, max 20 words",
+                        "description": "Phrase from narrative supporting this edge, max 25 words",
                     },
                     "confidence": {
                         "type": "number",

@@ -15,11 +15,15 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
 from typing import Any, Dict, Optional
+
+# Strip Qwen3 thinking tags from response before JSON parsing
+_THINK_RE = re.compile(r"<think>.*?</think>", re.DOTALL)
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +91,7 @@ def call_vllm(
         ],
         "stream": False,
         "temperature": temperature,
-        "max_tokens": 2048,
+        "max_tokens": 4096,
     }
     if schema is not None:
         payload["response_format"] = {
@@ -119,6 +123,8 @@ def call_vllm(
                     .get("message", {})
                     .get("content", "")
                 )
+                # Strip Qwen3 <think>...</think> tags before parsing
+                content = _THINK_RE.sub("", content).strip()
                 result = _extract_json_block(content)
                 if result is not None:
                     return result

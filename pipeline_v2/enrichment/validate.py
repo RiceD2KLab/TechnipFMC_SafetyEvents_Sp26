@@ -17,10 +17,13 @@ _VALID_ENTITY_TYPES: Set[str] = set(L2_ENTITY_TYPES)
 _VALID_ENTITY_TYPES_LOWER: Dict[str, str] = {t.lower(): t for t in L2_ENTITY_TYPES}
 
 # Minimum consecutive words from evidence that must appear in narrative
-_MIN_CONSECUTIVE_WORDS = 4
+_MIN_CONSECUTIVE_WORDS = 3
 
 # Minimum word length to count as "significant" for entity grounding
 _MIN_WORD_LEN = 3
+
+# Fraction of significant words that must appear in narrative for entity grounding
+_ENTITY_WORD_THRESHOLD = 0.5
 
 # Regex to strip punctuation from word boundaries (keeps internal hyphens/apostrophes)
 _WORD_BOUNDARY_PUNCT = re.compile(r'^[\W_]+|[\W_]+$')
@@ -143,7 +146,14 @@ def _entity_grounded(
             _narr_words_cache.clear()
             _narr_words_cache[narr_key] = narr_words_clean
     narr_words = _narr_words_cache[narr_key]
-    return all(_word_in_narrative(w, narr_words) for w in sig_words)
+    # Require a majority of significant words, not all (L2 entities are
+    # descriptive phrases, not exact L1 names)
+    matched = sum(1 for w in sig_words if _word_in_narrative(w, narr_words))
+    required = max(1, int(len(sig_words) * _ENTITY_WORD_THRESHOLD))
+    # For multi-word entities, require at least 2 words to avoid false positives
+    if len(sig_words) > 1:
+        required = max(2, required)
+    return matched >= required
 
 
 def validate_causal_edges(

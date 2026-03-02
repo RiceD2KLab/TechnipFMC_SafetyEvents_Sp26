@@ -378,7 +378,7 @@ def _parse_args() -> argparse.Namespace:
                         help="Model name (default: qwen3:30b-a3b for ollama, Qwen/Qwen3-30B-A3B for vllm)")
     parser.add_argument("--host", default=None,
                         help="Server URL (default: localhost:11434 for ollama, localhost:8000 for vllm)")
-    parser.add_argument("--temperature", type=float, default=0.1)
+    parser.add_argument("--temperature", type=float, default=0.3)
     parser.add_argument("--prompt-variant", choices=["full", "minimal", "cot"], default="full")
     parser.add_argument("--shard-index", type=int, default=0)
     parser.add_argument("--num-shards", type=int, default=1)
