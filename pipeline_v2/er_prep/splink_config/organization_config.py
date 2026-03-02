@@ -34,6 +34,10 @@ def preprocess(df):
         return v
 
     df["value_normalized"] = df["value"].apply(normalize)
+
+    # Drop entities that are ONLY a legal suffix (e.g. "PLC", "LLC", "SAS")
+    df = df[df["value_normalized"].str.strip().str.len() > 0].copy()
+
     df["first_5_chars"] = df["value_normalized"].str[:5]
     df["token_set"] = df["value_normalized"].apply(
         lambda v: " ".join(sorted(set(v.split())))

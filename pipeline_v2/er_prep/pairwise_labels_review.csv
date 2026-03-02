@@ -16,22 +16,22 @@ is_match,type,title_l,title_r,score,nums_l,nums_r,num_jaccard,num_mismatch,risk_
 1,ORGANIZATION,FLEXI FRANCE,Flexi-France,0.9167,,,1,FALSE,7.747
 1,ORGANIZATION,TECHNIPFMC,TFMC,1,,,1,FALSE,7.677
 1,ORGANIZATION,FLEXI FRANCE,FLEXI FRANCE SAS,0.8571,,,1,FALSE,7.495
-1,EQUIPMENT,forklift,forklift 1,0.8889,,1,0,FALSE,7.49
-1,EQUIPMENT,forklift,forklift 2,0.8889,,2,0,FALSE,7.49
+0,EQUIPMENT,forklift,forklift 1,0.8889,,1,0,FALSE,7.49
+0,EQUIPMENT,forklift,forklift 2,0.8889,,2,0,FALSE,7.49
 0,ROOT_CAUSE_CATEGORY,Hazardous solids (exposure to / spill / loss of containment /pollution),Substances  - Hazardous liquids (exposure to / spill / loss of containment /pollution),0.879,,,1,FALSE,7.414
 1,ORGANIZATION,FLEXI FRANCE,FlexiFrance,0.9565,,,1,FALSE,7.352
 1,ROOT_CAUSE_CATEGORY,Stored energy (dropped objects),Mechanical - Stored energy (dropped objects),0.8267,,,1,FALSE,7.324
 1,EQUIPMENT,forklift,fork lift,0.9412,,,1,FALSE,7.238
 1,EQUIPMENT,forklift,fork-lift,0.9412,,,1,FALSE,7.192
-1,EQUIPMENT,forklift,Forklift1,0.9412,,1,0,FALSE,7.189
+0,EQUIPMENT,forklift,Forklift1,0.9412,,1,0,FALSE,7.189
 1,EQUIPMENT,forklift,forkloift,0.9412,,,1,FALSE,7.189
 0,LOCATION,Train 2,Train 3,0.8571,2,3,0,TRUE,7.176
 0,LOCATION,Nusajaya Campus 2,Nusajaya Campus 1,0.9412,2,1,0,TRUE,7.152
 0,LOCATION,Train 2,Train 1,0.8571,2,1,0,TRUE,6.875
 1,ORGANIZATION,PETROBRAS,Petrobas,0.9412,,,1,FALSE,6.848
-1,LOCATION,main deck,main deckAl,0.9,,,1,FALSE,6.781
+0,LOCATION,main deck,main deckAl,0.9,,,1,FALSE,6.781
 1,ORGANIZATION,TECHNIP FMC,TFMC,0.9524,,,1,FALSE,6.654
-0,EQUIPMENT,forklift,forklifts,1,,,1,FALSE,6.609
+1,EQUIPMENT,forklift,forklifts,1,,,1,FALSE,6.609
 1,ORGANIZATION,TECHNIPFMC UMBILICALS LTD,Technip Umbilical,0.8947,,,1,FALSE,6.592
 1,ORGANIZATION,TECHNIPFMC UMBILICALS LTD,TechnipFMC Umbilicals (TU) Ltd,0.8936,,,1,FALSE,6.581
 0,LOCATION,Train 3,Train 1,0.8571,3,1,0,TRUE,6.578
@@ -39,7 +39,7 @@ is_match,type,title_l,title_r,score,nums_l,nums_r,num_jaccard,num_mismatch,risk_
 0,LOCATION,floor,floors,0.9091,,,1,FALSE,6.489
 1,LOCATION,floor,Flor,0.8889,,,1,FALSE,6.469
 1,INJURY_TYPE,injuries,injures,0.9231,,,1,FALSE,6.459
-0,EQUIPMENT,crane,cranes,1,,,1,FALSE,6.436
+1,EQUIPMENT,crane,cranes,1,,,1,FALSE,6.436
 1,BODY_PART,left hand,hand,1,,,1,FALSE,6.407
 1,ORGANIZATION,TFMC,Technip PMC,0.8571,,,1,FALSE,6.394
 1,ORGANIZATION,Client,Cliente,0.9231,,,1,FALSE,6.393
@@ -81,13 +81,13 @@ is_match,type,title_l,title_r,score,nums_l,nums_r,num_jaccard,num_mismatch,risk_
 0,LOCATION,station 1,Station 9,0.8889,1,9,0,TRUE,5.779
 0,LOCATION,station 1,Station 2,0.8889,1,2,0,TRUE,5.779
 1,ORGANIZATION,PETRONAS,Petrogas,0.875,,,1,FALSE,5.774
-1,ORGANIZATION,PETRONAS,Petrobas,0.875,,,1,FALSE,5.774
+0,ORGANIZATION,PETRONAS,Petrobas,0.875,,,1,FALSE,5.774
 0,LOCATION,Building 3,Building 1,0.9,3,1,0,TRUE,5.773
 0,LOCATION,Area 1,Area 51,0.9231,1,51,0,TRUE,5.765
 1,ORGANIZATION,"TechnipFMC Umbilicals, Inc.",TechnipFMC Umbilicals (TU) Ltd,0.875,,,1,FALSE,5.754
 1,ORGANIZATION,"TECHNIPFMC USA, INC.","TECHNIP USA, INC.",0.8889,,,1,FALSE,5.749
 0,LOCATION,building 14,Building 15,0.9091,14,15,0,TRUE,5.742
-1,INJURY_TYPE,injuries,minor injuries,1,,,1,FALSE,5.727
+0,INJURY_TYPE,injuries,minor injuries,1,,,1,FALSE,5.727
 1,ORGANIZATION,"TechnipFMC Umbilicals, Inc.",Technip Umbilical,0.8718,,,1,FALSE,5.722
 0,LOCATION,station 1,station 5,0.8889,1,5,0,TRUE,5.722
 1,BODY_PART,left foot,foot,1,,,1,FALSE,5.714
@@ -98,19 +98,19 @@ is_match,type,title_l,title_r,score,nums_l,nums_r,num_jaccard,num_mismatch,risk_
 0,LOCATION,station 1,station #16,0.9,1,16,0,TRUE,5.708
 0,LOCATION,Building 3,Building 7,0.9,3,7,0,TRUE,5.708
 0,LOCATION,level 3,level 1,0.8571,3,1,0,TRUE,5.706
-1,INJURY_TYPE,injuries,superficial injuries,1,,,1,FALSE,5.697
+0,INJURY_TYPE,injuries,superficial injuries,1,,,1,FALSE,5.697
 0,LOCATION,workshop,Workshop-3,0.8889,,3,0,FALSE,5.693
 0,LOCATION,workshop,Workshop B,0.8889,,,1,FALSE,5.693
 0,LOCATION,workshop,workshop A,0.8889,,,1,FALSE,5.693
 0,LOCATION,workshop,Workshop 2,0.8889,,2,0,FALSE,5.693
-1,INJURY_TYPE,injuries,slight injuries,1,,,1,FALSE,5.69
+0,INJURY_TYPE,injuries,slight injuries,1,,,1,FALSE,5.69
 0,LOCATION,workshop,workshop F,0.8889,,,1,FALSE,5.685
 0,LOCATION,workshop,workshop 6,0.8889,,6,0,FALSE,5.685
 0,LOCATION,workshop,workshop H,0.8889,,,1,FALSE,5.685
 0,LOCATION,Building 71,Building 15,0.9091,71,15,0,TRUE,5.682
 0,LOCATION,Building 15,Building 16,0.9091,15,16,0,TRUE,5.682
 1,BODY_PART,eye,right eye,1,,,1,FALSE,5.68
-0,EQUIPMENT,ROV,ROVs,1,,,1,FALSE,5.677
+1,EQUIPMENT,ROV,ROVs,1,,,1,FALSE,5.677
 1,BODY_PART,right foot,foot,1,,,1,FALSE,5.663
 0,LOCATION,level 5,level 1,0.8571,5,1,0,TRUE,5.662
 0,LOCATION,station 1,station 8,0.8889,1,8,0,TRUE,5.662
@@ -181,7 +181,7 @@ is_match,type,title_l,title_r,score,nums_l,nums_r,num_jaccard,num_mismatch,risk_
 0,LOCATION,station 4,Station 3,0.8889,4,3,0,TRUE,5.454
 0,LOCATION,station 4,station 0,0.8889,4,0,0,TRUE,5.454
 0,LOCATION,station 6,station 4,0.8889,6,4,0,TRUE,5.454
-0,LOCATION,bridge,bride,0.9091,,,1,FALSE,5.452
+1,LOCATION,bridge,bride,0.9091,,,1,FALSE,5.452
 0,LOCATION,level 15,level 1,0.9333,15,1,0,TRUE,5.44
 1,ORGANIZATION,"TECHNIPFMC USA, INC.",TechnipFMC UK,0.8571,,,1,FALSE,5.431
 0,BODY_PART,finger,middle fingers,1,,,1,FALSE,5.429
@@ -190,7 +190,7 @@ is_match,type,title_l,title_r,score,nums_l,nums_r,num_jaccard,num_mismatch,risk_
 0,BODY_PART,finger,Ring fingers,1,,,1,FALSE,5.425
 1,BODY_PART,finger,middle right finger,1,,,1,FALSE,5.421
 0,BODY_PART,finger,left fingers,1,,,1,FALSE,5.421
-0,BODY_PART,finger,Right index  finger,1,,,1,FALSE,5.421
+1,BODY_PART,finger,Right index  finger,1,,,1,FALSE,5.421
 0,EQUIPMENT,train 2,Train 3,0.8571,2,3,0,TRUE,5.404
 0,LOCATION,Area 1,Area P16,0.8571,1,16,0,TRUE,5.404
 0,LOCATION,Building 3,Building 16,0.8571,3,16,0,TRUE,5.404
@@ -243,7 +243,7 @@ is_match,type,title_l,title_r,score,nums_l,nums_r,num_jaccard,num_mismatch,risk_
 0,LOCATION,area E-05,area E-02,0.8889,05,02,0,TRUE,5.287
 0,LOCATION,station 6,Station 3,0.8889,6,3,0,TRUE,5.287
 0,LOCATION,station 0,Station 3,0.8889,0,3,0,TRUE,5.287
-1,LOCATION,Building 15,building 15/16,0.88,15,"15,16",0.5,TRUE,5.285
+0,LOCATION,Building 15,building 15/16,0.88,15,"15,16",0.5,TRUE,5.285
 0,LOCATION,area 2,Area 260,0.8571,2,260,0,TRUE,5.279
 0,LOCATION,area 2,area 203,0.8571,2,203,0,TRUE,5.279
 0,LOCATION,level 0,Level 2,0.8571,0,2,0,TRUE,5.279
@@ -300,7 +300,7 @@ is_match,type,title_l,title_r,score,nums_l,nums_r,num_jaccard,num_mismatch,risk_
 0,LOCATION,Building 15,building 100,0.8696,15,100,0,TRUE,5.181
 0,LOCATION,Building 15,building S01,0.8696,15,01,0,TRUE,5.181
 0,LOCATION,Area 5,Area 51,0.9231,5,51,0,TRUE,5.167
-1,EQUIPMENT,Scaffold,scaffolder,0.8889,,,1,FALSE,5.152
+0,EQUIPMENT,Scaffold,scaffolder,0.8889,,,1,FALSE,5.152
 1,LOCATION,office,offices,0.9231,,,1,FALSE,5.138
 0,LOCATION,Building 3,building 46,0.8571,3,46,0,TRUE,5.136
 0,LOCATION,Building 15,Building 2,0.8571,15,2,0,TRUE,5.136
@@ -353,7 +353,7 @@ is_match,type,title_l,title_r,score,nums_l,nums_r,num_jaccard,num_mismatch,risk_
 0,EQUIPMENT,compressor,compressor 3,0.9091,,3,0,FALSE,5.036
 1,EQUIPMENT,overhead crane,over head crane,0.9655,,,1,FALSE,5.036
 1,EQUIPMENT,compressor,compress,0.8889,,,1,FALSE,5.016
-1,INJURY_TYPE,minor laceration,laceration,1,,,1,FALSE,5.011
+0,INJURY_TYPE,minor laceration,laceration,1,,,1,FALSE,5.011
 0,LOCATION,KP 19,KP 149,0.9091,19,149,0,TRUE,4.988
 0,LOCATION,KP 19,KP 179,0.9091,19,179,0,TRUE,4.988
 0,LOCATION,KP 19,KP 169,0.9091,19,169,0,TRUE,4.988
@@ -390,8 +390,8 @@ is_match,type,title_l,title_r,score,nums_l,nums_r,num_jaccard,num_mismatch,risk_
 0,INJURY_TYPE,small cut,cut,1,,,1,FALSE,4.812
 0,INJURY_TYPE,pain,small pain,1,,,1,FALSE,4.812
 1,INJURY_TYPE,pain,pains,1,,,1,FALSE,4.812
-1,INJURY_TYPE,pain,mild pains,1,,,1,FALSE,4.812
-1,INJURY_TYPE,pain,mild pain,1,,,1,FALSE,4.812
+0,INJURY_TYPE,pain,mild pains,1,,,1,FALSE,4.812
+0,INJURY_TYPE,pain,mild pain,1,,,1,FALSE,4.812
 0,EQUIPMENT,generator,Generator 6,0.9,,6,0,FALSE,4.807
 0,EQUIPMENT,generator,Generator 4,0.9,,4,0,FALSE,4.807
 0,INJURY_TYPE,laceration,small laceration,1,,,1,FALSE,4.796
@@ -421,7 +421,7 @@ is_match,type,title_l,title_r,score,nums_l,nums_r,num_jaccard,num_mismatch,risk_
 0,INJURY_TYPE,laceration,small laceration injury,1,,,1,FALSE,4.644
 1,EQUIPMENT,fork lift,fork-lift,0.8889,,,1,FALSE,4.627
 1,EQUIPMENT,fire extinguisher,Fire extinguishers,1,,,1,FALSE,4.625
-0,EQUIPMENT,reel,reels,1,,,1,FALSE,4.615
+1,EQUIPMENT,reel,reels,1,,,1,FALSE,4.615
 0,EQUIPMENT,Thruster 7,Thruster 6,0.9,7,6,0,TRUE,4.609
 0,EQUIPMENT,ROV UHD 18,ROV UHD 61,0.9,18,61,0,TRUE,4.609
 0,EQUIPMENT,thruster 1,Thruster 6,0.9,1,6,0,TRUE,4.609
@@ -431,7 +431,7 @@ is_match,type,title_l,title_r,score,nums_l,nums_r,num_jaccard,num_mismatch,risk_
 1,INJURY_TYPE,contusion,contusion injury,1,,,1,FALSE,4.585
 0,INJURY_TYPE,contusion,severe contusion,1,,,1,FALSE,4.585
 0,EQUIPMENT,fork lift,Forklift1,0.8889,,1,0,FALSE,4.578
-0,EQUIPMENT,fork lift,forkloift,0.8889,,,1,FALSE,4.578
+1,EQUIPMENT,fork lift,forkloift,0.8889,,,1,FALSE,4.578
 1,INJURY_TYPE,bruise,Bruised,0.9231,,,1,FALSE,4.576
 0,INJURY_TYPE,contusion,slight contusion,1,,,1,FALSE,4.575
 0,INJURY_TYPE,contusion,Minor contusions,1,,,1,FALSE,4.575
@@ -499,3 +499,125 @@ is_match,type,title_l,title_r,score,nums_l,nums_r,num_jaccard,num_mismatch,risk_
 1,EQUIPMENT,spreader bar,spread bar,0.9091,,,1,FALSE,4.31
 1,EQUIPMENT,ice pack,icepack,0.9333,,,1,FALSE,4.305
 1,EQUIPMENT,dump truck,dump-trucks,0.9,,,1,FALSE,4.296
+0,ROOT_CAUSE_CATEGORY,Substances  - Hazardous liquids (exposure to / spill / loss of containment /pollution),Substances  - Hazardous solids (exposure to / spill / loss of containment /pollution),0.9708,,,1,FALSE,7.81
+0,ROOT_CAUSE_CATEGORY,Hazardous liquids (exposure to / spill / loss of containment /pollution),Hazardous solids (exposure to / spill / loss of containment /pollution),0.965,,,1,FALSE,3.03
+1,ROOT_CAUSE_CATEGORY,Information perceptiveness (amount / mode) & Information reception (extend / range),Ergonomics - Information perceptiveness (amount / mode) & Information reception (extend / range),0.9274,,,1,FALSE,0.12
+1,ROOT_CAUSE_CATEGORY,"Hazardous gases, vapours, aerosols (exposure to / spill / loss of containment /pollution)","Substances  - Hazardous gases, vapours, aerosols (exposure to / spill / loss of containment /pollution)",0.9271,,,1,FALSE,1.18
+1,ROOT_CAUSE_CATEGORY,Hazardous solids (exposure to / spill / loss of containment /pollution),Substances  - Hazardous solids (exposure to / spill / loss of containment /pollution),0.9103,,,1,FALSE,0.47
+1,ROOT_CAUSE_CATEGORY,Dangerous surfaces (sharp/ sharp edged/ high roughness grade),Mechanical - Dangerous surfaces (sharp/ sharp edged/ high roughness grade),0.9037,,,1,FALSE,2.29
+1,ROOT_CAUSE_CATEGORY,Unprotected/unguarded moving machine parts (struck by/caught by),Mechanical - Unprotected/unguarded moving machine parts (struck by/caught by ),0.9014,,,1,FALSE,2.28
+0,ROOT_CAUSE_CATEGORY,Work environment - Motor Vehicle Worksite Accident,Work environment - Motor Vehicle Road Accident,0.8958,,,1,FALSE,5.29
+1,ROOT_CAUSE_CATEGORY,Fall to lower level / fall to water / loose materials (e.g. silos with granulate),Work environment - Fall to lower level / fall to water / loose materials (e.g. silos with granulate),0.895,,,1,FALSE,5.14
+1,ROOT_CAUSE_CATEGORY,Difficult/Hindered operability of tools and equipment,Ergonomics - Difficult/Hindered operability of tools and equipment,0.8908,,,1,FALSE,1.32
+0,ROOT_CAUSE_CATEGORY,"Substances  - Hazardous gases, vapours, aerosols (exposure to / spill / loss of containment /pollution)",Substances  - Hazardous solids (exposure to / spill / loss of containment /pollution),0.883,,,1,FALSE,1.43
+0,ROOT_CAUSE_CATEGORY,Hazardous liquids (exposure to / spill / loss of containment /pollution),Substances  - Hazardous solids (exposure to / spill / loss of containment /pollution),0.879,,,1,FALSE,3.32
+1,ROOT_CAUSE_CATEGORY,Posture (constraint or restricted environment),Ergonomics - Posture (constraint or restricted environment),0.8762,,,1,FALSE,2.21
+1,ROOT_CAUSE_CATEGORY,Radiation (ionising / non ionising),Physical - Radiation (ionising / non ionising),0.8642,,,1,FALSE,0.13
+0,ROOT_CAUSE_CATEGORY,Hazardous solids (exposure to / spill / loss of containment /pollution),"Hazardous gases, vapours, aerosols (exposure to / spill / loss of containment /pollution)",0.8625,,,1,FALSE,0.22
+1,ROOT_CAUSE_CATEGORY,"Environment- Over-consumption of energy, natural resources (water, ...)","Over-consumption of energy, natural resources (water, etc.)",0.8615,,,1,FALSE,0.63
+1,ROOT_CAUSE_CATEGORY,Vibrations (hand arm / whole body),Physical - Vibrations (hand arm / whole body),0.8608,,,1,FALSE,0.19
+1,ROOT_CAUSE_CATEGORY,"Inappropriate behavior / Horseplay / Aggression / violence (Fights, Riots, etc.)",Psycho social - Inappropriate behaviour / horseplay / Aggression / violence (Fights/Riots etc. ...),0.8603,,,1,FALSE,1.5
+1,ROOT_CAUSE_CATEGORY,"Animals, Bacteria, Viruses and Funguses","Biological - Animals, Bacteria, Viruses and Funguses",0.8571,,,1,FALSE,1.66
+0,ROOT_CAUSE_CATEGORY,Substances  - Hazardous liquids (exposure to / spill / loss of containment /pollution),"Substances  - Hazardous gases, vapours, aerosols (exposure to / spill / loss of containment /pollution)",0.8571,,,1,FALSE,8.48
+1,ROOT_CAUSE_CATEGORY,"Unsorted waste, no traceability of the waste","Environment- Unsorted waste, no traceability of the waste;?",0.8544,,,1,FALSE,0.64
+1,ROOT_CAUSE_CATEGORY,Repetitive/one sided physical demand,Ergonomics - Repetitive/one sided physical demand,0.8471,,,1,FALSE,0.71
+0,ROOT_CAUSE_CATEGORY,Basic Organisational - Equipment Suitability,Basic Organizational - Tool suitability,0.8434,,,1,FALSE,5.76
+1,ROOT_CAUSE_CATEGORY,"Standard Operating Procedures, Procedures & Work instructions","Basic Organizational - Standard Operating Procedures, Procedures & Work instructions",0.8414,,,1,FALSE,8.17
+1,ROOT_CAUSE_CATEGORY,"Complaints from neighbors (noise, smell, light, dust, etc.)","Environment- Complaints from neighbours (noise, smell, light, dust...)",0.8372,,,1,FALSE,0.22
+1,ROOT_CAUSE_CATEGORY,"Stored energy (pressure, tension)","Mechanical - Stored energy (pressure, tension)",0.8354,,,1,FALSE,7.25
+0,ROOT_CAUSE_CATEGORY,Hazardous liquids (exposure to / spill / loss of containment /pollution),"Hazardous gases, vapours, aerosols (exposure to / spill / loss of containment /pollution)",0.8323,,,1,FALSE,3.07
+1,ROOT_CAUSE_CATEGORY,Accumulation / Presence of explosive atmosphere,Fire & Explosion - Accumulation / Presence of explosive atmosphere,0.8319,,,1,FALSE,0.3
+0,ROOT_CAUSE_CATEGORY,Motor Vehicle Road Accident,Motor Vehicle Worksite Accident,0.8276,,,1,FALSE,3.13
+1,ROOT_CAUSE_CATEGORY,Traffic Management / Routes / Pedestrian path,Work environment - Traffic Management / Routes / Pedestrian path,0.8257,,,1,FALSE,3.63
+1,ROOT_CAUSE_CATEGORY,Hot/cold surfaces or media,Physical - Hot/cold surfaces or media,0.8254,,,1,FALSE,0.94
+1,ROOT_CAUSE_CATEGORY,Computer workplaces / Screens,Ergonomics - Computer workplaces / Screens,0.8169,,,1,FALSE,0.1
+1,ROOT_CAUSE_CATEGORY,Uncontrolled chemical or physical reaction,Fire & Explosion - Uncontrolled chemical or physical reaction,0.8155,,,1,FALSE,1.2
+1,ROOT_CAUSE_CATEGORY,Confined Spaces (space/sizing issues only),Work environment - Confined Spaces (space/sizing issues only),0.8155,,,1,FALSE,0.47
+0,ROOT_CAUSE_CATEGORY,Mechanical - Equipment condition,Mechanical - Tool condition,0.8136,,,1,FALSE,10.54
+1,ROOT_CAUSE_CATEGORY,"Flammable solids, liquids and gases","Fire & Explosion - Flammable solids, liquids and gases",0.7865,,,1,FALSE,3.22
+1,ROOT_CAUSE_CATEGORY,Workload (Overload/Underload),Psycho social - Workload (Overload/Underload),0.7838,,,1,FALSE,0.1
+1,ROOT_CAUSE_CATEGORY,Illumination / sight / visibility,Work environment - Illumination / sight / visibility,0.7765,,,1,FALSE,0.42
+1,ROOT_CAUSE_CATEGORY,Fire & Explosion - Explosives / potential explosives,Explosives / potential explosives,0.7765,,,1,FALSE,0.23
+1,ROOT_CAUSE_CATEGORY,Hazard Identification & Risk Assessment,Basic Organizational - Hazard Identification & Risk Assessment,0.7723,,,1,FALSE,13.06
+1,ROOT_CAUSE_CATEGORY,SIMOPS (coordination with 3rd Parties),Basic Organizational - SIMOPS (coordination with 3rd Parties),0.7677,3,3,1,FALSE,0.9
+1,ROOT_CAUSE_CATEGORY,Motor Vehicle Worksite Accident,Work environment - Motor Vehicle Worksite Accident,0.7654,,,1,FALSE,3.53
+1,ROOT_CAUSE_CATEGORY,Use of personal protective equipment,Basic Organizational - Use of personal protective equipment,0.7579,,,1,FALSE,3.5
+1,ROOT_CAUSE_CATEGORY,Workplace layout / congestion,Work environment - Workplace layout / congestion,0.7532,,,1,FALSE,3.92
+1,ROOT_CAUSE_CATEGORY,Work time/ Shift pattern,Psycho social - Work time/ Shift pattern,0.75,,,1,FALSE,0.18
+1,ROOT_CAUSE_CATEGORY,Planning and coordination of works,Basic Organizational - Planning and coordination of works,0.7473,,,1,FALSE,7.18
+1,ROOT_CAUSE_CATEGORY,Climate (Heat/Cold/Humidity),Work environment - Climate (Heat/Cold/Humidity),0.7467,,,1,FALSE,2.08
+1,ROOT_CAUSE_CATEGORY,Equipment condition,Mechanical - Equipment condition,0.7451,,,1,FALSE,12.55
+1,ROOT_CAUSE_CATEGORY,Motor Vehicle Road Accident,Work environment - Motor Vehicle Road Accident,0.7397,,,1,FALSE,4.89
+1,ROOT_CAUSE_CATEGORY,Hyperbaric work environment,Work environment - Hyperbaric work environment,0.7397,,,1,FALSE,0.33
+1,ROOT_CAUSE_CATEGORY,Manual handling,Ergonomics - Manual handling,0.6977,,,1,FALSE,7.6
+1,ROOT_CAUSE_CATEGORY,Tool condition,Mechanical - Tool condition,0.6829,,,1,FALSE,2.04
+0,ROOT_CAUSE_CATEGORY,Basic Organizational,Basic Organizational - Tool suitability,0.678,,,1,FALSE,1.94
+1,ROOT_CAUSE_CATEGORY,Inadequate Supervision,Basic Organizational - Inadequate Supervision,0.6567,,,1,FALSE,3.35
+1,ROOT_CAUSE_CATEGORY,Equipment Suitability,Basic Organisational - Equipment Suitability,0.6462,,,1,FALSE,5.37
+1,ROOT_CAUSE_CATEGORY,Unfamiliar personnel,Basic Organizational - Unfamiliar personnel,0.6349,,,1,FALSE,3.22
+1,ROOT_CAUSE_CATEGORY,Management of Change,Basic Organizational - Management of Change,0.6349,,,1,FALSE,0.59
+0,ROOT_CAUSE_CATEGORY,Basic Organizational,Basic Organizational - Unfamiliar personnel,0.6349,,,1,FALSE,2.62
+0,ROOT_CAUSE_CATEGORY,Basic Organizational,Basic Organizational - Management of Change,0.6349,,,1,FALSE,0.47
+0,ROOT_CAUSE_CATEGORY,Basic Organizational,Basic Organizational - Inadequate Supervision,0.6154,,,1,FALSE,3.01
+1,ROOT_CAUSE_CATEGORY,Tool suitability,Basic Organizational - Tool suitability,0.5818,,,1,FALSE,2.69
+1,ROOT_CAUSE_CATEGORY,Access/Egress,Work environment - Access/Egress,0.5778,,,1,FALSE,2.53
+0,ROOT_CAUSE_CATEGORY,Basic Organizational,Basic Organizational - Planning and coordination of works,0.5195,,,1,FALSE,5.39
+0,ROOT_CAUSE_CATEGORY,Basic Organizational,Basic Organizational - Use of personal protective equipment,0.5063,,,1,FALSE,2.63
+0,ROOT_CAUSE_CATEGORY,Basic Organizational,Basic Organizational - SIMOPS (coordination with 3rd Parties),0.4938,,3,0.0000,TRUE,0.72
+0,ROOT_CAUSE_CATEGORY,Basic Organizational,Basic Organizational - Hazard Identification & Risk Assessment,0.4878,,,1,FALSE,9.74
+1,ROOT_CAUSE_CATEGORY,Noise,Physical - Noise,0.4762,,,1,FALSE,0.06
+1,ROOT_CAUSE_CATEGORY,Stress,Psycho social - Stress,0.4286,,,1,FALSE,0.36
+0,ROOT_CAUSE_CATEGORY,Basic Organizational,"Basic Organizational - Standard Operating Procedures, Procedures & Work instructions",0.3846,,,1,FALSE,6.6
+0,ROOT_CAUSE_CATEGORY,Electrical,Electrical - Electrical current / electrocution / ESD / electromagnetic Fields,0.2273,,,1,FALSE,2.69
+1,ROOT_CAUSE_CATEGORY,"Complaints from neighbors (noise, smell, light, dust, etc.)",Noise,0.1562,,,1,FALSE,0.03
+1,ROOT_CAUSE_CATEGORY,Noise,"Environment- Complaints from neighbours (noise, smell, light, dust...)",0.1333,,,1,FALSE,0.21
+1,ORGANIZATION,VELESSTROY,LLC Velesstroy,1.0,,,1,FALSE,1.4
+1,ORGANIZATION,VELESSTROY,VELESSTROY LLC,1.0,,,1,FALSE,1.39
+1,ORGANIZATION,BP TRINIDAD & TOBAGO LLC,BP Trinidad & Tobago,1.0,,,1,FALSE,1.22
+0,ORGANIZATION,PLC,LLC,1.0,,,1,FALSE,1.1
+0,ORGANIZATION,LLC,Ltd.,1.0,,,1,FALSE,1.1
+1,ORGANIZATION,contractor,contractors,0.9524,,,1,FALSE,0.95
+1,ORGANIZATION,"NOBLE ENERGY, INC.",Noble Energy,0.96,,,1,FALSE,0.93
+1,ORGANIZATION,PETROLEO BRASILEIRO S A PETROBRAS,PETROLEO BRASILEIRO S/A PETROBRAS,0.9697,,,1,FALSE,0.83
+1,ORGANIZATION,CONOCOPHILIPS,CONOCOPHILLIPS,0.963,,,1,FALSE,0.8
+1,ORGANIZATION,Maintenance,mainternance,0.9565,,,1,FALSE,0.78
+1,ORGANIZATION,Maintenance,Maintenace,0.9524,,,1,FALSE,0.78
+0,ORGANIZATION,TECHNIP ENERGIES INDIA LIMITED,TECHNIP ENERGIES INDIA LIMITED NEW DELHI,0.8571,,,1,FALSE,0.72
+0,ORGANIZATION,FMC KONGSBERG SUBSEA AS,FMC KONGSBERG SUBSEA AS - VEWW1,0.8519,,1,0.0000,TRUE,0.72
+1,ORGANIZATION,Velesstroymontazh,LLC VelesstroyMontazh,1.0,,,1,FALSE,0.71
+1,ORGANIZATION,EXXON MOBIL,EXXON MOBILE,0.9565,,,1,FALSE,0.7
+1,ORGANIZATION,TOTAL E & P ANGOLA,TOTAL E&P ANGOLA,0.9412,,,1,FALSE,0.7
+1,ORGANIZATION,SHELL AUSTRALIA PTY LTD,Shell Australia,0.8824,,,1,FALSE,0.69
+1,ORGANIZATION,VelesstroyMontazh LLC,Velesstroymontazh,1.0,,,1,FALSE,0.67
+1,ORGANIZATION,FMC TECHNOLOGIES INDIA PRIVATE LIMITED,FMC TECHNOLOGIES INDIA PRIVATE,0.8824,,,1,FALSE,0.67
+1,ORGANIZATION,Velesstroymontazh,Velesstroy-Montazh LLC,0.9714,,,1,FALSE,0.66
+1,ORGANIZATION,Velesstroymontazh,Velesstroy Montazh,0.9714,,,1,FALSE,0.66
+0,ORGANIZATION,Velesstroymontazh,Velesstroy-Montage,0.8571,,,1,FALSE,0.65
+1,ORGANIZATION,subcontractor,subcontractors,0.963,,,1,FALSE,0.61
+0,ORGANIZATION,Employee,employer,0.875,,,1,FALSE,0.61
+1,ORGANIZATION,subcontractor,subcontracor,0.96,,,1,FALSE,0.58
+1,ORGANIZATION,"TULLOW GHANA, LTD.",TULLOW GHANA LTD,0.96,,,1,FALSE,0.58
+0,ORGANIZATION,FMC TECHNOLOGIES AUSTRALIA LTD,FMC TECHNOLOGIES AUSTRALIA LIMITED,0.8667,,,1,FALSE,0.58
+1,ORGANIZATION,SHELL OFFSHORE INC.,"SHELL OFFSHORE, INC",0.9655,,,1,FALSE,0.57
+1,ORGANIZATION,clinic,clininc,0.9231,,,1,FALSE,0.57
+1,ORGANIZATION,SOGAZ-Medservis,SOGAZ-Medservice,0.9032,,,1,FALSE,0.57
+1,ORGANIZATION,HALLIBURTON,Hallibuton,0.9524,,,1,FALSE,0.56
+1,ORGANIZATION,clinic,Clinica,0.9231,,,1,FALSE,0.56
+0,ORGANIZATION,subcontractor,Subcontractor F&B,0.8667,,,1,FALSE,0.56
+0,ORGANIZATION,subcontractor,Subcontractor HSE,0.8667,,,1,FALSE,0.56
+1,ORGANIZATION,SHELL OFFSHORE INC.,"SHELL OFFSHORE, INC.",0.9655,,,1,FALSE,0.55
+0,ORGANIZATION,Skandi Africa,Skandi Africa OMT,0.8667,,,1,FALSE,0.55
+1,ORGANIZATION,CONOCOPHILLIPS,Conoco Phillips,0.9655,,,1,FALSE,0.53
+1,ORGANIZATION,collaborator,collaborators,0.96,,,1,FALSE,0.53
+1,ORGANIZATION,TOTAL E & P UK LIMITED,TOTAL E&P UK LIMITED,0.9524,,,1,FALSE,0.53
+1,ORGANIZATION,employers,employer,0.9412,,,1,FALSE,0.5
+0,ORGANIZATION,FMC TECHNOLOGIES AUSTRALIA LIMITED,FMC TECHNOLOGIES SAUDI ARABIA LIMITED,0.8732,,,1,FALSE,0.5
+0,ORGANIZATION,SOCAR AZK,SOCAR AZK ER,0.8571,,,1,FALSE,0.5
+1,ORGANIZATION,Shawcor,Shawcors,0.9333,,,1,FALSE,0.49
+1,ORGANIZATION,SERIMAX LTD.,Serimax,1.0,,,1,FALSE,0.48
+1,ORGANIZATION,"TECHNIP BRASIL - ENGENHARIA, INSTALACOES E APOIO MARITIMO LTDA",TECHNIP BRASIL - ENGENHARIA INSTALACOES E APOIO MARITIMO LTDA.,0.9839,,,1,FALSE,0.48
+1,ORGANIZATION,SERIMAX LTD,Serimax,1.0,,,1,FALSE,0.47
+0,ORGANIZATION,TECHNIPFMC GHANA LIMITED,TECHNIPFMC LIMITED,0.8571,,,1,FALSE,0.47
+1,ORGANIZATION,TECHNIPFMC CANADA LTD,TechnipFMC Canada Ltd.,1.0,,,1,FALSE,0.46
+1,ORGANIZATION,Medic,Medics,0.9091,,,1,FALSE,0.46
+1,ORGANIZATION,"TECHNIP BRASIL - ENGENHARIA, INSTALACOES E APOIO MARITIMO LTDA","TECHNIP BRASIL - ENGENHARIA, INSTALACOES E APOIO MARITIMO LTDA.",0.992,,,1,FALSE,0.44

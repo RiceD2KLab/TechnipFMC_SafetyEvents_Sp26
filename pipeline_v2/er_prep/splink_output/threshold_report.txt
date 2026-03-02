@@ -1,0 +1,8 @@
+Splink Threshold Calibration Report
+==================================================
+
+BODY_PART: FALLBACK threshold=6.0 (no threshold achieved P>=90%)
+EQUIPMENT: threshold=21.96, F0.5=0.678, P=1.000, R=0.296, labeled_pairs_scored=145
+INJURY_TYPE: FALLBACK threshold=6.0 (no threshold achieved P>=90%)
+LOCATION: FALLBACK threshold=6.0 (no threshold achieved P>=90%)
+ORGANIZATION: threshold=7.41, F0.5=0.462, P=1.000, R=0.146, labeled_pairs_scored=96
