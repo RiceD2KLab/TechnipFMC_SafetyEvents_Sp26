@@ -6,10 +6,9 @@ OpenAI-compatible /v1/chat/completions endpoint with structured output
 
 Start vLLM server before running:
     python -m vllm.entrypoints.openai.api_server \
-        --model Qwen/Qwen3-30B-A3B \
+        --model Qwen/Qwen3-30B-A3B-GPTQ-Int4 \
         --max-model-len 4096 \
         --gpu-memory-utilization 0.90 \
-        --enable-reasoning --reasoning-parser qwen3 \
         --port 8000
 """
 from __future__ import annotations

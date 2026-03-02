@@ -718,3 +718,167 @@ def generate_event_cluster_plot(df, x_col='tsne_x', y_col='tsne_y',
 
     return fig
 
+
+# ============================================================================
+# Knowledge Graph Visualization Functions
+# ============================================================================
+
+
+def generate_kg_subgraph_figure(subgraph, center_node_id):
+    """
+    Generate an interactive Plotly figure of a KG subgraph.
+
+    Uses NetworkX spring layout for positioning, then renders nodes as
+    scatter markers and edges as line traces with arrowhead annotations.
+
+    Args:
+        subgraph: nx.DiGraph — the subgraph to visualize
+        center_node_id: str — the center node (rendered larger)
+
+    Returns:
+        plotly.graph_objects.Figure
+    """
+    import networkx as nx
+    from kg_loader import ENTITY_COLORS, ENTITY_TYPE_LABELS
+
+    if subgraph.number_of_nodes() == 0:
+        fig = go.Figure()
+        fig.add_annotation(text="No nodes found.", showarrow=False,
+                           font=dict(size=16, color="gray"))
+        return fig
+
+    # Compute layout
+    pos = nx.spring_layout(subgraph.to_undirected(), seed=42, k=2.0 / max(1, subgraph.number_of_nodes() ** 0.3))
+
+    fig = go.Figure()
+
+    # --- Draw edges as lines + midpoint labels ---
+    for src, tgt, attrs in subgraph.edges(data=True):
+        x0, y0 = pos[src]
+        x1, y1 = pos[tgt]
+        relation = attrs.get("relation", "")
+        confidence = attrs.get("confidence", None)
+        source_type = attrs.get("source_type", "")
+
+        hover = relation
+        if confidence is not None:
+            hover += f"<br>Confidence: {confidence:.2f}"
+        if source_type:
+            hover += f"<br>Source: {source_type}"
+
+        # Edge line
+        fig.add_trace(go.Scatter(
+            x=[x0, x1, None], y=[y0, y1, None],
+            mode="lines",
+            line=dict(width=1.5, color="#aaa"),
+            hoverinfo="skip",
+            showlegend=False,
+        ))
+
+        # Edge label at midpoint
+        mx, my = (x0 + x1) / 2, (y0 + y1) / 2
+        fig.add_trace(go.Scatter(
+            x=[mx], y=[my],
+            mode="text",
+            text=[relation],
+            textfont=dict(size=9, color="#666"),
+            hovertext=[hover],
+            hoverinfo="text",
+            showlegend=False,
+        ))
+
+    # --- Draw nodes grouped by entity type (for legend) ---
+    # Group nodes by entity_type so each type gets one legend entry
+    nodes_by_type = {}
+    for node_id, attrs in subgraph.nodes(data=True):
+        et = attrs.get("entity_type", "UNKNOWN")
+        if et not in nodes_by_type:
+            nodes_by_type[et] = []
+        nodes_by_type[et].append((node_id, attrs))
+
+    for entity_type, node_list in nodes_by_type.items():
+        color = ENTITY_COLORS.get(entity_type, "#95A5A6")
+        type_label = ENTITY_TYPE_LABELS.get(entity_type, entity_type)
+
+        xs, ys, texts, hovers, sizes = [], [], [], [], []
+        for node_id, attrs in node_list:
+            x, y = pos[node_id]
+            xs.append(x)
+            ys.append(y)
+
+            value = attrs.get("value", str(node_id))
+            display = str(value)[:30] + "..." if len(str(value)) > 30 else str(value)
+            texts.append(display)
+
+            hover_parts = [f"<b>{value}</b>", f"Type: {type_label}", f"ID: {node_id}"]
+            for prop in ["incident_type", "severity", "risk_color", "business_unit"]:
+                if prop in attrs and pd.notna(attrs[prop]):
+                    hover_parts.append(f"{prop}: {attrs[prop]}")
+            hovers.append("<br>".join(hover_parts))
+
+            is_center = (node_id == center_node_id)
+            sizes.append(28 if is_center else 16)
+
+        fig.add_trace(go.Scatter(
+            x=xs, y=ys,
+            mode="markers+text",
+            marker=dict(size=sizes, color=color, line=dict(width=1, color="white")),
+            text=texts,
+            textposition="top center",
+            textfont=dict(size=10),
+            hovertext=hovers,
+            hoverinfo="text",
+            name=type_label,
+            legendgroup=entity_type,
+        ))
+
+    # Compute axis range from node positions with padding
+    all_x = [pos[n][0] for n in subgraph.nodes()]
+    all_y = [pos[n][1] for n in subgraph.nodes()]
+    pad = 0.15
+    x_min, x_max = min(all_x) - pad, max(all_x) + pad
+    y_min, y_max = min(all_y) - pad, max(all_y) + pad
+
+    fig.update_layout(
+        template="plotly_white",
+        height=650,
+        showlegend=True,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
+        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False, title="",
+                   range=[x_min, x_max], constrain="domain"),
+        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False, title="",
+                   range=[y_min, y_max], scaleanchor="x"),
+        margin=dict(l=20, r=20, t=40, b=20),
+        dragmode="pan",
+    )
+
+    return fig
+
+
+def generate_kg_subgraph_stats(subgraph):
+    """
+    Return summary statistics dict for a KG subgraph.
+
+    Args:
+        subgraph: nx.DiGraph
+
+    Returns:
+        dict with node_count, edge_count, entity_type_counts, relation_type_counts
+    """
+    entity_type_counts = {}
+    for _, attrs in subgraph.nodes(data=True):
+        et = attrs.get("entity_type", "UNKNOWN")
+        entity_type_counts[et] = entity_type_counts.get(et, 0) + 1
+
+    relation_type_counts = {}
+    for _, _, attrs in subgraph.edges(data=True):
+        rel = attrs.get("relation", "UNKNOWN")
+        relation_type_counts[rel] = relation_type_counts.get(rel, 0) + 1
+
+    return {
+        "node_count": subgraph.number_of_nodes(),
+        "edge_count": subgraph.number_of_edges(),
+        "entity_type_counts": entity_type_counts,
+        "relation_type_counts": relation_type_counts,
+    }
+

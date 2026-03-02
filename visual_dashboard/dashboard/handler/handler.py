@@ -373,6 +373,69 @@ def generate_chart(chart_type, filter_requirements=None, return_metadata=False, 
 
 
 # ============================================================================
+# Knowledge Graph Handlers
+# ============================================================================
+
+from kg_loader import (
+    load_kg_data,
+    get_incident_display_map,
+    find_entities_by_value as _kg_find_entities,
+    extract_subgraph,
+)
+from graph_makers import (
+    generate_kg_subgraph_figure,
+    generate_kg_subgraph_stats,
+)
+
+
+def generate_kg_visualization(node_id, hops=1, entity_type_filter=None):
+    """
+    Handler for KG visualization requests.
+
+    Args:
+        node_id: str — entity_id of the center node
+        hops: int — 1 or 2
+        entity_type_filter: set or None — entity types to include
+
+    Returns:
+        dict with keys:
+            - 'figure': plotly Figure
+            - 'stats': dict — subgraph summary statistics
+            - 'truncated': bool — whether the subgraph was capped
+    """
+    G, entities_df, relations_df = load_kg_data()
+
+    subgraph, truncated = extract_subgraph(
+        G, node_id, hops=hops, entity_type_filter=entity_type_filter
+    )
+
+    fig = generate_kg_subgraph_figure(subgraph, center_node_id=node_id)
+    stats = generate_kg_subgraph_stats(subgraph)
+
+    return {"figure": fig, "stats": stats, "truncated": truncated}
+
+
+def search_kg_entities(entity_type=None, value_pattern="", max_results=100):
+    """
+    Handler for entity search in the KG.
+
+    Returns:
+        list of [entity_id, entity_type, value] lists
+    """
+    _, entities_df, _ = load_kg_data()
+    return _kg_find_entities(
+        entities_df, entity_type=entity_type,
+        value_pattern=value_pattern, max_results=max_results
+    )
+
+
+def get_kg_incident_options():
+    """Return display_label -> entity_id mapping for incident selector."""
+    _, entities_df, _ = load_kg_data()
+    return get_incident_display_map(entities_df)
+
+
+# ============================================================================
 # Example Usage
 # ============================================================================
 

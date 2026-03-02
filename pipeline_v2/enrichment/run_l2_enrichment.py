@@ -59,12 +59,29 @@ def _count_sentences(text: str) -> int:
     return max(count, 1) if text.strip() else 0
 
 
+# Map L1 entity types (SCREAMING_CASE) to L2-compatible types (TitleCase)
+# so the prompt entity block matches the types the LLM is told to use.
+_L1_TO_L2_TYPE: Dict[str, str] = {
+    "EQUIPMENT": "Equipment",
+    "BODY_PART": "Injury",       # body parts are injury context
+    "INJURY_TYPE": "Injury",
+    "LOCATION": "Location",
+    "ORGANIZATION": "Person",    # closest L2 type (org = group of people)
+    "ROOT_CAUSE_CATEGORY": "Condition",
+    "INCIDENT": "Incident",
+}
+
+
 def _build_entity_dict(
     nodes_df: pd.DataFrame,
     record_no: str,
     edges_df: pd.DataFrame,
 ) -> Dict[str, List[str]]:
-    """Build {entity_type: [values]} for a single incident from its edges."""
+    """Build {entity_type: [values]} for a single incident from its edges.
+
+    Maps L1 entity types to L2-compatible types so the prompt entity block
+    uses the same type vocabulary as the LLM extraction schema.
+    """
     inc_id = f"INCIDENT::{record_no}"
     # Find all entity IDs connected to this incident
     connected = edges_df[edges_df["source"] == inc_id]["target"].tolist()
@@ -78,7 +95,9 @@ def _build_entity_dict(
         etype = str(row.get("entity_type", ""))
         value = str(row.get("value", ""))
         if etype and value and etype != "INCIDENT":
-            entities[etype].append(value)
+            # Map to L2 type; keep original if no mapping exists
+            l2_type = _L1_TO_L2_TYPE.get(etype, etype)
+            entities[l2_type].append(value)
     return dict(entities)
 
 
@@ -182,13 +201,19 @@ def run_l2_enrichment(
         rno = str(row["record_no"])
         narratives[rno] = str(row.get(narrative_col, ""))
 
-    # Resume support
+    # Resume support — track ALL attempted record_nos, not just those with edges
     jsonl_path = output_path / "l2_edges.jsonl"
+    progress_path = output_path / "progress.jsonl"
     processed_ids: Set[str] = set()
     existing_records: List[dict] = []
     if resume:
         existing_records = _load_existing_jsonl(jsonl_path)
         for rec in existing_records:
+            rid = str(rec.get("record_no", ""))
+            if rid:
+                processed_ids.add(rid)
+        # Also load progress file (records attempted but possibly no edges)
+        for rec in _load_existing_jsonl(progress_path):
             rid = str(rec.get("record_no", ""))
             if rid:
                 processed_ids.add(rid)
@@ -226,6 +251,7 @@ def run_l2_enrichment(
     )
 
     jsonl_mode = "a" if resume and jsonl_path.exists() else "w"
+    progress_mode = "a" if resume and progress_path.exists() else "w"
     all_l2_edges: List[dict] = list(existing_records)
     stats = {"total": 0, "llm_calls": 0, "edges_produced": 0, "edges_rejected": 0, "errors": 0}
 
@@ -262,6 +288,8 @@ def run_l2_enrichment(
         except Exception as exc:
             logger.warning("LLM call failed for record %s: %s", rno, exc)
             stats["errors"] += 1
+            _append_jsonl(progress_path, [{"record_no": rno, "status": "error"}], mode=progress_mode)
+            progress_mode = "a"
             continue
 
         call_seconds = time.time() - t0
@@ -308,6 +336,10 @@ def run_l2_enrichment(
         _append_jsonl(jsonl_path, batch_records, mode=jsonl_mode)
         jsonl_mode = "a"
         all_l2_edges.extend(batch_records)
+
+        # Track this record as processed (for resume even if 0 edges)
+        _append_jsonl(progress_path, [{"record_no": rno, "status": "ok", "edges": len(deduped)}], mode=progress_mode)
+        progress_mode = "a"
 
     # Write metrics
     metrics = {
