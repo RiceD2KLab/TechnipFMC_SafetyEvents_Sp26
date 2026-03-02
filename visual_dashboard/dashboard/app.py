@@ -12,7 +12,7 @@ st.title("Safety Event Dashboard")
 @st.cache_data
 def load_filter_options():
     """Load unique values for filter dropdowns."""
-    data_file = Path(__file__).parent.parent.parent / "data" / "merged_incidents.csv"
+    data_file = Path(__file__).parent.parent.parent / "data" / "merged_incidents_tsne.csv"
     df = pd.read_csv(data_file, low_memory=False)
     
     return {
