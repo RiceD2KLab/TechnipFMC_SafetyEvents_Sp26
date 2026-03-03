@@ -22,7 +22,7 @@ Each annotation is a **JSONL edge** with these fields:
 }
 ```
 
-## Relation Types (3)
+## Relation Types (4)
 
 ### CAUSAL — One thing caused, led to, or contributed to another
 The primary relation. Covers direct causes, contributing factors, and sequential
@@ -49,6 +49,18 @@ Use when a control, barrier, or safety measure was in place but failed.
 
 - source = the failed control/barrier, target = what it failed to prevent
 - Example: source="safety interlock", target="machine started while worker inside"
+
+### MITIGATED_BY — A harm/event that was prevented or reduced by a control
+Use when a control, barrier, or safety measure worked as intended.
+
+- source = the event/harm that was mitigated, target = the control/barrier that worked
+- Example: source="head injury", target="PPE (hard hat)"
+- Example: source="personnel exposure", target="gas detector alarm"
+- Look for: "prevented", "stopped", "contained", "caught", "PPE protected",
+  "barrier held", "alarm alerted", "detected", "shut down", "isolated"
+
+**Note:** Annotation has not yet been done for MITIGATED_BY edges. This relation
+type was added to capture the ~15.8% of narratives describing controls that worked.
 
 ## Entity Types (9)
 

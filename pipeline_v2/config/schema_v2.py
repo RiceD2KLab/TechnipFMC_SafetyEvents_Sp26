@@ -96,6 +96,11 @@ L2_RELATIONS = {
         "allowed_source_types": L2_ENTITY_TYPES,
         "allowed_target_types": L2_ENTITY_TYPES,
     },
+    "MITIGATED_BY": {
+        "description": "Harm/event Y was successfully prevented or reduced by control/barrier X (source=event, target=control)",
+        "allowed_source_types": L2_ENTITY_TYPES,
+        "allowed_target_types": L2_ENTITY_TYPES,
+    },
 }
 
 L2_ALLOWED_RELATIONS = frozenset(L2_RELATIONS.keys())

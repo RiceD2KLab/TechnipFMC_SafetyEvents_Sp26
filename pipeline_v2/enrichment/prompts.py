@@ -22,6 +22,7 @@ RELATIONS (use exactly these strings):
 - CAUSAL: one thing caused, led to, or contributed to another (source=cause, target=effect). Covers direct cause, consequence, and contributing factors. Look for: "due to", "caused by", "because of", "resulted in", "causing", "leading to", "contributed to", "was a factor"
 - PRECEDED_BY: temporal sequence with causal link (look for: "after", "following", "when")
 - FAILED_CONTROL: a safety barrier that failed (look for: "failed to", "did not prevent", "was not")
+- MITIGATED_BY: harm/event was prevented or reduced by a control or barrier (source=event, target=control). Look for: "prevented", "stopped", "contained", "caught", "PPE protected", "barrier held", "alarm alerted"
 
 DIRECTION RULE: For CAUSAL edges, source is always the CAUSE and target is always the EFFECT.
 - "fire due to corrosion" → source="corrosion", target="fire"
@@ -48,6 +49,10 @@ Narrative: "The pressure relief valve failed to open due to corrosion, causing a
 Narrative: "Fire started in electrical panel due to short circuiting of wires. The smoke detector in the room was not functioning."
 → Condition("short circuiting of wires") CAUSAL Event("fire") — evidence: "Fire started in electrical panel due to short circuiting of wires"
 → Event("fire") FAILED_CONTROL Equipment("smoke detector") — evidence: "smoke detector in the room was not functioning"
+
+Narrative: "The gas leak was detected by the H2S monitor, which triggered the emergency shutdown and prevented any injuries."
+→ Event("gas leak") MITIGATED_BY Equipment("H2S monitor") — evidence: "gas leak was detected by the H2S monitor"
+→ Event("injuries") MITIGATED_BY Equipment("emergency shutdown") — evidence: "triggered the emergency shutdown and prevented any injuries"
 
 Respond only with valid JSON. No explanation outside the JSON."""
 
@@ -120,6 +125,7 @@ EXTRACTION_SCHEMA = {
                         "type": "string",
                         "enum": [
                             "CAUSAL", "PRECEDED_BY", "FAILED_CONTROL",
+                            "MITIGATED_BY",
                         ],
                     },
                     "target":      {"type": "string"},
@@ -152,7 +158,7 @@ EXTRACTION_SCHEMA = {
 # Minimal prompt — tests how much the schema alone does the work
 SYSTEM_PROMPT_MINIMAL = """Extract causal relationships from oil and gas safety incident reports.
 
-Relations: CAUSAL (source=cause, target=effect), PRECEDED_BY, FAILED_CONTROL
+Relations: CAUSAL (source=cause, target=effect), PRECEDED_BY, FAILED_CONTROL, MITIGATED_BY (control that worked)
 Entity types: Incident, Event, Equipment, Location, Person, Injury, Material, Condition, Action
 
 Only extract edges with direct textual evidence. Return JSON only."""
@@ -169,7 +175,7 @@ Think through the narrative step by step before extracting edges:
 4. Check each potential edge: can you quote the exact phrase that supports it?
 5. Discard any edge where you cannot quote supporting text
 
-Relations: CAUSAL (source=cause, target=effect), PRECEDED_BY, FAILED_CONTROL
+Relations: CAUSAL (source=cause, target=effect), PRECEDED_BY, FAILED_CONTROL, MITIGATED_BY (control that worked)
 Entity types: Incident, Event, Equipment, Location, Person, Injury, Material, Condition, Action
 
 After reasoning, respond with JSON only. No text after the JSON."""
@@ -184,6 +190,7 @@ RELATIONS (use exactly these strings):
 - CAUSAL: one thing caused, led to, or contributed to another (source=cause, target=effect). Covers direct cause, consequence, and contributing factors. Look for: "due to", "caused by", "because of", "resulted in", "causing", "leading to", "contributed to", "was a factor"
 - PRECEDED_BY: a temporal sequence with causal relevance — one event happened before and set the stage for another. Look for: "before", "prior to", "led to", "followed by", "then", "after", "earlier", "previously", "when", "during"
 - FAILED_CONTROL: a safety barrier, procedure, or control that was supposed to prevent the incident but failed or was absent. Look for: "failed to", "did not prevent", "bypassed", "overridden", "inadequate", "missing", "not in place", "not functioning", "was not worn", "not followed"
+- MITIGATED_BY: harm/event was prevented or reduced by a control or barrier (source=event, target=control). Look for: "prevented", "stopped", "contained", "caught", "PPE protected", "barrier held", "alarm alerted", "detected", "shut down", "isolated"
 
 DIRECTION RULE: For CAUSAL edges, source is always the CAUSE and target is always the EFFECT.
 - "fire due to corrosion" → source="corrosion", target="fire"
@@ -217,6 +224,10 @@ Narrative: "The crane operator moved the load before receiving the signal from t
 → Action("crane operator moved load before receiving signal") CAUSAL Event("load struck scaffolding") — evidence: "The load struck the scaffolding"
 → Equipment("safety net") FAILED_CONTROL Event("load struck scaffolding") — evidence: "safety net had been removed for maintenance"
 
+Narrative: "The gas leak was detected by the H2S monitor, which triggered the emergency shutdown and prevented any injuries."
+→ Event("gas leak") MITIGATED_BY Equipment("H2S monitor") — evidence: "gas leak was detected by the H2S monitor"
+→ Event("injuries") MITIGATED_BY Equipment("emergency shutdown") — evidence: "triggered the emergency shutdown and prevented any injuries"
+
 Respond only with valid JSON. No explanation outside the JSON."""
 
 
@@ -226,7 +237,7 @@ USER_PROMPT_TEMPLATE_V2 = """NARRATIVE:
 PRE-IDENTIFIED ENTITIES (use as source/target when relevant, but also extract new entities from the narrative):
 {entity_block}
 
-Extract all causal edges from this narrative. Look for temporal sequences (PRECEDED_BY) and failed safety barriers (FAILED_CONTROL), not just direct causes. Most incidents have 1-3 causal relationships."""
+Extract all causal edges from this narrative. Look for temporal sequences (PRECEDED_BY), failed safety barriers (FAILED_CONTROL), and controls that worked (MITIGATED_BY), not just direct causes. Most incidents have 1-3 causal relationships."""
 
 
 PROMPT_VARIANTS = {
@@ -280,5 +291,13 @@ EXPECTED_EDGES = [
         "target": "hot work",
         "target_type": "Event",
         "evidence": "permit-to-work had not been suspended, allowing hot work to continue",
+    },
+    {
+        "source": "hydrocarbon leak",
+        "source_type": "Event",
+        "relation": "MITIGATED_BY",
+        "target": "area gas detector",
+        "target_type": "Equipment",
+        "evidence": "area gas detector alarmed",
     },
 ]

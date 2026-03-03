@@ -309,7 +309,7 @@ def severity_comparison(spec, G, entities_df, relations_df, metadata_df,
 
 def causal_chain_check(spec, G, entities_df, relations_df, metadata_df,
                        *, results=None):
-    causal_rels = ["CAUSAL", "PRECEDED_BY", "FAILED_CONTROL"]
+    causal_rels = ["CAUSAL", "PRECEDED_BY", "FAILED_CONTROL", "MITIGATED_BY"]
     causal_edges = relations_df[relations_df["relation"].isin(causal_rels)]
 
     if len(causal_edges) == 0:
@@ -344,8 +344,8 @@ def causal_chain_check(spec, G, entities_df, relations_df, metadata_df,
     source_counts = Counter()
     tautological = 0
     for _, e in causal_sources.iterrows():
-        src_val = safe_get_node_value(G, e["source"], "")
-        tgt_val = safe_get_node_value(G, e["target"], "")
+        src_val = str(safe_get_node_value(G, e["source"], "") or "")
+        tgt_val = str(safe_get_node_value(G, e["target"], "") or "")
         # Skip tautological: both source and target are fire-related
         if fire_keywords.search(src_val) and fire_keywords.search(tgt_val):
             tautological += 1
@@ -471,7 +471,7 @@ def dual_risk_detection(spec, G, entities_df, relations_df, metadata_df,
 def procedural_dropped_injury(spec, G, entities_df, relations_df, metadata_df,
                               *, results=None):
     """Trace L2 causal edges: procedural violation → dropped object → injury."""
-    causal_rels = ["CAUSAL", "PRECEDED_BY", "FAILED_CONTROL"]
+    causal_rels = ["CAUSAL", "PRECEDED_BY", "FAILED_CONTROL", "MITIGATED_BY"]
     causal_edges = relations_df[relations_df["relation"].isin(causal_rels)]
 
     if len(causal_edges) == 0:
@@ -503,7 +503,7 @@ def procedural_dropped_injury(spec, G, entities_df, relations_df, metadata_df,
         bps = get_entities_for_incident(
             G, inc_id, entity_type="BODY_PART", relation_type="AFFECTED")
         for bp_id in bps:
-            val = safe_get_node_value(G, bp_id, "").lower()
+            val = str(safe_get_node_value(G, bp_id, "") or "").lower()
             if re.search(r"head|hand|finger|skull|wrist|thumb", val):
                 head_hand_drops.add(inc_id)
                 break
@@ -522,8 +522,8 @@ def procedural_dropped_injury(spec, G, entities_df, relations_df, metadata_df,
     proc_edges = []
     all_factors = Counter()
     for _, e in drop_causal.iterrows():
-        src_val = safe_get_node_value(G, e["source"], "")
-        tgt_val = safe_get_node_value(G, e["target"], "")
+        src_val = str(safe_get_node_value(G, e["source"], "") or "")
+        tgt_val = str(safe_get_node_value(G, e["target"], "") or "")
         if src_val:
             all_factors[src_val] += 1
         if proc_keywords.search(src_val) or proc_keywords.search(tgt_val):
@@ -587,9 +587,9 @@ def corrosion_effects(spec, G, entities_df, relations_df, metadata_df,
 
     corrosion_edges = []
     for _, e in causal_edges.iterrows():
-        src_val = safe_get_node_value(G, e["source"], "")
+        src_val = str(safe_get_node_value(G, e["source"], "") or "")
         if corrosion_pat.search(src_val):
-            tgt_val = safe_get_node_value(G, e["target"], "")
+            tgt_val = str(safe_get_node_value(G, e["target"], "") or "")
             corrosion_edges.append({
                 "source": src_val,
                 "target": tgt_val,
