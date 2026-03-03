@@ -8,27 +8,27 @@ SH-06,Incidents reported by Shell Offshore,Single-hop,entity_filter,ORGANIZATION
 AG-01,Root causes of dropped object incidents,Aggregation,narrative_filter,,,dropped,,aggregate,ROOT_CAUSE_CATEGORY:CATEGORIZED_AS,10,3:1,CLEAN,,,,1026
 AG-02,Countries with most high-severity incidents,Aggregation,meta_filter,,severity_bin >= 4,,,aggregate,LOCATION[country]:OCCURRED_AT,10,3:1,CLEAN,,,,167
 AG-03,Most common equipment by incident count,Aggregation,entity_filter,,,,,aggregate,EQUIPMENT:INVOLVED,20,1:0,ER_NEEDED,,,Pre-ER variants are separate,
-AG-04,Incident type x business unit crosstab,Aggregation,crosstab,,,,,crosstab,business_unit:incident_type,,99999:1,DATA_SPARSE,,,,
+AG-04,Incident type x business unit crosstab,Aggregation,crosstab,,,,,crosstab,business_unit:incident_type,,99999:1,DATA_SPARSE,,,Expected sparse: 70.7% null business_unit in source data,
 AG-05,Monthly trend of fall/slip incidents,Aggregation,entity_filter,ROOT_CAUSE_CATEGORY:fall|slip|trip:CATEGORIZED_AS,,,,count_by_year,,10,12:1,CLEAN,,,,1695
 AG-06,Severity distribution by impact type,Aggregation,crosstab,,,,,crosstab,impact_type:severity_bin,,1:0,CLEAN,,,,
-MH-01,Equipment in containment->injury at offshore,Multi-hop,custom,,,,,,,10,,CLEAN,containment_injury_offshore,,,
+MH-01,Equipment in containment->injury at offshore,Multi-hop,custom,,,,,,,10,1:1,CLEAN,containment_injury_offshore,,Rare query: containment + injury + offshore,
 MH-02,Injuries from equipment failures during maintenance,Multi-hop,intersect,,work_process contains maintenance,fail,,pairs,"EQUIPMENT:INVOLVED,INJURY_TYPE:RESULTED_IN",10,3:1,CLEAN,,,,29
 MH-03,Clients with vessel + back injury,Multi-hop,intersect,EQUIPMENT:^vessel$:INVOLVED;BODY_PART:back:AFFECTED,,,,aggregate,ORGANIZATION:REPORTED_BY,10,10:1,ER_NEEDED,,,,
 MH-04,Top injury types per top-5 equipment,Multi-hop,custom,,,,,,,10,,ER_NEEDED,top_injury_per_equipment,,,
 MH-05,Hand + pipe + Asia Pacific,Multi-hop,intersect,BODY_PART:hand:AFFECTED;EQUIPMENT:pipe:INVOLVED;LOCATION:asia pacific:OCCURRED_AT,,,,count_incidents,,10,5:1,auto,,,,
 MH-06,Severity: trucks vs cranes,Multi-hop,custom,,,,,,,10,,ER_NEEDED,severity_comparison,,,
 MH-07,Scaffold near-misses by location,Multi-hop,entity_filter,EQUIPMENT:scaffold:INVOLVED,incident_type contains near miss,,,aggregate,LOCATION[city]:OCCURRED_AT,10,3:1,ER_NEEDED,,,,309
-MH-08,Hydraulic valve -> injury outcome,Multi-hop,entity_filter,EQUIPMENT:hydraulic valve:INVOLVED,,,,aggregate,INJURY_TYPE:RESULTED_IN,10,2:0,ER_NEEDED,,,,
+MH-08,Hydraulic valve -> injury outcome,Multi-hop,entity_filter,EQUIPMENT:hydraulic valve:INVOLVED,,,,aggregate,INJURY_TYPE:RESULTED_IN,10,2:0,EXTRACTION_GAP,,,Hydraulic valve incidents found but injury_type extraction missing,
 GL-01,Safety risk clusters (Louvain),Global,custom,,,,,,,10,,CLEAN,louvain_communities,,,
 GL-02,Equipment recurring across regions,Global,custom,,,,,,,20,,ER_NEEDED,equipment_across_regions,,,
 GL-03,Temporal trend of incident types,Global,crosstab,,,,,crosstab,year:incident_type,,1:0,CLEAN,,,,
 GL-04,Hub centrality analysis,Global,custom,,,,,,,20,,CLEAN,hub_centrality,,,
 CJ-01,Corrosion -> equipment failure -> fire (L2),Conjunctive,custom,,,,,,,10,,L2_REQUIRED,causal_chain_check,,,
-CJ-02,Crane + back + offshore + high severity,Conjunctive,intersect,EQUIPMENT:crane:INVOLVED;BODY_PART:back:AFFECTED,work_process contains offshore;severity_bin >= 4,,,count_incidents,,10,1:0,auto,,,,
-CJ-03,Maintenance fail + pipe + environmental + Middle East,Conjunctive,intersect,EQUIPMENT:pipe:INVOLVED;LOCATION:middle east|saudi arabia|kuwait|bahrain|uae|united arab emirates|qatar|oman|iraq|iran:OCCURRED_AT,impact_type contains environment,"maintenance,fail",,count_incidents,,10,1:0,auto,,,,
+CJ-02,Crane + back + offshore + high severity,Conjunctive,intersect,EQUIPMENT:crane:INVOLVED;BODY_PART:back:AFFECTED,work_process contains offshore;severity_bin >= 4,,,count_incidents,,10,1:0,auto,,,Expected sparse: 4-way conjunction too specific for 20K records,
+CJ-03,Maintenance fail + pipe + environmental + Middle East,Conjunctive,intersect,EQUIPMENT:pipe:INVOLVED;LOCATION:middle east|saudi arabia|kuwait|bahrain|uae|united arab emirates|qatar|oman|iraq|iran:OCCURRED_AT,impact_type contains environment,"maintenance,fail",,count_incidents,,10,1:0,auto,,,Expected sparse: 4-way conjunction too specific for 20K records,
 CJ-04,Equipment: accident + near-miss same location/year,Conjunctive,custom,,,,,,,10,,CLEAN,dual_risk_detection,,,
-CJ-05,Procedural -> dropped -> head/hand injury (L2),Conjunctive,intersect,ROOT_CAUSE_CATEGORY:procedure|organizational|supervision:CATEGORIZED_AS;BODY_PART:head|hand:AFFECTED,,dropped,,count_incidents,,10,99999:1,L2_REQUIRED,,,,
-CJ-06,Falls/slips + vehicle + construction,Conjunctive,intersect,"ROOT_CAUSE_CATEGORY:fall|slip|trip:CATEGORIZED_AS;EQUIPMENT:truck|vehicle|van|car :INVOLVED",work_process contains construction,,,count_incidents,,10,1:0,auto,,,,147
+CJ-05,Procedural -> dropped -> head/hand injury (L2),Conjunctive,custom,,,,,count_incidents,,10,99999:1,L2_REQUIRED,procedural_dropped_injury,,,
+CJ-06,Falls/slips + vehicle + construction,Conjunctive,intersect,ROOT_CAUSE_CATEGORY:fall|slip|trip:CATEGORIZED_AS;EQUIPMENT:truck|vehicle|van|car :INVOLVED,work_process contains construction,,,count_incidents,,10,1:0,auto,,,,147
 SC-01,Spot-check: forklift mirror caught manifold (#623703),Single-hop,spot_check,,,,,aggregate,INCIDENT::623703:EQUIPMENT:INVOLVED,10,2:1,auto,,forklift|mirror|manifold,Equipment extraction check,
 SC-02,Spot-check: electrical substation feeder fire (#570187),Single-hop,spot_check,,,,,aggregate,INCIDENT::570187:EQUIPMENT:INVOLVED,10,2:1,auto,,connector link|feeder breaker|feeder box,Equipment extraction check,
 SC-03,Spot-check: forklift hit PGB in yard (#602346),Single-hop,spot_check,,,,,aggregate,INCIDENT::602346:EQUIPMENT:INVOLVED,10,1:1,auto,,forklift|pgb,Equipment extraction check,

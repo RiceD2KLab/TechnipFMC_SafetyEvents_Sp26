@@ -164,11 +164,13 @@ def incidents_for_meta_filter(metadata_df, field, op, value):
         val = int(value)
     elif op == "contains":
         col = metadata_df[field].astype(str).str.lower()
-        # Escape regex special characters to prevent injection
-        # Note: If pipe-separated OR is desired, caller should use regex=False
-        # or explicitly construct the regex pattern safely
-        escaped_value = re.escape(value.lower())
-        mask = col.str.contains(escaped_value, na=False, regex=True)
+        # Value comes from benchmark CSV — treated as a regex pattern
+        # (supports pipe-separated OR like "offshore|marine")
+        try:
+            mask = col.str.contains(value.lower(), na=False, regex=True)
+        except re.error:
+            mask = col.str.contains(
+                re.escape(value.lower()), na=False, regex=True)
         return {f"INCIDENT::{row['record_no']}"
                 for _, row in metadata_df[mask].iterrows()}
     else:

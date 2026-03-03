@@ -251,7 +251,9 @@ def top_injury_per_equipment(spec, G, entities_df, relations_df,
                 G, inc_id, entity_type="INJURY_TYPE",
                 relation_type="RESULTED_IN")
             for inj in injuries:
-                injury_counts[G.nodes[inj]["value"]] += 1
+                inj_val = safe_get_node_value(G, inj)
+                if inj_val:
+                    injury_counts[inj_val] += 1
 
         top_injuries = injury_counts.most_common(5)
         lines.append(f"\n  {equip_val} ({count} incidents):")
@@ -335,13 +337,21 @@ def causal_chain_check(spec, G, entities_df, relations_df, metadata_df,
         causal_edges["record_no"].astype(str).isin(fire_record_nos)]
 
     # Count causal factors (sources of CAUSAL edges for fire incidents)
+    # Filter out tautological edges where source AND target are both fire-related
+    fire_keywords = re.compile(
+        r"\b(?:fire|flame|burn|smoke|spark|ignit)", re.IGNORECASE)
     causal_sources = fire_causal[fire_causal["relation"] == "CAUSAL"]
     source_counts = Counter()
+    tautological = 0
     for _, e in causal_sources.iterrows():
-        src_node = e["source"]
-        val = safe_get_node_value(G, src_node)
-        if val:
-            source_counts[val] += 1
+        src_val = safe_get_node_value(G, e["source"], "")
+        tgt_val = safe_get_node_value(G, e["target"], "")
+        # Skip tautological: both source and target are fire-related
+        if fire_keywords.search(src_val) and fire_keywords.search(tgt_val):
+            tautological += 1
+            continue
+        if src_val:
+            source_counts[src_val] += 1
 
     # Also find corrosion-related causal chains
     corrosion_narr = incidents_matching_narrative(metadata_df, ["corrosion"])
@@ -358,8 +368,9 @@ def causal_chain_check(spec, G, entities_df, relations_df, metadata_df,
         f"Fire/explosion incidents: {len(fire_incidents):,}",
         f"  With causal edges: {fire_causal['record_no'].nunique():,}",
         f"  Total causal edges: {len(fire_causal):,}",
+        f"  Tautological (fire→fire) filtered: {tautological}",
         "",
-        "Top causal factors for fire/explosion:",
+        "Top root causes for fire/explosion (non-tautological):",
     ]
     for factor, count in source_counts.most_common(10):
         lines.append(f"  {factor}: {count}")
@@ -455,6 +466,105 @@ def dual_risk_detection(spec, G, entities_df, relations_df, metadata_df,
     }
 
 
+# ── CJ-05: Procedural → dropped → head/hand injury (L2 traversal) ────
+
+def procedural_dropped_injury(spec, G, entities_df, relations_df, metadata_df,
+                              *, results=None):
+    """Trace L2 causal edges: procedural violation → dropped object → injury."""
+    causal_rels = ["CAUSAL", "PRECEDED_BY", "FAILED_CONTROL"]
+    causal_edges = relations_df[relations_df["relation"].isin(causal_rels)]
+
+    if len(causal_edges) == 0:
+        return {
+            "coverage": "❌",
+            "diagnosis": "L2_REQUIRED",
+            "result_summary": "0 causal edges in graph — L2 merge needed",
+            "detail": "No L2 causal edges found. Run merge_l2_edges.py first.",
+        }
+
+    # Step 1: Find dropped-object incidents via L1 categorization
+    drop_rcc = find_entities_by_value(
+        entities_df, "ROOT_CAUSE_CATEGORY",
+        r"drop|fall.*object|loose.*material")
+    drop_incidents = set()
+    for rcc_id in drop_rcc:
+        drop_incidents.update(
+            get_incidents_for_entity(G, rcc_id, "CATEGORIZED_AS"))
+
+    # Also find via narrative keywords
+    narr_drops = incidents_matching_narrative(
+        metadata_df, ["dropped", "drop"], match_all=False)
+    narr_drop_ids = {f"INCIDENT::{rn}" for rn in narr_drops}
+    drop_incidents.update(narr_drop_ids & set(G.nodes()))
+
+    # Step 2: Among drop incidents, find those with head/hand body parts
+    head_hand_drops = set()
+    for inc_id in drop_incidents:
+        bps = get_entities_for_incident(
+            G, inc_id, entity_type="BODY_PART", relation_type="AFFECTED")
+        for bp_id in bps:
+            val = safe_get_node_value(G, bp_id, "").lower()
+            if re.search(r"head|hand|finger|skull|wrist|thumb", val):
+                head_hand_drops.add(inc_id)
+                break
+
+    # Step 3: For those incidents, trace L2 causal edges
+    drop_record_nos = {inc.split("::")[-1] for inc in head_hand_drops}
+    drop_causal = causal_edges[
+        causal_edges["record_no"].astype(str).isin(drop_record_nos)]
+
+    # Step 4: Find procedural causal factors in those edges
+    proc_keywords = re.compile(
+        r"proced|supervis|training|instruct|permit|protocol|compliance|"
+        r"briefing|communication|rule|violat|failure to follow|"
+        r"inadequate|not follow|organization", re.IGNORECASE)
+
+    proc_edges = []
+    all_factors = Counter()
+    for _, e in drop_causal.iterrows():
+        src_val = safe_get_node_value(G, e["source"], "")
+        tgt_val = safe_get_node_value(G, e["target"], "")
+        if src_val:
+            all_factors[src_val] += 1
+        if proc_keywords.search(src_val) or proc_keywords.search(tgt_val):
+            proc_edges.append((src_val, e["relation"], tgt_val,
+                               str(e.get("record_no", ""))))
+
+    lines = [
+        f"Dropped-object incidents: {len(drop_incidents):,}",
+        f"  With head/hand injury: {len(head_hand_drops):,}",
+        f"  With L2 causal edges: {drop_causal['record_no'].nunique():,}",
+        f"  Total causal edges: {len(drop_causal):,}",
+        "",
+        f"Procedural causal edges: {len(proc_edges):,}",
+    ]
+
+    # Show procedural edge samples
+    if proc_edges:
+        lines.append("  Samples:")
+        seen = set()
+        for src, rel, tgt, rn in proc_edges[:15]:
+            key = (src, rel, tgt)
+            if key not in seen:
+                lines.append(f"    [{rn}] {src} --{rel}--> {tgt}")
+                seen.add(key)
+
+    lines.extend(["", "Top causal factors for dropped → head/hand:"])
+    for factor, count in all_factors.most_common(10):
+        lines.append(f"  {factor}: {count}")
+
+    has_results = len(head_hand_drops) > 0 and len(drop_causal) > 0
+    return {
+        "coverage": "✅" if has_results else "❌",
+        "diagnosis": "CLEAN" if has_results else "L2_REQUIRED",
+        "result_summary": (
+            f"{len(head_hand_drops):,} incidents; "
+            f"{len(proc_edges)} procedural causal edges"
+            if has_results else "0 incidents"),
+        "detail": "\n".join(lines),
+    }
+
+
 # ── Registry ─────────────────────────────────────────────────────────────
 
 CUSTOM_REGISTRY = {
@@ -466,4 +576,5 @@ CUSTOM_REGISTRY = {
     "severity_comparison": severity_comparison,
     "causal_chain_check": causal_chain_check,
     "dual_risk_detection": dual_risk_detection,
+    "procedural_dropped_injury": procedural_dropped_injury,
 }
