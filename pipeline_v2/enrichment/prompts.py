@@ -19,11 +19,14 @@ SYSTEM_PROMPT = """You are a safety incident analyst extracting causal relations
 TASK: Given an incident narrative and a list of pre-identified entities, extract causal edges supported by the text. Use the entity list as a starting point, but also extract entities and events described in the narrative even if they are not in the list.
 
 RELATIONS (use exactly these strings):
-- CAUSED_BY: direct cause of an event or injury (look for: "due to", "caused by", "because of", "as a result of")
-- RESULTED_IN: direct outcome or consequence (look for: "resulted in", "causing", "leading to", "which led to")
-- CONTRIBUTED_TO: partial or enabling cause (look for: "contributed to", "was a factor", "played a role")
+- CAUSAL: one thing caused, led to, or contributed to another (source=cause, target=effect). Covers direct cause, consequence, and contributing factors. Look for: "due to", "caused by", "because of", "resulted in", "causing", "leading to", "contributed to", "was a factor"
 - PRECEDED_BY: temporal sequence with causal link (look for: "after", "following", "when")
 - FAILED_CONTROL: a safety barrier that failed (look for: "failed to", "did not prevent", "was not")
+
+DIRECTION RULE: For CAUSAL edges, source is always the CAUSE and target is always the EFFECT.
+- "fire due to corrosion" → source="corrosion", target="fire"
+- "leak caused damage" → source="leak", target="damage"
+- "rain contributed to slippery surface" → source="rain", target="slippery surface"
 
 ENTITY TYPES (source and target must be one of these):
 Incident, Event, Equipment, Location, Person, Injury, Material, Condition, Action
@@ -39,11 +42,11 @@ RULES:
 
 EXAMPLES:
 Narrative: "The pressure relief valve failed to open due to corrosion, causing a hydrocarbon release."
-→ Equipment("pressure relief valve") CAUSED_BY Condition("corrosion") — evidence: "failed to open due to corrosion"
-→ Event("hydrocarbon release") CAUSED_BY Equipment("pressure relief valve") — evidence: "causing a hydrocarbon release"
+→ Condition("corrosion") CAUSAL Equipment("pressure relief valve failure") — evidence: "failed to open due to corrosion"
+→ Equipment("pressure relief valve failure") CAUSAL Event("hydrocarbon release") — evidence: "causing a hydrocarbon release"
 
 Narrative: "Fire started in electrical panel due to short circuiting of wires. The smoke detector in the room was not functioning."
-→ Event("fire") CAUSED_BY Condition("short circuiting of wires") — evidence: "Fire started in electrical panel due to short circuiting of wires"
+→ Condition("short circuiting of wires") CAUSAL Event("fire") — evidence: "Fire started in electrical panel due to short circuiting of wires"
 → Event("fire") FAILED_CONTROL Equipment("smoke detector") — evidence: "smoke detector in the room was not functioning"
 
 Respond only with valid JSON. No explanation outside the JSON."""
@@ -111,8 +114,7 @@ EXTRACTION_SCHEMA = {
                     "relation": {
                         "type": "string",
                         "enum": [
-                            "CAUSED_BY", "RESULTED_IN", "CONTRIBUTED_TO",
-                            "PRECEDED_BY", "FAILED_CONTROL",
+                            "CAUSAL", "PRECEDED_BY", "FAILED_CONTROL",
                         ],
                     },
                     "target":      {"type": "string"},
@@ -145,7 +147,7 @@ EXTRACTION_SCHEMA = {
 # Minimal prompt — tests how much the schema alone does the work
 SYSTEM_PROMPT_MINIMAL = """Extract causal relationships from oil and gas safety incident reports.
 
-Relations: CAUSED_BY, RESULTED_IN, CONTRIBUTED_TO, PRECEDED_BY, FAILED_CONTROL
+Relations: CAUSAL (source=cause, target=effect), PRECEDED_BY, FAILED_CONTROL
 Entity types: Incident, Event, Equipment, Location, Person, Injury, Material, Condition, Action
 
 Only extract edges with direct textual evidence. Return JSON only."""
@@ -162,7 +164,7 @@ Think through the narrative step by step before extracting edges:
 4. Check each potential edge: can you quote the exact phrase that supports it?
 5. Discard any edge where you cannot quote supporting text
 
-Relations: CAUSED_BY, RESULTED_IN, CONTRIBUTED_TO, PRECEDED_BY, FAILED_CONTROL
+Relations: CAUSAL (source=cause, target=effect), PRECEDED_BY, FAILED_CONTROL
 Entity types: Incident, Event, Equipment, Location, Person, Injury, Material, Condition, Action
 
 After reasoning, respond with JSON only. No text after the JSON."""
@@ -196,19 +198,19 @@ EXAMPLE_ENTITIES = {
 
 EXPECTED_EDGES = [
     {
-        "source": "mechanical seal",
-        "source_type": "Equipment",
-        "relation": "CAUSED_BY",
-        "target": "incorrect reinstallation",
-        "target_type": "Condition",
+        "source": "incorrect reinstallation",
+        "source_type": "Condition",
+        "relation": "CAUSAL",
+        "target": "mechanical seal failure",
+        "target_type": "Equipment",
         "evidence": "failed due to incorrect reinstallation by the maintenance crew",
     },
     {
-        "source": "hydrocarbon leak",
-        "source_type": "Event",
-        "relation": "CAUSED_BY",
-        "target": "mechanical seal",
-        "target_type": "Equipment",
+        "source": "mechanical seal failure",
+        "source_type": "Equipment",
+        "relation": "CAUSAL",
+        "target": "hydrocarbon leak",
+        "target_type": "Event",
         "evidence": "caused a hydrocarbon leak at the pump discharge flange",
     },
     {

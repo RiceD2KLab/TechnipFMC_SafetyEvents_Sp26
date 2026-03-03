@@ -80,18 +80,9 @@ L2_ENTITY_TYPES = frozenset({
 })
 
 L2_RELATIONS = {
-    "CAUSED_BY": {
-        "description": "X was directly caused by Y (Y is root cause of X)",
-        "allowed_source_types": L2_ENTITY_TYPES,
-        "allowed_target_types": L2_ENTITY_TYPES,
-    },
-    "RESULTED_IN": {
-        "description": "X directly led to outcome Y",
-        "allowed_source_types": L2_ENTITY_TYPES,
-        "allowed_target_types": L2_ENTITY_TYPES,
-    },
-    "CONTRIBUTED_TO": {
-        "description": "X was a contributing factor to Y (not sole cause)",
+    "CAUSAL": {
+        "description": "X caused or contributed to Y (source=cause, target=effect). "
+                       "Subsumes the former CAUSED_BY, RESULTED_IN, and CONTRIBUTED_TO.",
         "allowed_source_types": L2_ENTITY_TYPES,
         "allowed_target_types": L2_ENTITY_TYPES,
     },

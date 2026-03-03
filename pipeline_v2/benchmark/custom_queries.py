@@ -303,46 +303,79 @@ def severity_comparison(spec, G, entities_df, relations_df, metadata_df,
     }
 
 
-# ── CJ-01: Causal chain check (L2 required) ─────────────────────────────
+# ── CJ-01: Causal chain check (L2 traversal) ─────────────────────────────
 
 def causal_chain_check(spec, G, entities_df, relations_df, metadata_df,
                        *, results=None):
-    causal_edges = relations_df[relations_df["relation"].isin(
-        ["CAUSED_BY", "CONTRIBUTED_TO", "LED_TO"])]
-    corrosion_narr = incidents_matching_narrative(
-        metadata_df, ["corrosion"])
+    causal_rels = ["CAUSAL", "PRECEDED_BY", "FAILED_CONTROL"]
+    causal_edges = relations_df[relations_df["relation"].isin(causal_rels)]
+
+    if len(causal_edges) == 0:
+        return {
+            "coverage": "\u274c",
+            "diagnosis": "L2_REQUIRED",
+            "result_summary": "0 causal edges in graph — L2 merge needed",
+            "detail": "No L2 causal edges found. Run merge_l2_edges.py first.",
+        }
+
+    # Query: "What caused fire/explosion incidents?" — trace CAUSAL edges backward
     fire_rcc = find_entities_by_value(
         entities_df, "ROOT_CAUSE_CATEGORY",
         r"fire|explosion|flammable")
-    fire_rcc_vals = [safe_get_node_value(G, e)
-                     for e in fire_rcc if e in G]
     fire_incidents = set()
     for rcc_id in fire_rcc:
         fire_incidents.update(
             get_incidents_for_entity(G, rcc_id, "CATEGORIZED_AS"))
 
-    approx_result = ({f"INCIDENT::{r}" for r in corrosion_narr}
-                     & fire_incidents)
+    # For fire incidents, find causal chains by traversing L2 edges
+    # L2 edges connect free-text entities (not INCIDENT nodes directly),
+    # so we find causal edges whose record_no matches fire incidents
+    fire_record_nos = {inc.split("::")[-1] for inc in fire_incidents}
+    fire_causal = causal_edges[
+        causal_edges["record_no"].astype(str).isin(fire_record_nos)]
+
+    # Count causal factors (sources of CAUSAL edges for fire incidents)
+    causal_sources = fire_causal[fire_causal["relation"] == "CAUSAL"]
+    source_counts = Counter()
+    for _, e in causal_sources.iterrows():
+        src_node = e["source"]
+        val = safe_get_node_value(G, src_node)
+        if val:
+            source_counts[val] += 1
+
+    # Also find corrosion-related causal chains
+    corrosion_narr = incidents_matching_narrative(metadata_df, ["corrosion"])
+    corrosion_fire = fire_record_nos & set(str(r) for r in corrosion_narr)
+    corrosion_causal = causal_edges[
+        causal_edges["record_no"].astype(str).isin(corrosion_fire)]
 
     lines = [
-        f"Causal edges in graph: {len(causal_edges)} (EXPECTED: 0)",
-        "\u26a0\ufe0f True causal chain query CANNOT be answered at L1",
+        f"L2 causal edges in graph: {len(causal_edges):,}",
+        f"  CAUSAL: {len(causal_edges[causal_edges['relation'] == 'CAUSAL']):,}",
+        f"  PRECEDED_BY: {len(causal_edges[causal_edges['relation'] == 'PRECEDED_BY']):,}",
+        f"  FAILED_CONTROL: {len(causal_edges[causal_edges['relation'] == 'FAILED_CONTROL']):,}",
         "",
-        "Approximate fallback "
-        "(narrative 'corrosion' intersection fire/explosion RCC):",
-        f"  Corrosion narratives: {len(corrosion_narr)}",
-        f"  Fire/explosion RCC values: {fire_rcc_vals}",
-        f"  Fire/explosion incidents: {len(fire_incidents)}",
-        f"  Intersection: {len(approx_result)}",
+        f"Fire/explosion incidents: {len(fire_incidents):,}",
+        f"  With causal edges: {fire_causal['record_no'].nunique():,}",
+        f"  Total causal edges: {len(fire_causal):,}",
+        "",
+        "Top causal factors for fire/explosion:",
     ]
-    if approx_result:
-        lines.append(f"  Sample: {sorted(approx_result)[:5]}")
+    for factor, count in source_counts.most_common(10):
+        lines.append(f"  {factor}: {count}")
+
+    lines.extend([
+        "",
+        f"Corrosion + fire/explosion intersection: {len(corrosion_fire)} records",
+        f"  Causal edges in these: {len(corrosion_causal)}",
+    ])
 
     return {
-        "coverage": "\u274c",
-        "diagnosis": "L2_REQUIRED",
+        "coverage": "\u2705",
+        "diagnosis": "CLEAN",
         "result_summary":
-            f"0 causal edges; approximate: {len(approx_result)} incidents",
+            f"{len(causal_edges):,} causal edges; "
+            f"{len(fire_causal):,} for fire/explosion",
         "detail": "\n".join(lines),
     }
 

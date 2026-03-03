@@ -1,5 +1,6 @@
 """Helper functions for benchmark queries."""
 
+import re
 import pandas as pd
 import networkx as nx
 from collections import Counter
@@ -31,7 +32,10 @@ def load_data():
     for _, edge in relations_df.iterrows():
         source, target = edge["source"], edge["target"]
         if source in G and target in G:
-            G.add_edge(source, target, relation=edge["relation"])
+            attrs = {"relation": edge["relation"]}
+            if "layer" in edge.index and pd.notna(edge.get("layer")):
+                attrs["layer"] = edge["layer"]
+            G.add_edge(source, target, **attrs)
 
     print(f"  Graph: {G.number_of_nodes():,} nodes, {G.number_of_edges():,} edges")
     return G, entities_df, relations_df, metadata_df
@@ -111,8 +115,10 @@ def incidents_matching_narrative(metadata_df, keywords, match_all=True):
     # Start with True for AND (all must match), False for OR (any may match)
     mask = pd.Series(match_all, index=metadata_df.index)
     for kw in keywords:
+        # Escape regex special characters to prevent injection
+        escaped_kw = re.escape(kw.lower())
         kw_mask = metadata_df["narrative"].str.lower().str.contains(
-            kw.lower(), na=False)
+            escaped_kw, na=False, regex=True)
         mask = mask & kw_mask if match_all else mask | kw_mask
     return set(metadata_df[mask]["record_no"].astype(str).tolist())
 
@@ -158,8 +164,11 @@ def incidents_for_meta_filter(metadata_df, field, op, value):
         val = int(value)
     elif op == "contains":
         col = metadata_df[field].astype(str).str.lower()
-        # Use regex directly (pipe-separated values work as OR)
-        mask = col.str.contains(value.lower(), na=False, regex=True)
+        # Escape regex special characters to prevent injection
+        # Note: If pipe-separated OR is desired, caller should use regex=False
+        # or explicitly construct the regex pattern safely
+        escaped_value = re.escape(value.lower())
+        mask = col.str.contains(escaped_value, na=False, regex=True)
         return {f"INCIDENT::{row['record_no']}"
                 for _, row in metadata_df[mask].iterrows()}
     else:
