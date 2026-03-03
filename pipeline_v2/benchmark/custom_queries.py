@@ -565,6 +565,97 @@ def procedural_dropped_injury(spec, G, entities_df, relations_df, metadata_df,
     }
 
 
+# ── CJ-07: Corrosion effects analysis (L2 traversal) ────────────────────
+
+def corrosion_effects(spec, G, entities_df, relations_df, metadata_df,
+                      *, results=None):
+    """Find what corrosion causes by tracing L2 CAUSAL edges."""
+    causal_edges = relations_df[relations_df["relation"] == "CAUSAL"]
+
+    if len(causal_edges) == 0:
+        return {
+            "coverage": "❌",
+            "diagnosis": "L2_REQUIRED",
+            "result_summary": "0 causal edges in graph — L2 merge needed",
+            "detail": "No L2 causal edges found. Run merge_l2_edges.py first.",
+        }
+
+    # Find CAUSAL edges where source mentions corrosion/rust/degradation
+    corrosion_pat = re.compile(
+        r"corros|rust|degradat|oxidat|erosion|pitting|deteriorat",
+        re.IGNORECASE)
+
+    corrosion_edges = []
+    for _, e in causal_edges.iterrows():
+        src_val = safe_get_node_value(G, e["source"], "")
+        if corrosion_pat.search(src_val):
+            tgt_val = safe_get_node_value(G, e["target"], "")
+            corrosion_edges.append({
+                "source": src_val,
+                "target": tgt_val,
+                "record_no": str(e.get("record_no", "")),
+            })
+
+    # Categorize targets
+    categories = {
+        "equipment failure": re.compile(
+            r"fail|malfunction|break|crack|ruptur|burst|collapse", re.IGNORECASE),
+        "leak/release": re.compile(
+            r"leak|spill|releas|discharg|seep", re.IGNORECASE),
+        "structural damage": re.compile(
+            r"structur|damag|weaken|thin|hole|perfora", re.IGNORECASE),
+        "loss of containment": re.compile(
+            r"containment|breach|integrit", re.IGNORECASE),
+        "safety system impact": re.compile(
+            r"safe|alarm|detect|protect|barrier|shut.?down", re.IGNORECASE),
+    }
+
+    cat_counts = Counter()
+    cat_examples = defaultdict(list)
+    uncategorized = Counter()
+
+    for edge in corrosion_edges:
+        tgt = edge["target"]
+        matched = False
+        for cat_name, cat_pat in categories.items():
+            if cat_pat.search(tgt):
+                cat_counts[cat_name] += 1
+                if len(cat_examples[cat_name]) < 3:
+                    cat_examples[cat_name].append(tgt)
+                matched = True
+                break
+        if not matched:
+            uncategorized[tgt] += 1
+
+    unique_records = {e["record_no"] for e in corrosion_edges}
+
+    lines = [
+        f"Corrosion-source CAUSAL edges: {len(corrosion_edges)}",
+        f"Unique incidents with corrosion causes: {len(unique_records)}",
+        "",
+        "Effects by category:",
+    ]
+    for cat, cnt in cat_counts.most_common():
+        examples = cat_examples[cat]
+        lines.append(f"  {cat}: {cnt} edges (e.g. {examples})")
+
+    if uncategorized:
+        lines.append(f"\n  Other effects: {sum(uncategorized.values())} edges")
+        for tgt, cnt in uncategorized.most_common(5):
+            lines.append(f"    {tgt}: {cnt}")
+
+    has_results = len(corrosion_edges) > 0
+    return {
+        "coverage": "✅" if has_results else "⚠️",
+        "diagnosis": "CLEAN" if has_results else "DATA_SPARSE",
+        "result_summary": (
+            f"{len(corrosion_edges)} corrosion causal edges across "
+            f"{len(unique_records)} incidents"
+            if has_results else "No corrosion causal edges found"),
+        "detail": "\n".join(lines),
+    }
+
+
 # ── Registry ─────────────────────────────────────────────────────────────
 
 CUSTOM_REGISTRY = {
@@ -577,4 +668,5 @@ CUSTOM_REGISTRY = {
     "causal_chain_check": causal_chain_check,
     "dual_risk_detection": dual_risk_detection,
     "procedural_dropped_injury": procedural_dropped_injury,
+    "corrosion_effects": corrosion_effects,
 }

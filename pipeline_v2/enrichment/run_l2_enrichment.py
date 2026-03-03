@@ -265,7 +265,7 @@ def run_l2_enrichment(
     for rno in tqdm(qualifying, desc="L2 enrichment", unit="record"):
         narrative = narratives[rno]
         entities = _build_entity_dict(nodes_indexed, rno, edges_df)
-        user_prompt = build_user_prompt(narrative, entities)
+        user_prompt = build_user_prompt(narrative, entities, variant=prompt_variant)
 
         stats["total"] += 1
         stats["llm_calls"] += 1
@@ -379,7 +379,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--host", default=None,
                         help="Server URL (default: localhost:11434 for ollama, localhost:8000 for vllm)")
     parser.add_argument("--temperature", type=float, default=0.3)
-    parser.add_argument("--prompt-variant", choices=["full", "minimal", "cot"], default="full")
+    parser.add_argument("--prompt-variant", choices=list(PROMPT_VARIANTS.keys()), default="full")
     parser.add_argument("--shard-index", type=int, default=0)
     parser.add_argument("--num-shards", type=int, default=1)
     parser.add_argument("--timeout-sec", type=int, default=120)
@@ -389,6 +389,10 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--backend", choices=["ollama", "vllm"], default="ollama",
                         help="LLM serving backend (ollama or vllm)")
     parser.add_argument("--mock", action="store_true", help="Use mock backend (dry-run)")
+    parser.add_argument(
+        "--subset-csv", default="",
+        help="Path to CSV with record_no column. Only process records in this file.",
+    )
     parser.add_argument(
         "--ground-truth", default="",
         help="Path to ground truth edges CSV/JSONL. If provided, runs Gate 3 evaluation after enrichment.",
@@ -423,6 +427,15 @@ def main() -> None:
     for df in (nodes_df, edges_df, metadata_df):
         if "record_no" in df.columns:
             df["record_no"] = df["record_no"].astype(str)
+
+    # Subset filtering
+    if args.subset_csv:
+        subset_df = _read_df(args.subset_csv)
+        subset_ids = set(subset_df["record_no"].astype(str))
+        before = len(metadata_df)
+        metadata_df = metadata_df[metadata_df["record_no"].isin(subset_ids)]
+        logger.info("Subset filter: %d → %d records (from %s)",
+                     before, len(metadata_df), args.subset_csv)
 
     result_df = run_l2_enrichment(
         nodes_df=nodes_df,
