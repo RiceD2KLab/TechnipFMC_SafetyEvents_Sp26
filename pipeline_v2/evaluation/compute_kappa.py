@@ -1,20 +1,10 @@
-"""Compute Cohen's kappa for inter-annotator agreement on causal annotations.
+"""Compute Cohen's kappa for inter-annotator agreement on L2 causal annotations.
 
-Supports two formats:
-    --format csv   (default) Legacy CSV annotation format (3 relation types)
-    --format jsonl  L2 JSONL edge format (5 relation types)
-
-Usage (CSV mode):
+Usage:
     python pipeline_v2/evaluation/compute_kappa.py \
-        pipeline_v2/annotation/annotation_llm.csv \
-        pipeline_v2/annotation/annotation_codex.csv \
+        pipeline_v2/annotation/l2_gt_v2_claude.jsonl \
+        pipeline_v2/annotation/l2_gt_v2_codex.jsonl \
         [--overlap-only]
-
-Usage (JSONL mode):
-    python pipeline_v2/evaluation/compute_kappa.py \
-        pipeline_v2/annotation/l2_gt_v2_sonnet.jsonl \
-        pipeline_v2/annotation/l2_gt_v2_gemini.jsonl \
-        --format jsonl [--overlap-only]
 
 For each record, each relation type is binarised: 1 if the annotator
 produced at least one edge of that type, 0 otherwise.  Cohen's kappa
@@ -30,22 +20,6 @@ from pathlib import Path
 from typing import Dict, List, Set
 
 import pandas as pd
-
-
-def _has_edge(row: pd.Series, prefix: str) -> int:
-    """Return 1 if the annotator recorded at least one edge of this type."""
-    # Column naming: caused_by_1_cause, caused_by_2_cause,
-    #                contributed_to_1_factor, contributed_to_2_factor,
-    #                led_to_1_event, led_to_2_event, led_to_3_event
-    if prefix == "caused_by":
-        cols = [c for c in row.index if c.startswith("caused_by_") and c.endswith("_cause")]
-    elif prefix == "contributed_to":
-        cols = [c for c in row.index if c.startswith("contributed_to_") and c.endswith("_factor")]
-    elif prefix == "led_to":
-        cols = [c for c in row.index if c.startswith("led_to_") and c.endswith("_event")]
-    else:
-        return 0
-    return int(any(pd.notna(row[c]) and str(row[c]).strip() != "" for c in cols))
 
 
 def cohens_kappa(y1, y2):
@@ -81,8 +55,8 @@ def _load_jsonl(path: Path) -> List[dict]:
     return records
 
 
-# L2 relation types (5 types, matching schema_v2.py)
-_L2_RELATIONS = ["CAUSAL", "PRECEDED_BY", "FAILED_CONTROL"]
+# L2 relation types (matching schema_v2.py)
+_L2_RELATIONS = ["CAUSAL", "PRECEDED_BY", "FAILED_CONTROL", "MITIGATED_BY"]
 
 
 def _binarize_jsonl(
@@ -106,54 +80,35 @@ def _binarize_jsonl(
     return result
 
 
-def _run_csv_mode(args: argparse.Namespace) -> None:
-    """Original CSV-based kappa computation."""
-    a = pd.read_csv(args.file_a)
-    b = pd.read_csv(args.file_b)
+def _print_verdict(macro: float, agreement_rates: dict[str, float] | None = None) -> None:
+    print(f"\n**Macro-average kappa: {macro:.4f}**")
 
-    if args.overlap_only:
-        a = a.iloc[80:120]
-        b = b.iloc[80:120]
-        label = "Overlap set (rows 81–120, n=40)"
+    # For high-prevalence relations (>90% both annotators), kappa is unreliable.
+    # Use raw agreement rate instead.
+    if agreement_rates:
+        causal_rate = agreement_rates.get("CAUSAL")
+        if causal_rate is not None and causal_rate >= 0.95:
+            print(f"\nNote: CAUSAL has near-universal prevalence — kappa is unreliable.")
+            print(f"CAUSAL raw agreement: {causal_rate:.1%}")
+            print(f"\nGate 3 prerequisite: PASS (CAUSAL agreement >= 95%)")
+            return
+
+    if macro >= 0.70:
+        print("\nGate 3 prerequisite: PASS (kappa >= 0.70)")
+    elif macro >= 0.50:
+        print("\nGate 3 prerequisite: MODERATE (0.50–0.69) — adjudicate disagreements before proceeding")
     else:
-        label = f"All records (n={len(a)})"
-
-    assert len(a) == len(b), f"Row count mismatch: {len(a)} vs {len(b)}"
-    assert (a["record_no"].values == b["record_no"].values).all(), "record_no mismatch"
-
-    relation_types = ["caused_by", "contributed_to", "led_to"]
-    results = {}
-
-    print(f"## Cohen's Kappa — {label}")
-    print(f"\nAnnotator A: {a['annotator_id'].iloc[0]}")
-    print(f"Annotator B: {b['annotator_id'].iloc[0]}")
-    print()
-
-    print("| Relation | Kappa | A present | B present | Both present | Both absent | Disagree |")
-    print("|----------|------:|----------:|----------:|-------------:|------------:|---------:|")
-
-    for rel in relation_types:
-        y_a = [_has_edge(a.iloc[i], rel) for i in range(len(a))]
-        y_b = [_has_edge(b.iloc[i], rel) for i in range(len(b))]
-
-        k = cohens_kappa(y_a, y_b)
-        results[rel] = k
-
-        both_yes = sum(1 for x, y in zip(y_a, y_b) if x == 1 and y == 1)
-        both_no = sum(1 for x, y in zip(y_a, y_b) if x == 0 and y == 0)
-        disagree = len(y_a) - both_yes - both_no
-        a_present = sum(y_a)
-        b_present = sum(y_b)
-
-        display_name = rel.upper()
-        print(f"| {display_name} | {k:.4f} | {a_present} | {b_present} | {both_yes} | {both_no} | {disagree} |")
-
-    macro = sum(results.values()) / len(results)
-    _print_verdict(macro)
+        print("\nGate 3 prerequisite: FAIL (kappa < 0.50) — revise guidelines, re-annotate overlap set")
 
 
-def _run_jsonl_mode(args: argparse.Namespace) -> None:
-    """JSONL-based kappa computation for L2 edges."""
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Compute Cohen's kappa on L2 causal annotations")
+    parser.add_argument("file_a", type=Path, help="Annotator A JSONL file")
+    parser.add_argument("file_b", type=Path, help="Annotator B JSONL file")
+    parser.add_argument("--overlap-only", action="store_true",
+                        help="Restrict to protocol overlap set (rows 81-120)")
+    args = parser.parse_args()
+
     edges_a = _load_jsonl(args.file_a)
     edges_b = _load_jsonl(args.file_b)
 
@@ -228,43 +183,6 @@ def _run_jsonl_mode(args: argparse.Namespace) -> None:
 
     macro = sum(results.values()) / len(results)
     _print_verdict(macro, agreement_rates=agreement_rates)
-
-
-def _print_verdict(macro: float, agreement_rates: dict[str, float] | None = None) -> None:
-    print(f"\n**Macro-average kappa: {macro:.4f}**")
-
-    # For high-prevalence relations (>90% both annotators), kappa is unreliable.
-    # Use raw agreement rate instead.
-    if agreement_rates:
-        causal_rate = agreement_rates.get("CAUSAL")
-        if causal_rate is not None and causal_rate >= 0.95:
-            print(f"\nNote: CAUSAL has near-universal prevalence — kappa is unreliable.")
-            print(f"CAUSAL raw agreement: {causal_rate:.1%}")
-            print(f"\nGate 3 prerequisite: PASS (CAUSAL agreement >= 95%)")
-            return
-
-    if macro >= 0.70:
-        print("\nGate 3 prerequisite: PASS (kappa >= 0.70)")
-    elif macro >= 0.50:
-        print("\nGate 3 prerequisite: MODERATE (0.50–0.69) — adjudicate disagreements before proceeding")
-    else:
-        print("\nGate 3 prerequisite: FAIL (kappa < 0.50) — revise guidelines, re-annotate overlap set")
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Compute Cohen's kappa on causal annotations")
-    parser.add_argument("file_a", type=Path, help="Annotator A file (CSV or JSONL)")
-    parser.add_argument("file_b", type=Path, help="Annotator B file (CSV or JSONL)")
-    parser.add_argument("--format", choices=["csv", "jsonl"], default="csv",
-                        help="Input format: csv (legacy) or jsonl (L2 edges)")
-    parser.add_argument("--overlap-only", action="store_true",
-                        help="Restrict to protocol overlap set (rows 81-120)")
-    args = parser.parse_args()
-
-    if args.format == "jsonl":
-        _run_jsonl_mode(args)
-    else:
-        _run_csv_mode(args)
 
 
 if __name__ == "__main__":
