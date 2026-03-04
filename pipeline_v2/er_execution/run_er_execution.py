@@ -292,9 +292,17 @@ for idx, row in ent[loc_mask].iterrows():
         if len(existing) > 0:
             loc_remap[old_id] = existing.iloc[0]["entity_id"]
         else:
-            # Reconstruct ID properly: old_id is uppercased (e.g. LOCATION::SITE:ZOBSOLETE - HOUSTON)
-            # so string replace with mixed-case val won't match. Use upper() on clean_val instead.
-            new_id = old_id.replace(val.strip().upper(), clean_val.strip().upper())
+            # Reconstruct ID properly: old_id format is LOCATION::{granularity}:{value}
+            # Extract granularity prefix and reconstruct with clean_val
+            # Example: LOCATION::SITE:ZOBSOLETE - HOUSTON -> LOCATION::SITE:HOUSTON
+            old_id_parts = old_id.split("::", 1)
+            if len(old_id_parts) == 2 and ":" in old_id_parts[1]:
+                # Extract granularity prefix (e.g., "SITE:")
+                granularity_part = old_id_parts[1].split(":", 1)[0] + ":"
+                new_id = f"LOCATION::{granularity_part}{clean_val.strip().upper()}"
+            else:
+                # Fallback: reconstruct from entity_type and clean_val only
+                new_id = f"LOCATION::{clean_val.strip().upper()}"
             ent.loc[idx, "value"] = clean_val
             ent.loc[idx, "entity_id"] = new_id
             loc_remap[old_id] = new_id
@@ -345,7 +353,8 @@ high_sim = merge_cands[merge_cands["similarity_score"] >= 0.90].copy()
 # Also include exact_normalized and legal_suffix_strip regardless of score
 rule_based = merge_cands[merge_cands["merge_rule"].isin(
     ["exact_normalized", "legal_suffix_strip", "laterality_strip",
-     "severity_strip", "obsolete_prefix", "substring_match"]
+     "severity_strip", "obsolete_prefix", "substring_match",
+     "manual_approved"]
 )]
 to_merge = pd.concat([high_sim, rule_based]).drop_duplicates(
     subset=["entity_a_id", "entity_b_id"]

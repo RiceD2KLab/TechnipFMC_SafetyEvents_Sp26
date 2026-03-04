@@ -10139,3 +10139,13 @@ ROOT_CAUSE_CATEGORY,ROOT_CAUSE_CATEGORY::BASIC ORGANIZATIONAL,Basic Organization
 ROOT_CAUSE_CATEGORY,ROOT_CAUSE_CATEGORY::ELECTRICAL,Electrical,60,ROOT_CAUSE_CATEGORY::ELECTRICAL - ELECTRICAL CURRENT / ELECTROCUTION / ESD / ELECTROMAGNETIC FIELDS,Electrical - Electrical current / electrocution / ESD / electromagnetic Fields,209,0.2273,substring_match
 ROOT_CAUSE_CATEGORY,"ROOT_CAUSE_CATEGORY::COMPLAINTS FROM NEIGHBORS (NOISE, SMELL, LIGHT, DUST, ETC.)","Complaints from neighbors (noise, smell, light, dust, etc.)",2,ROOT_CAUSE_CATEGORY::NOISE,Noise,1,0.1562,substring_match
 ROOT_CAUSE_CATEGORY,ROOT_CAUSE_CATEGORY::NOISE,Noise,1,"ROOT_CAUSE_CATEGORY::ENVIRONMENT- COMPLAINTS FROM NEIGHBOURS (NOISE, SMELL, LIGHT, DUST...)","Environment- Complaints from neighbours (noise, smell, light, dust...)",20,0.1333,substring_match
+EQUIPMENT,,overhead crane,,,crane,,1.0,manual_approved
+BODY_PART,,left hand,,,hand,,1.0,manual_approved
+BODY_PART,,right hand,,,hand,,1.0,manual_approved
+BODY_PART,,left foot,,,foot,,1.0,manual_approved
+BODY_PART,,right foot,,,foot,,1.0,manual_approved
+BODY_PART,,middle finger,,,finger,,1.0,manual_approved
+INJURY_TYPE,,minor cut,,,cut,,1.0,manual_approved
+INJURY_TYPE,,small cut,,,cut,,1.0,manual_approved
+INJURY_TYPE,,minor laceration,,,laceration,,1.0,manual_approved
+INJURY_TYPE,,personal injury,,,injury,,1.0,manual_approved

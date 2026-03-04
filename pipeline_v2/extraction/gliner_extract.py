@@ -18,6 +18,7 @@ through unchunked.
 """
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -120,6 +121,36 @@ def _chunk_narrative(
     return chunks
 
 
+DOMAIN_ACRONYMS = {
+    "EQUIPMENT": [
+        (r"\bTMS\b", "TMS"),
+        (r"\bBOP\b", "BOP"),
+        (r"\bHPU\b", "HPU"),
+        (r"\bESD\b", "ESD"),
+        (r"\bROV\b", "ROV"),
+        (r"\bPRV\b", "PRV"),
+    ],
+}
+
+
+def _supplement_acronyms(entities: list[dict], narrative: str) -> list[dict]:
+    """Add known domain acronyms not already found by GLiNER."""
+    existing = {(e["span"].strip().upper(), e["type"]) for e in entities}
+    for entity_type, patterns in DOMAIN_ACRONYMS.items():
+        for pattern, canonical in patterns:
+            if (canonical, entity_type) not in existing and re.search(pattern, narrative):
+                match = re.search(pattern, narrative)
+                entities.append({
+                    "span": canonical,
+                    "type": entity_type,
+                    "score": 1.0,
+                    "start": match.start(),
+                    "end": match.end(),
+                    "source": "acronym_supplement",
+                })
+    return entities
+
+
 def load_model(model_name: str = "urchade/gliner_medium-v2.1"):
     """Load GLiNER model. Import is deferred so metadata-only runs skip it."""
     from gliner import GLiNER
@@ -165,7 +196,12 @@ def extract_entities(
         if key not in best or ent["score"] > best[key]["score"]:
             best[key] = ent
 
-    return list(best.values())
+    deduped = list(best.values())
+
+    # Supplement known domain acronyms missed by GLiNER
+    deduped = _supplement_acronyms(deduped, narrative_text)
+
+    return deduped
 
 
 def run_gliner_extraction(

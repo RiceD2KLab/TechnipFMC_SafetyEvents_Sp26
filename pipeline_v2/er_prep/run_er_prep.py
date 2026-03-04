@@ -96,6 +96,16 @@ for _, row in candidates.iterrows():
         flag(row, "short_non_abbreviation")
         continue
 
+    # 5. Generic/circular entity terms (exact match, type-aware)
+    STOP_ENTITIES = {
+        "EQUIPMENT": {"equipment", "machine", "tool", "device"},
+        "INJURY_TYPE": {"injury", "injuries"},
+    }
+    stop_set = STOP_ENTITIES.get(row["entity_type"], set())
+    if val.lower() in stop_set:
+        flag(row, "stop_entity")
+        continue
+
 garbage_df = pd.DataFrame(garbage_rows)
 
 # Compute edges_affected for each garbage entity

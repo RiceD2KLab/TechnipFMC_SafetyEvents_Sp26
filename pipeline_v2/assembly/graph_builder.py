@@ -16,7 +16,11 @@ def _is_valid_value(val: object) -> bool:
     if val is None:
         return False
     s = str(val).strip()
-    return s != "" and s.lower() not in ("nan", "none", "null", "unknown")
+    if s == "" or s.lower() in ("nan", "none", "null", "unknown"):
+        return False
+    if "please update" in s.lower():
+        return False
+    return True
 
 
 def make_entity_id(entity_type: str, entity_value: str) -> str:

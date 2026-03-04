@@ -194,7 +194,7 @@
 ### High-Degree Summary
 
 - **GARBAGE nodes in top-15 across all types:** 0
-- **TOO GENERIC nodes:** 2
+- **TOO GENERIC nodes:** 2 → addressed by stop-entity filter (item 3, `run_er_prep.py`)
 - **POSSIBLE MERGE pairs:** 23
   - `overhead crane` ↔ `crane` (EQUIPMENT)
   - `hand` ↔ `left hand` (BODY_PART)
@@ -206,6 +206,28 @@
   - `minor cut` ↔ `cut` (INJURY_TYPE)
   - `minor laceration` ↔ `laceration` (INJURY_TYPE)
   - `small cut` ↔ `cut` (INJURY_TYPE)
+
+#### Manual Merge Approval (2026-03-03)
+
+The 10 pairs listed above were manually approved and appended to
+`pipeline_v2/er_prep/merge_candidates.csv` with `merge_rule=manual_approved`
+and `similarity_score=1.0`. Rationale per pair:
+
+| entity_type | entity_a | entity_b | rationale |
+|---|---|---|---|
+| EQUIPMENT | overhead crane | crane | subtype → parent |
+| BODY_PART | left hand | hand | laterality strip |
+| BODY_PART | right hand | hand | laterality strip |
+| BODY_PART | left foot | foot | laterality strip |
+| BODY_PART | right foot | foot | laterality strip |
+| BODY_PART | middle finger | finger | laterality strip |
+| INJURY_TYPE | minor cut | cut | severity strip |
+| INJURY_TYPE | small cut | cut | severity strip |
+| INJURY_TYPE | minor laceration | laceration | severity strip |
+| INJURY_TYPE | personal injury | injury | synonym (both generic) |
+
+`run_er_execution.py` Phase 2 includes `"manual_approved"` in its rule-based
+merge list, so these pairs will be picked up on the next ER execution run.
 
 ---
 
