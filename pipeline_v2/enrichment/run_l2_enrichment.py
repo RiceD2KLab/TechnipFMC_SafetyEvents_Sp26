@@ -293,7 +293,10 @@ def run_l2_enrichment(
             continue
 
         call_seconds = time.time() - t0
-        raw_edges = result.get("causal_edges", result.get("edges", []))
+        if isinstance(result, list):
+            raw_edges = result
+        else:
+            raw_edges = result.get("causal_edges", result.get("edges", []))
 
         # Validate
         valid_edges = validate_causal_edges(raw_edges, entities, narrative)
