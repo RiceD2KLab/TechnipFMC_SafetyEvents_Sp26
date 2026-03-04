@@ -36,8 +36,8 @@ export PATH="${SCRATCH_BASE}/bin:${PATH}"
 export LD_LIBRARY_PATH="${SCRATCH_BASE}/ollama_install/lib/ollama:${LD_LIBRARY_PATH:-}"
 
 # ── Data paths (same as production run) ──────────────────────────────────
-NODES_CSV="${NODES_CSV:-pipeline_v2/outputs/entities_pre_er.parquet}"
-EDGES_CSV="${EDGES_CSV:-pipeline_v2/outputs/relations_pre_er.parquet}"
+NODES_CSV="${NODES_CSV:-pipeline_v2/outputs/entities.parquet}"
+EDGES_CSV="${EDGES_CSV:-pipeline_v2/outputs/relations.parquet}"
 METADATA_CSV="${METADATA_CSV:-pipeline_v2/outputs/metadata_parsed.parquet}"
 SUBSET_CSV="${SUBSET_CSV:-comparison_subset_500.csv}"
 PYTHON_BIN="${PYTHON_BIN:-${SCRATCH_BASE}/.venv_cluster/bin/python}"
