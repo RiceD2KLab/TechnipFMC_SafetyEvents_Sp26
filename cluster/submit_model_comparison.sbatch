@@ -33,6 +33,7 @@ module load GCC/13.2.0
 module load CUDA/12.6.0
 
 export PATH="${SCRATCH_BASE}/bin:${PATH}"
+export LD_LIBRARY_PATH="${SCRATCH_BASE}/ollama_install/lib/ollama:${LD_LIBRARY_PATH:-}"
 
 # ── Data paths (same as production run) ──────────────────────────────────
 NODES_CSV="${NODES_CSV:-pipeline_v2/outputs/entities_pre_er.parquet}"
