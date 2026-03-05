@@ -18,9 +18,13 @@
 #   BACKEND=ollama (default)  — uses Ollama server + Ollama model tags
 #   BACKEND=vllm              — uses vLLM OpenAI-compat server + HF model IDs
 #
+# Additional env vars:
+#   OUTPUT_BASE  — override output directory base
+#
 # Usage:
-#   sbatch cluster/submit_model_comparison.sbatch                  # Ollama
-#   BACKEND=vllm sbatch cluster/submit_model_comparison.sbatch     # vLLM
+#   sbatch cluster/submit_model_comparison.sbatch                  # Ollama (all 3)
+#   BACKEND=vllm sbatch cluster/submit_model_comparison.sbatch     # vLLM (all 3)
+#   sbatch --array=1-2 cluster/submit_model_comparison.sbatch      # Qwen 3.5 only
 #
 # Array index maps to model:
 #   0 = qwen3:30b-a3b / Qwen/Qwen3-30B-A3B-GPTQ-Int4     (baseline MoE)
@@ -65,12 +69,12 @@ if [ "${BACKEND}" = "vllm" ]; then
   )
   TAGS=("qwen3_30b_baseline_vllm" "qwen35_9b_dense_vllm" "qwen35_35b_moe_vllm")
   PYTHON_BIN="${PYTHON_BIN:-${SCRATCH_BASE}/.venv_vllm/bin/python}"
-  OUTPUT_BASE="output/l2/comparison_vllm"
+  OUTPUT_BASE="${OUTPUT_BASE:-output/l2/comparison_vllm}"
 else
   MODELS=("qwen3:30b-a3b" "qwen3.5:9b" "qwen3.5:35b-a3b")
   TAGS=("qwen3_30b_baseline" "qwen35_9b_dense" "qwen35_35b_moe")
   PYTHON_BIN="${PYTHON_BIN:-${SCRATCH_BASE}/.venv_cluster/bin/python}"
-  OUTPUT_BASE="output/l2/comparison"
+  OUTPUT_BASE="${OUTPUT_BASE:-output/l2/comparison}"
 fi
 
 MODEL="${MODELS[$idx]}"
