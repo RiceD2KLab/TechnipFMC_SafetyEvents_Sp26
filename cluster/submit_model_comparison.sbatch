@@ -123,7 +123,7 @@ start_ollama() {
 start_vllm() {
   VLLM_PORT="$((8000 + idx))"
   HOST="http://127.0.0.1:${VLLM_PORT}"
-  VLLM_MAX_MODEL_LEN="${VLLM_MAX_MODEL_LEN:-4096}"
+  VLLM_MAX_MODEL_LEN="${VLLM_MAX_MODEL_LEN:-8192}"
   VLLM_GPU_UTIL="${VLLM_GPU_UTIL:-0.85}"
 
   export HF_HOME="${SCRATCH_BASE}/.cache/huggingface"
