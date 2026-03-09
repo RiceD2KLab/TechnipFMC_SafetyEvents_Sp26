@@ -36,6 +36,9 @@ pip-wheel-metadata/
 # --- LOGS ---
 *.log
 
+# --- Node ---
+node_modules/
+
 # --- Editors/OS ---
 .DS_Store
 .vscode/
