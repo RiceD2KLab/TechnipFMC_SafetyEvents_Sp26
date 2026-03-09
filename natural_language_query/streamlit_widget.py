@@ -4,11 +4,11 @@ Drop this into the existing dashboard. Requires:
     pip install streamlit
 
 Usage in your Streamlit app:
-    from nl_query.streamlit_widget import render_nl_query_widget
+    from natural_language_query.streamlit_widget import render_nl_query_widget
     render_nl_query_widget(G, entities_df, relations_df, metadata_df)
 
 Or run standalone for testing:
-    streamlit run nl_query/streamlit_widget.py
+    streamlit run natural_language_query/streamlit_widget.py
 """
 
 from __future__ import annotations
@@ -38,7 +38,7 @@ def render_nl_query_widget(
         model: Model name (None = use default for backend).
         base_url: Ollama server URL.
     """
-    from nl_query.translator import translate
+    from natural_language_query.translator import translate
 
     st.subheader("Natural Language Query")
 
@@ -109,9 +109,12 @@ def render_nl_query_widget(
         # ── Execute against graph ────────────────────────────────
         if G is not None:
             try:
-                # Import the existing query engine
+                # Import query engine from v2 benchmark package.
                 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-                from benchmark.query_engine import QuerySpec, execute_query
+                from pipeline_v2.benchmark.query_engine import (
+                    QuerySpec,
+                    execute_query,
+                )
 
                 spec = QuerySpec(**spec_dict)
                 exec_result = execute_query(

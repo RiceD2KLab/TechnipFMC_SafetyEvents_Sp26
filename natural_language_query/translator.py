@@ -4,7 +4,7 @@ Calls an LLM (Ollama local, Anthropic, or Gemini API) to convert a natural
 language query into a structured NLQueryOutput, then bridges to QuerySpec.
 
 Usage:
-    from nl_query.translator import translate
+    from natural_language_query.translator import translate
 
     # Local Ollama (default)
     result = translate("How many forklift incidents in 2022?")
@@ -49,7 +49,7 @@ def _call_ollama(query: str, model: str, base_url: str, temperature: float) -> s
         "stream": False,
         "options": {
             "temperature": temperature,
-            "num_predict": 1024,
+            "num_predict": 256,
         },
     }
 
@@ -57,7 +57,7 @@ def _call_ollama(query: str, model: str, base_url: str, temperature: float) -> s
     # (e.g. qwen3.5) that return empty responses with structured output mode.
     payload["format"] = "json"
     resp = requests.post(
-        f"{base_url}/api/generate", json=payload, timeout=120,
+        f"{base_url}/api/generate", json=payload, timeout=300,
     )
     resp.raise_for_status()
     text = resp.json()["response"]
@@ -67,7 +67,7 @@ def _call_ollama(query: str, model: str, base_url: str, temperature: float) -> s
     # Retry without format constraint
     del payload["format"]
     resp = requests.post(
-        f"{base_url}/api/generate", json=payload, timeout=120,
+        f"{base_url}/api/generate", json=payload, timeout=300,
     )
     resp.raise_for_status()
     return resp.json()["response"]

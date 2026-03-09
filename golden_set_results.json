@@ -1,0 +1,1130 @@
+{
+  "queries": [
+    {
+      "query_id": "SH-01",
+      "family": "Single-Hop",
+      "query": "What incidents involved forklifts in 2022?",
+      "success": true,
+      "strategy": "meta_filter",
+      "output_mode": "count_incidents",
+      "confidence": 0.95,
+      "latency_ms": 169828.1433582306,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "SH-01",
+        "name": "What incidents involved forklifts in 2022?",
+        "query_type": "NL",
+        "strategy": "meta_filter",
+        "entity_filters": [],
+        "meta_filters": [
+          [
+            "year",
+            "==",
+            "2022"
+          ]
+        ],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "count_incidents",
+        "output_target": "",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "2022 is a year metadata filter. Filter by year and count incidents involving forklifts.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "SH-02",
+      "family": "Single-Hop",
+      "query": "What equipment was involved in incident #29857?",
+      "success": true,
+      "strategy": "intersect",
+      "output_mode": "list_incidents",
+      "confidence": 0.95,
+      "latency_ms": 33547.25956916809,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "SH-02",
+        "name": "What equipment was involved in incident #29857?",
+        "query_type": "NL",
+        "strategy": "intersect",
+        "entity_filters": [
+          [
+            "EQUIPMENT",
+            "forklift|fork\\s*lift|flt|crane|overhead crane|mobile crane|tower crane|gantry crane|pedestal crane",
+            "INVOLVED"
+          ]
+        ],
+        "meta_filters": [
+          [
+            "id",
+            "==",
+            "29857"
+          ]
+        ],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "list_incidents",
+        "output_target": "",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "ID filter for incident #29857 combined with EQUIPMENT entity filter.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "SH-03",
+      "family": "Single-Hop",
+      "query": "What body parts were affected in crane-related incidents?",
+      "success": true,
+      "strategy": "entity_filter",
+      "output_mode": "aggregate",
+      "confidence": 0.95,
+      "latency_ms": 34124.21369552612,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "SH-03",
+        "name": "What body parts were affected in crane-related incidents?",
+        "query_type": "NL",
+        "strategy": "entity_filter",
+        "entity_filters": [
+          [
+            "EQUIPMENT",
+            "crane|overhead crane|mobile crane|tower crane|gantry crane|pedestal crane",
+            "INVOLVED"
+          ]
+        ],
+        "meta_filters": [],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "aggregate",
+        "output_target": "BODY_PART:AFFECTED",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Crane is EQUIPMENT, incidents involving cranes are filtered. Aggregate by affected body part.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "SH-04",
+      "family": "Single-Hop",
+      "query": "Which locations reported valve-related incidents?",
+      "success": true,
+      "strategy": "entity_filter",
+      "output_mode": "count_incidents",
+      "confidence": 0.95,
+      "latency_ms": 28725.53515434265,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "SH-04",
+        "name": "Which locations reported valve-related incidents?",
+        "query_type": "NL",
+        "strategy": "entity_filter",
+        "entity_filters": [
+          [
+            "LOCATION",
+            "valve|valves",
+            "OCCURRED_AT"
+          ]
+        ],
+        "meta_filters": [],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "count_incidents",
+        "output_target": "",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Filter by location where valve-related incidents occurred.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "SH-05",
+      "family": "Single-Hop",
+      "query": "What types of injuries resulted from incidents at offshore installations?",
+      "success": true,
+      "strategy": "entity_filter",
+      "output_mode": "aggregate",
+      "confidence": 0.95,
+      "latency_ms": 36751.72805786133,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "SH-05",
+        "name": "What types of injuries resulted from incidents at offshore installations?",
+        "query_type": "NL",
+        "strategy": "entity_filter",
+        "entity_filters": [
+          [
+            "LOCATION",
+            "offshore|oil\\s*platform|gulf\\s*of\\s*penisula|north\\s*sea|north\\s*atlantic|north\\s*pacific",
+            "OCCURRED_AT"
+          ]
+        ],
+        "meta_filters": [],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "aggregate",
+        "output_target": "INJURY_TYPE:RESULTED_IN",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Offshore installations are filtered by LOCATION. Aggregate by INJURY_TYPE.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "SH-06",
+      "family": "Single-Hop",
+      "query": "What incidents were reported by client SHELL OFFSHORE INC.?",
+      "success": true,
+      "strategy": "entity_filter",
+      "output_mode": "count_incidents",
+      "confidence": 0.95,
+      "latency_ms": 28257.429599761963,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "SH-06",
+        "name": "What incidents were reported by client SHELL OFFSHORE INC.?",
+        "query_type": "NL",
+        "strategy": "entity_filter",
+        "entity_filters": [
+          [
+            "ORGANIZATION",
+            "SHELL\\s+OFFSHORE\\s+INC",
+            "REPORTED_BY"
+          ]
+        ],
+        "meta_filters": [],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "count_incidents",
+        "output_target": "",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "SHELL OFFSHORE INC. is an organization. We filter by the REPORTED_BY relation to find incidents reported by this client.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "AG-01",
+      "family": "Aggregation",
+      "query": "What are the most common root causes of dropped object incidents?",
+      "success": true,
+      "strategy": "narrative_filter",
+      "output_mode": "aggregate",
+      "confidence": 0.9,
+      "latency_ms": 24544.39878463745,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "AG-01",
+        "name": "What are the most common root causes of dropped object incidents?",
+        "query_type": "NL",
+        "strategy": "narrative_filter",
+        "entity_filters": [],
+        "meta_filters": [],
+        "narrative_keywords": [
+          "dropped"
+        ],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "aggregate",
+        "output_target": "ROOT_CAUSE_CATEGORY:CATEGORIZED_AS",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Dropped object incidents found via narrative keyword 'dropped'. Aggregate by root cause category.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "AG-02",
+      "family": "Aggregation",
+      "query": "Which countries have the highest rate of high-severity incidents?",
+      "success": true,
+      "strategy": "meta_filter",
+      "output_mode": "aggregate",
+      "confidence": 0.95,
+      "latency_ms": 27353.44696044922,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "AG-02",
+        "name": "Which countries have the highest rate of high-severity incidents?",
+        "query_type": "NL",
+        "strategy": "meta_filter",
+        "entity_filters": [],
+        "meta_filters": [
+          [
+            "severity_bin",
+            ">=",
+            "4"
+          ]
+        ],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "aggregate",
+        "output_target": "LOCATION[country]:OCCURRED_AT",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "High severity incidents are defined by severity_bin >= 4. Aggregate by LOCATION at country granularity.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "AG-03",
+      "family": "Aggregation",
+      "query": "What equipment types are involved in the most incidents overall?",
+      "success": true,
+      "strategy": "entity_filter",
+      "output_mode": "aggregate",
+      "confidence": 0.95,
+      "latency_ms": 52310.99009513855,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "AG-03",
+        "name": "What equipment types are involved in the most incidents overall?",
+        "query_type": "NL",
+        "strategy": "entity_filter",
+        "entity_filters": [
+          [
+            "EQUIPMENT",
+            "forklift|fork\\s*lift|flt|crane|overhead crane|mobile crane|tower crane|gantry crane|pedestal crane|scaffold|scaffolding|pipe|pipeline|piping|valve|ball valve|check valve|safety valve|isolation valve|control valve|pressure valve",
+            "INVOLVED"
+          ]
+        ],
+        "meta_filters": [],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "aggregate",
+        "output_target": "EQUIPMENT:INVOLVED",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Filter by equipment types and aggregate by the same equipment types to find the most involved equipment overall.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "AG-04",
+      "family": "Aggregation",
+      "query": "How do incidents break down by type (accident vs. near miss) across business units?",
+      "success": true,
+      "strategy": "crosstab",
+      "output_mode": "crosstab",
+      "confidence": 0.95,
+      "latency_ms": 23209.729194641113,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "AG-04",
+        "name": "How do incidents break down by type (accident vs. near miss) across business uni",
+        "query_type": "NL",
+        "strategy": "crosstab",
+        "entity_filters": [],
+        "meta_filters": [],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "crosstab",
+        "output_target": "incident_type:business_unit",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Break down incident types (accident vs. near miss) by business units.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "AG-05",
+      "family": "Aggregation",
+      "query": "What is the monthly trend of fall/slip incidents over the past 3 years?",
+      "success": true,
+      "strategy": "narrative_filter",
+      "output_mode": "count_by_year",
+      "confidence": 0.9,
+      "latency_ms": 22828.036308288574,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "AG-05",
+        "name": "What is the monthly trend of fall/slip incidents over the past 3 years?",
+        "query_type": "NL",
+        "strategy": "narrative_filter",
+        "entity_filters": [],
+        "meta_filters": [],
+        "narrative_keywords": [
+          "fall",
+          "slip"
+        ],
+        "match_any_keyword": true,
+        "require_connected": null,
+        "output_mode": "count_by_year",
+        "output_target": "year",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Falls and slips found via narrative keywords (OR match). Trend = count_by_year.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "AG-06",
+      "family": "Aggregation",
+      "query": "What proportion of incidents in each impact type category result in high-severity outcomes?",
+      "success": false,
+      "strategy": null,
+      "output_mode": null,
+      "confidence": 0.0,
+      "latency_ms": 0,
+      "clarification": "Failed to parse LLM output after 2 attempts: ValidationError: 1 validation error for NLQueryOutput\nstrategy\n  Input should be 'entity_filter', 'meta_filter', 'narrative_filter', 'intersect', 'crosstab', 'custom' or 'out_of_scope' [type=enum, input_value='aggregate', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum",
+      "query_spec": null
+    },
+    {
+      "query_id": "MH-01",
+      "family": "Multi-Hop",
+      "query": "Find all equipment types involved in containment loss events leading to injuries at offshore locations.",
+      "success": true,
+      "strategy": "intersect",
+      "output_mode": "count_incidents",
+      "confidence": 0.9,
+      "latency_ms": 35252.06136703491,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "MH-01",
+        "name": "Find all equipment types involved in containment loss events leading to injuries",
+        "query_type": "NL",
+        "strategy": "intersect",
+        "entity_filters": [
+          [
+            "EQUIPMENT",
+            "containment|containment system|containment device",
+            "INVOLVED"
+          ]
+        ],
+        "meta_filters": [
+          [
+            "work_process",
+            "contains",
+            "loss"
+          ],
+          [
+            "INJURY_TYPE",
+            "==",
+            "Injury"
+          ]
+        ],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "count_incidents",
+        "output_target": "",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Containment loss events and injuries found via work process AND INJURY_TYPE. Equipment types are filtered by containment or containment system terms.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "MH-02",
+      "family": "Multi-Hop",
+      "query": "What injury types are associated with equipment failures during maintenance operations?",
+      "success": true,
+      "strategy": "intersect",
+      "output_mode": "aggregate",
+      "confidence": 0.85,
+      "latency_ms": 30494.696617126465,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "MH-02",
+        "name": "What injury types are associated with equipment failures during maintenance oper",
+        "query_type": "NL",
+        "strategy": "intersect",
+        "entity_filters": [
+          [
+            "EQUIPMENT",
+            "equipment|machinery",
+            "INVOLVED"
+          ]
+        ],
+        "meta_filters": [
+          [
+            "work_process",
+            "contains",
+            "maintenance operations"
+          ]
+        ],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "aggregate",
+        "output_target": "INJURY_TYPE:RESULTED_IN",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Equipment failure + maintenance found via narrative AND keywords. Aggregate by injury type.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "MH-03",
+      "family": "Multi-Hop",
+      "query": "Which clients have experienced vessel-related incidents resulting in back injuries?",
+      "success": true,
+      "strategy": "entity_filter",
+      "output_mode": "aggregate",
+      "confidence": 0.9,
+      "latency_ms": 32097.538948059082,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "MH-03",
+        "name": "Which clients have experienced vessel-related incidents resulting in back injuri",
+        "query_type": "NL",
+        "strategy": "entity_filter",
+        "entity_filters": [
+          [
+            "ORGANIZATION",
+            "\\b(?:client|client\\s+|client\\s+\\w*)\\b",
+            "REPORTED_BY"
+          ]
+        ],
+        "meta_filters": [],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "aggregate",
+        "output_target": "ORGANIZATION:REPORTED_BY",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Vessel-related incidents involving back injuries found via narrative keywords. Aggregate by reporting organization.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "MH-04",
+      "family": "Multi-Hop",
+      "query": "What are the most common injury types for each of the top 5 equipment categories?",
+      "success": false,
+      "strategy": null,
+      "output_mode": null,
+      "confidence": 0.0,
+      "latency_ms": 0,
+      "clarification": "Failed to parse LLM output after 2 attempts: ValidationError: 1 validation error for NLQueryOutput\nstrategy\n  Input should be 'entity_filter', 'meta_filter', 'narrative_filter', 'intersect', 'crosstab', 'custom' or 'out_of_scope' [type=enum, input_value='aggregate', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum",
+      "query_spec": null
+    },
+    {
+      "query_id": "MH-05",
+      "family": "Multi-Hop",
+      "query": "Find incidents where hand injuries occurred during work involving pipes at locations in Asia Pacific.",
+      "success": true,
+      "strategy": "intersect",
+      "output_mode": "list_incidents",
+      "confidence": 0.9,
+      "latency_ms": 29100.995540618896,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "MH-05",
+        "name": "Find incidents where hand injuries occurred during work involving pipes at locat",
+        "query_type": "NL",
+        "strategy": "intersect",
+        "entity_filters": [
+          [
+            "EQUIPMENT",
+            "pipe|piping",
+            "INVOLVED"
+          ]
+        ],
+        "meta_filters": [
+          [
+            "work_process",
+            "contains",
+            "pipes"
+          ]
+        ],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "list_incidents",
+        "output_target": "",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Filter by equipment (pipe/piping), work process containing 'pipes', and locations in Asia Pacific. List incidents.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "MH-06",
+      "family": "Multi-Hop",
+      "query": "What is the severity distribution of incidents involving trucks compared to those involving cranes?",
+      "success": false,
+      "strategy": null,
+      "output_mode": null,
+      "confidence": 0.0,
+      "latency_ms": 0,
+      "clarification": "Failed to parse LLM output after 2 attempts: ValidationError: 1 validation error for NLQueryOutput\naggregate_target.entity_type\n  Input should be 'EQUIPMENT', 'LOCATION', 'BODY_PART', 'INJURY_TYPE', 'ROOT_CAUSE_CATEGORY', 'ORGANIZATION' or 'INCIDENT' [type=enum, input_value='severity_bin', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum",
+      "query_spec": null
+    },
+    {
+      "query_id": "MH-07",
+      "family": "Multi-Hop",
+      "query": "Which locations have the highest concentration of near-miss incidents involving scaffolding?",
+      "success": true,
+      "strategy": "entity_filter",
+      "output_mode": "aggregate",
+      "confidence": 0.9,
+      "latency_ms": 28258.464574813843,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "MH-07",
+        "name": "Which locations have the highest concentration of near-miss incidents involving ",
+        "query_type": "NL",
+        "strategy": "entity_filter",
+        "entity_filters": [
+          [
+            "LOCATION",
+            "city|region|country",
+            "OCCURRED_AT"
+          ]
+        ],
+        "meta_filters": [],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "aggregate",
+        "output_target": "LOCATION[country]:OCCURRED_AT",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Filter by near-miss incidents involving scaffolding and aggregate by location at country granularity.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "MH-08",
+      "family": "Multi-Hop",
+      "query": "Trace the relationship path between a specific piece of equipment (e.g., hydraulic valve) and all recorded injury outcomes across all incidents.",
+      "success": true,
+      "strategy": "entity_filter",
+      "output_mode": "aggregate",
+      "confidence": 0.95,
+      "latency_ms": 33104.97784614563,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "MH-08",
+        "name": "Trace the relationship path between a specific piece of equipment (e.g., hydraul",
+        "query_type": "NL",
+        "strategy": "entity_filter",
+        "entity_filters": [
+          [
+            "EQUIPMENT",
+            "hydraulic valve|hydraulic\\s*valve",
+            "INVOLVED"
+          ]
+        ],
+        "meta_filters": [],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "aggregate",
+        "output_target": "INJURY_TYPE:RESULTED_IN",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Hydraulic valve is an EQUIPMENT. Aggregate by INJURY_TYPE to show all injuries related to this equipment.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "GL-01",
+      "family": "Global",
+      "query": "What are the most significant safety risk clusters across TechnipFMC's global operations?",
+      "success": true,
+      "strategy": "intersect",
+      "output_mode": "aggregate",
+      "confidence": 0.95,
+      "latency_ms": 30971.680641174316,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "GL-01",
+        "name": "What are the most significant safety risk clusters across TechnipFMC's global op",
+        "query_type": "NL",
+        "strategy": "intersect",
+        "entity_filters": [
+          [
+            "ORGANIZATION",
+            "TechnipFMC",
+            "REPORTED_BY"
+          ]
+        ],
+        "meta_filters": [],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "aggregate",
+        "output_target": "ROOT_CAUSE_CATEGORY:CATEGORIZED_AS",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "TechnipFMC is an organization. Aggregate by root cause category to identify significant risk clusters.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "GL-02",
+      "family": "Global",
+      "query": "Are there systemic patterns where the same type of equipment failure recurs across different geographic regions?",
+      "success": true,
+      "strategy": "intersect",
+      "output_mode": "crosstab",
+      "confidence": 0.9,
+      "latency_ms": 44822.421073913574,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "GL-02",
+        "name": "Are there systemic patterns where the same type of equipment failure recurs acro",
+        "query_type": "NL",
+        "strategy": "intersect",
+        "entity_filters": [
+          [
+            "EQUIPMENT",
+            "failure|malfunction",
+            "INVOLVED"
+          ]
+        ],
+        "meta_filters": [
+          [
+            "work_process",
+            "contains",
+            "maintenance"
+          ]
+        ],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "crosstab",
+        "output_target": "work_process:country",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Filter for equipment failures related to maintenance, then cross-tabulate by work process and country.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "GL-03",
+      "family": "Global",
+      "query": "How has the overall safety incident profile changed over the dataset's time range? Are certain incident types increasing or decreasing?",
+      "success": false,
+      "strategy": null,
+      "output_mode": null,
+      "confidence": 0.0,
+      "latency_ms": 0,
+      "clarification": "Failed to parse LLM output after 2 attempts: ValidationError: 2 validation errors for NLQueryOutput\nstrategy\n  Input should be 'entity_filter', 'meta_filter', 'narrative_filter', 'intersect', 'crosstab', 'custom' or 'out_of_scope' [type=enum, input_value='count_by_year', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.12/v/enum\noutput_top_n\n  Input should be a valid integer [type=int_type, input_value=None, input_type=NoneType]\n    For further information visit https://errors.pydantic.dev/2.12/v/int_type",
+      "query_spec": null
+    },
+    {
+      "query_id": "GL-04",
+      "family": "Global",
+      "query": "What entities serve as the most connected hubs in the knowledge graph, and what does their centrality reveal about systemic risk?",
+      "success": true,
+      "strategy": "crosstab",
+      "output_mode": "crosstab",
+      "confidence": 0.9,
+      "latency_ms": 30406.362771987915,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "GL-04",
+        "name": "What entities serve as the most connected hubs in the knowledge graph, and what ",
+        "query_type": "NL",
+        "strategy": "crosstab",
+        "entity_filters": [],
+        "meta_filters": [],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "crosstab",
+        "output_target": "REPORTED_BY:CENTRALITY_SCORE",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "CENTRALITY_SCORE is a hypothetical metadata field that could represent how connected an entity is in the graph. The query asks about the most connected entities and what their centrality reveals about systemic risk, so we aggregate by REPORTED_BY and show the top 10 centrality scores.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "CJ-01",
+      "family": "Conjunctive",
+      "query": "Which incidents match the pattern of corrosion-induced equipment failure leading to fire?",
+      "success": true,
+      "strategy": "narrative_filter",
+      "output_mode": "count_incidents",
+      "confidence": 0.85,
+      "latency_ms": 24344.00773048401,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "CJ-01",
+        "name": "Which incidents match the pattern of corrosion-induced equipment failure leading",
+        "query_type": "NL",
+        "strategy": "narrative_filter",
+        "entity_filters": [],
+        "meta_filters": [],
+        "narrative_keywords": [
+          "corrosion",
+          "induced",
+          "equipment failure",
+          "fire"
+        ],
+        "match_any_keyword": true,
+        "require_connected": null,
+        "output_mode": "count_incidents",
+        "output_target": "",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Corrosion, induced, equipment failure, and fire found via narrative keywords. Count incidents.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "CJ-02",
+      "family": "Conjunctive",
+      "query": "Find all high-severity incidents where a crane was involved AND a back injury was sustained AND the location was offshore.",
+      "success": true,
+      "strategy": "intersect",
+      "output_mode": "count_incidents",
+      "confidence": 0.9,
+      "latency_ms": 34830.01756668091,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "CJ-02",
+        "name": "Find all high-severity incidents where a crane was involved AND a back injury wa",
+        "query_type": "NL",
+        "strategy": "intersect",
+        "entity_filters": [
+          [
+            "EQUIPMENT",
+            "crane|overhead crane|mobile crane|tower crane|gantry crane|pedestal crane",
+            "INVOLVED"
+          ]
+        ],
+        "meta_filters": [
+          [
+            "severity_bin",
+            ">=",
+            "4"
+          ]
+        ],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "count_incidents",
+        "output_target": "",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "High severity = severity_bin >= 4. Crane involvement and back injury found via entity filters. Offshore location found via meta filter.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "CJ-03",
+      "family": "Conjunctive",
+      "query": "Identify incidents where maintenance procedures failed, involving pipe equipment, resulting in environmental impact at locations in the Middle East.",
+      "success": true,
+      "strategy": "intersect",
+      "output_mode": "aggregate",
+      "confidence": 0.9,
+      "latency_ms": 33253.09062004089,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "CJ-03",
+        "name": "Identify incidents where maintenance procedures failed, involving pipe equipment",
+        "query_type": "NL",
+        "strategy": "intersect",
+        "entity_filters": [
+          [
+            "EQUIPMENT",
+            "pipe|piping",
+            "INVOLVED"
+          ]
+        ],
+        "meta_filters": [
+          [
+            "work_process",
+            "contains",
+            "maintenance procedures failed"
+          ]
+        ],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "aggregate",
+        "output_target": "LOCATION[country]:OCCURRED_AT",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Filter by pipe equipment, work process containing 'maintenance procedures failed', and locations in the Middle East. Aggregate by location at country granularity.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "CJ-04",
+      "family": "Conjunctive",
+      "query": "Which equipment types have caused both injuries AND near-misses at the same location within the same year?",
+      "success": true,
+      "strategy": "intersect",
+      "output_mode": "aggregate",
+      "confidence": 0.9,
+      "latency_ms": 35292.643785476685,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "CJ-04",
+        "name": "Which equipment types have caused both injuries AND near-misses at the same loca",
+        "query_type": "NL",
+        "strategy": "intersect",
+        "entity_filters": [
+          [
+            "EQUIPMENT",
+            "forklift|fork\\s*lift|flt|crane|overhead crane|mobile crane|tower crane|gantry crane|pedestal crane",
+            "INVOLVED"
+          ]
+        ],
+        "meta_filters": [
+          [
+            "incident_type",
+            "==",
+            "near_miss"
+          ]
+        ],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "aggregate",
+        "output_target": "EQUIPMENT:INVOLVED",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Filter for both 'near_miss' incident type and any EQUIPMENT involved, within the same year.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "CJ-05",
+      "family": "Conjunctive",
+      "query": "Find the causal chain pattern: procedural non-compliance -> dropped object -> head/hand injury. How many incidents match?",
+      "success": true,
+      "strategy": "intersect",
+      "output_mode": "count_incidents",
+      "confidence": 0.9,
+      "latency_ms": 32659.71565246582,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "CJ-05",
+        "name": "Find the causal chain pattern: procedural non-compliance -> dropped object -> he",
+        "query_type": "NL",
+        "strategy": "intersect",
+        "entity_filters": [
+          [
+            "ROOT_CAUSE_CATEGORY",
+            "Procedural non-compliance",
+            "CATEGORIZED_AS"
+          ],
+          [
+            "INJURY_TYPE",
+            "head|hand",
+            "RESULTED_IN"
+          ]
+        ],
+        "meta_filters": [],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "count_incidents",
+        "output_target": "",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Procedural non-compliance leads to dropped object, which results in head/hand injury. Intersection of these two filter types.",
+        "expected_count": null
+      }
+    },
+    {
+      "query_id": "CJ-06",
+      "family": "Conjunctive",
+      "query": "Which incidents involve the co-occurrence of slip/fall events AND vehicle/transportation equipment at construction sites?",
+      "success": true,
+      "strategy": "intersect",
+      "output_mode": "aggregate",
+      "confidence": 0.9,
+      "latency_ms": 29326.48491859436,
+      "clarification": null,
+      "query_spec": {
+        "query_id": "CJ-06",
+        "name": "Which incidents involve the co-occurrence of slip/fall events AND vehicle/transp",
+        "query_type": "NL",
+        "strategy": "intersect",
+        "entity_filters": [
+          [
+            "EQUIPMENT",
+            "vehicle|transportation|vehicle\\s*equipment",
+            "INVOLVED"
+          ]
+        ],
+        "meta_filters": [],
+        "narrative_keywords": [],
+        "match_any_keyword": false,
+        "require_connected": null,
+        "output_mode": "aggregate",
+        "output_target": "LOCATION[city]:OCCURRED_AT",
+        "output_top_n": 10,
+        "coverage_thresholds": [
+          1,
+          0
+        ],
+        "diagnosis_rule": "auto",
+        "custom_fn": "",
+        "ground_truth": [],
+        "notes": "Filter for slip/fall events and vehicle/transportation equipment at construction sites.",
+        "expected_count": null
+      }
+    }
+  ]
+}

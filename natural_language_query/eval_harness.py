@@ -6,19 +6,19 @@ through the translator, and scores field-level accuracy.
 
 Usage:
     # Test against local Ollama (default)
-    python -m nl_query.eval_harness
+    python -m natural_language_query.eval_harness
 
     # Test against Anthropic API
-    python -m nl_query.eval_harness --backend anthropic --model claude-sonnet-4-5-20250514
+    python -m natural_language_query.eval_harness --backend anthropic --model claude-sonnet-4-5-20250514
 
     # Test against Gemini API
-    python -m nl_query.eval_harness --backend gemini --model gemini-2.5-flash
+    python -m natural_language_query.eval_harness --backend gemini --model gemini-2.5-flash
 
     # Test a single query interactively
-    python -m nl_query.eval_harness --interactive
+    python -m natural_language_query.eval_harness --interactive
 
     # Use custom paraphrases file
-    python -m nl_query.eval_harness --paraphrases path/to/paraphrases.json
+    python -m natural_language_query.eval_harness --paraphrases path/to/paraphrases.json
 """
 
 from __future__ import annotations

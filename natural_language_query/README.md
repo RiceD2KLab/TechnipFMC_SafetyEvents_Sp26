@@ -2,10 +2,16 @@
 
 Translates natural language questions → structured QuerySpec → executes against the existing benchmark query engine. Zero new dependencies beyond `pydantic` and `requests`.
 
+**Requirements:** Python 3.9+ (current `pydantic` and pip do not support 3.8). On Windows with multiple Pythons, use the py launcher: `py -3.12 -m venv .venv` so the venv uses 3.12.
+
 ## Setup
 
 ```bash
-# Install deps (you probably have these already)
+# Use Python 3.9+ for the venv (Windows: py -3.12 -m venv .venv)
+python -m venv .venv
+source .venv/bin/activate   # or on Windows: .\.venv\Scripts\Activate.ps1
+
+# Install deps
 pip install pydantic requests
 
 # Make sure Ollama is running with a model
@@ -17,23 +23,23 @@ ollama serve                 # if not already running
 
 ```bash
 # Interactive mode — type questions, see translations
-python -m nl_query.eval_harness -i
+python -m natural_language_query.eval_harness -i
 
 # Run full eval against Ollama
-python -m nl_query.eval_harness --backend ollama --model qwen3:8b
+python -m natural_language_query.eval_harness --backend ollama --model qwen3:8b
 
 # Run against Anthropic API
-ANTHROPIC_API_KEY=sk-... python -m nl_query.eval_harness --backend anthropic
+ANTHROPIC_API_KEY=sk-... python -m natural_language_query.eval_harness --backend anthropic
 
 # Save results
-python -m nl_query.eval_harness -o eval_results.json
+python -m natural_language_query.eval_harness -o eval_results.json
 ```
 
 ## Integration with Existing Pipeline
 
 ```python
-from nl_query.translator import translate
-from benchmark.query_engine import QuerySpec, execute_query
+from natural_language_query.translator import translate
+from pipeline_v2.benchmark.query_engine import QuerySpec, execute_query
 
 # Step 1: Translate NL → QuerySpec
 result = translate("How many forklift incidents in 2022?")
@@ -53,39 +59,58 @@ else:
 
 ```python
 # In your existing Streamlit app:
-from nl_query.streamlit_widget import render_nl_query_widget
+from natural_language_query.streamlit_widget import render_nl_query_widget
 
 # Add this wherever you want the NL interface
 render_nl_query_widget(G, entities_df, relations_df, metadata_df)
 
 # Or test standalone:
-# streamlit run nl_query/streamlit_widget.py
+# streamlit run natural_language_query/streamlit_widget.py
 ```
+
+## Golden Set (Dashboard query coverage)
+
+A canonical set of 30 analyst-style queries is defined in `golden_set_queries.md`
+(Single-Hop, Aggregation, Multi-Hop, Global, Conjunctive). To run the translator
+on all of them and get a pass/fail + latency report:
+
+```bash
+# Translation only (no graph execution)
+python -m natural_language_query.run_golden_set
+
+# Save detailed results to JSON
+python -m natural_language_query.run_golden_set -o golden_set_results.json
+
+# Execute each translated query against the pipeline_v2 graph (if data is present)
+python -m natural_language_query.run_golden_set --execute -o results.json
+```
+
+Exit code is 0 if every query translated successfully, 1 otherwise.
 
 ## File Structure
 
 ```
-nl_query/
-├── __init__.py           # Package init
-├── __main__.py           # python -m nl_query entry point
+natural_language_query/
 ├── schema.py             # Pydantic models + QuerySpec bridge
 ├── prompt.py             # System prompt (the core artifact)
 ├── translator.py         # LLM call + validation + retry
 ├── eval_harness.py       # Evaluation against benchmark ground truth
 ├── paraphrases.py        # Test set: 6-10 phrasings per query
+├── run_golden_set.py     # Run translator on golden set (30 dashboard queries)
+├── golden_set_queries.md # Golden set query spec (reference)
 ├── streamlit_widget.py   # Drop-in Streamlit component
 └── README.md             # This file
 ```
 
 ## Swapping Backends
 
-The translator supports three backends with zero code changes:
+The translator currently supports three backends:
 
 | Backend | Dev/Test | Production | Cost |
 |---------|----------|------------|------|
-| `ollama` | ✅ M1 Mac, NOTS | ❌ needs GPU | $0 |
-| `anthropic` | ✅ | ✅ | ~$0.003/query |
-| `openai` | ✅ | ✅ | ~$0.002/query |
+| `ollama` | ✅ local | depends on host resources | $0 |
+| `anthropic` | ✅ | ✅ | API cost |
+| `gemini` | ✅ | ✅ | API cost |
 
 ```python
 # Local dev
@@ -94,9 +119,8 @@ result = translate(query, backend="ollama", model="qwen3:8b")
 # Production API
 result = translate(query, backend="anthropic", model="claude-sonnet-4-5-20250514")
 
-# OpenAI-compatible (vLLM, Together, etc.)
-OPENAI_BASE_URL=http://your-server/v1 \
-result = translate(query, backend="openai", model="your-model")
+# Gemini API
+result = translate(query, backend="gemini", model="gemini-2.5-flash")
 ```
 
 ## Evaluation Metrics
@@ -115,9 +139,9 @@ Target: ≥90% full-pass rate across all paraphrases.
 
 The system prompt in `prompt.py` is the entire product. To tune:
 
-1. Run eval: `python -m nl_query.eval_harness -o before.json`
+1. Run eval: `python -m natural_language_query.eval_harness -o before.json`
 2. Edit `prompt.py` (add examples, clarify rules)
-3. Re-run eval: `python -m nl_query.eval_harness -o after.json`
+3. Re-run eval: `python -m natural_language_query.eval_harness -o after.json`
 4. Compare pass rates
 
 Most failures will be in entity pattern generation (synonyms) and
