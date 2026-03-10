@@ -12,7 +12,7 @@
 #SBATCH --exclusive
 #SBATCH --array=0-2
 
-# ── Model comparison: 3 models x 500-record subset x full_v2 prompt ────
+# ── Model comparison: 3 models x 500-record subset x full prompt ────
 #
 # Supports two backends via BACKEND env var:
 #   BACKEND=ollama (default)  — uses Ollama server + Ollama model tags
@@ -177,7 +177,7 @@ cmd=(
   "--host" "${HOST}"
   "--backend" "${BACKEND}"
   "--temperature" "${TEMPERATURE}"
-  "--prompt-variant" "full_v2"
+  "--prompt-variant" "full"
   "--subset-csv" "${SUBSET_CSV}"
   "--num-shards" "1"
   "--shard-index" "0"

@@ -127,7 +127,7 @@ srun --partition=commons --gres=gpu:1 --time=04:00:00 --mem=64G \\
       --metadata-csv pipeline_v2/outputs/metadata_parsed.parquet \\
       --output-dir {out_dir} \\
       --model {model} \\
-      --prompt-variant full_v2 \\
+      --prompt-variant full \\
       --subset-csv {args.output} \\
       --num-shards 1
   '
