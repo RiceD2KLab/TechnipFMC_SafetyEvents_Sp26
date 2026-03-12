@@ -8,10 +8,17 @@ Executes the full Tier 1 evaluation workflow:
   5. Run Tier 1 evaluation for both weight configurations:
        - domain_informed (EQUIPMENT=0.25, INJURY_TYPE=0.25, …)
        - uniform (all entity types weighted equally — ablation)
+  6. (Optional, --tier2) Train KG and GNN embeddings:
+       - Node2Vec   (requires: pip install torch torch_geometric)
+       - TransE     (requires: pip install torch pykeen)
+       - GraphSAGE  (requires: pip install torch torch_geometric)
+  7. Build the sponsor comparison table across all available methods.
 
 Usage:
     python -m event_similarity.run_similarity
     python -m event_similarity.run_similarity --recompute
+    python -m event_similarity.run_similarity --tier2
+    python -m event_similarity.run_similarity --tier2 --recompute
     python -m event_similarity.run_similarity --gold-ids-file path/to/ids.json
 
 Outputs (all written to event_similarity/outputs/):
@@ -19,6 +26,11 @@ Outputs (all written to event_similarity/outputs/):
     text_embeddings.pkl             Cached sentence-transformer embeddings
     tier1_eval_domain_informed.json Per-query results + aggregate metrics
     tier1_eval_uniform.json         Ablation run with uniform weights
+    node2vec_embeddings.pkl         Node2Vec KG embeddings (--tier2 only)
+    transe_embeddings.pkl           TransE KG embeddings   (--tier2 only)
+    graphsage_embeddings.pkl        GraphSAGE GNN embeddings (--tier2 only)
+    method_comparison.csv           All-method comparison table
+    method_comparison.md            Markdown version of comparison table
 """
 from __future__ import annotations
 
@@ -28,6 +40,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from .comparison_table import build_comparison_table
 from .config import (
     ENTITIES_PATH,
     GOLD_STANDARD_IDS,
@@ -71,6 +84,7 @@ def _check_inputs() -> None:
 def main(
     recompute: bool = False,
     gold_ids_file: Path | None = None,
+    run_tier2: bool = False,
 ) -> None:
     """Run the event similarity pipeline end-to-end."""
     print("=" * 65)
@@ -157,6 +171,66 @@ def main(
         output_dir=OUTPUT_DIR,
     )
 
+    # ── 6. Tier 2: KG and GNN embeddings ─────────────────────────────────
+    tier2_emb_maps: dict[str, dict] = {}
+
+    if run_tier2:
+        print("\n[6/7] Training Tier 2 KG / GNN embeddings …")
+
+        from .gnn_similarity import train_graphsage
+        from .kg_embeddings import train_node2vec, train_transe
+
+        n2v_cache   = None if recompute else OUTPUT_DIR / "node2vec_embeddings.pkl"
+        transe_cache = None if recompute else OUTPUT_DIR / "transe_embeddings.pkl"
+        sage_cache  = None if recompute else OUTPUT_DIR / "graphsage_embeddings.pkl"
+
+        print("  → Node2Vec …")
+        try:
+            node2vec_emb = train_node2vec(cache_path=n2v_cache)
+            if node2vec_emb:
+                tier2_emb_maps["node2vec"] = node2vec_emb
+                print(f"     Node2Vec embeddings: {len(node2vec_emb):,} incidents")
+            else:
+                print("     Node2Vec returned empty — skipped")
+        except ImportError as e:
+            print(f"     Node2Vec skipped: {e}")
+
+        print("  → TransE …")
+        try:
+            transe_emb = train_transe(cache_path=transe_cache)
+            if transe_emb:
+                tier2_emb_maps["transe"] = transe_emb
+                print(f"     TransE embeddings: {len(transe_emb):,} incidents")
+            else:
+                print("     TransE returned empty — skipped")
+        except ImportError as e:
+            print(f"     TransE skipped: {e}")
+
+        print("  → GraphSAGE …")
+        try:
+            graphsage_emb = train_graphsage(cache_path=sage_cache)
+            if graphsage_emb:
+                tier2_emb_maps["graphsage"] = graphsage_emb
+                print(f"     GraphSAGE embeddings: {len(graphsage_emb):,} incidents")
+            else:
+                print("     GraphSAGE returned empty (quality gate not met) — skipped")
+        except ImportError as e:
+            print(f"     GraphSAGE skipped: {e}")
+    else:
+        print("\n[6/7] Tier 2 skipped (pass --tier2 to train KG/GNN embeddings)")
+
+    # ── 7. Method comparison table ────────────────────────────────────────
+    print("\n[7/7] Building method comparison table …")
+    emb_maps = {"text": emb_map, **tier2_emb_maps}
+    build_comparison_table(
+        gold_ids=gold_ids,
+        emb_maps=emb_maps,
+        entity_sets=entity_sets,
+        corpus_ids=corpus_ids,
+        k=TOP_K,
+        output_dir=OUTPUT_DIR,
+    )
+
     print("\nAll outputs written to:", OUTPUT_DIR)
     print("Done.")
 
@@ -178,5 +252,13 @@ if __name__ == "__main__":
         metavar="FILE",
         help="Path to a JSON file containing a list of gold standard incident IDs.",
     )
+    parser.add_argument(
+        "--tier2",
+        action="store_true",
+        help=(
+            "Train Tier 2 KG and GNN embeddings (Node2Vec, TransE, GraphSAGE). "
+            "Requires: pip install torch torch_geometric pykeen"
+        ),
+    )
     args = parser.parse_args()
-    main(recompute=args.recompute, gold_ids_file=args.gold_ids_file)
+    main(recompute=args.recompute, gold_ids_file=args.gold_ids_file, run_tier2=args.tier2)
