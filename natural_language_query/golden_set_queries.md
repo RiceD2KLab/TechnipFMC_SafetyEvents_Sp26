@@ -7,19 +7,20 @@ question types in the TechnipFMC safety context.
 ## Purpose
 
 - Validate NL -> structured query translation quality against realistic asks.
-- Ensure coverage across retrieval, aggregation, multi-hop, global, and
-  conjunctive query types.
+- Ensure coverage across retrieval, aggregation, multi-hop, global,
+  conjunctive, and spot-check query types.
 - Use as the baseline reference for repeatable NLQ regression testing.
 
 ## Query Families
 
 - Single-Hop Queries: 6
+- Spot-check Queries: 13
 - Aggregation Queries: 6
 - Multi-Hop Queries: 8
 - Global Queries: 4
-- Conjunctive Queries: 6
+- Conjunctive Queries: 7
 
-Total: 30 queries
+Total: 44 queries
 
 ---
 
@@ -72,6 +73,114 @@ Total: 30 queries
 - **Data Density:** CLIENT at 97.9% coverage
 - **Expected Answer:** List of incident IDs associated with Shell
 - **Why This Query:** Organization integration and naming/abbreviation robustness.
+
+---
+
+## Spot-check Queries (13)
+
+### SC-01
+- **Query:** In incident #623703, what equipment was involved?
+- **Traversal:** [Incident: 623703] -> involved -> [Equipment]
+- **Tests:** Spot-check of equipment extraction for a known forklift incident
+- **Data Density:** Single known record (forklift mirror caught manifold)
+- **Expected Answer:** Equipment list including forklift, mirror, manifold-related items
+- **Why This Query:** Regression guard for detailed equipment extraction on a complex forklift scenario.
+
+### SC-02
+- **Query:** In incident #570187, what equipment was involved?
+- **Traversal:** [Incident: 570187] -> involved -> [Equipment]
+- **Tests:** Spot-check of equipment extraction in an electrical substation feeder fire
+- **Data Density:** Single known record
+- **Expected Answer:** Equipment such as connector link, feeder breaker, feeder box
+- **Why This Query:** Ensures correct extraction for electrical power-distribution components.
+
+### SC-03
+- **Query:** In incident #602346, what equipment was involved?
+- **Traversal:** [Incident: 602346] -> involved -> [Equipment]
+- **Tests:** Spot-check of equipment extraction in a forklift collision with PGB in yard
+- **Data Density:** Single known record
+- **Expected Answer:** Forklift and associated yard equipment
+- **Why This Query:** Additional forklift-focused regression case.
+
+### SC-04
+- **Query:** In incident #14338, what equipment was involved?
+- **Traversal:** [Incident: 14338] -> involved -> [Equipment]
+- **Tests:** Spot-check of equipment extraction for a press-related back pain incident
+- **Data Density:** Single known record
+- **Expected Answer:** PRESS (and related equipment if present)
+- **Why This Query:** Validates extraction for less common equipment like presses.
+
+### SC-05
+- **Query:** In incident #500389, what equipment was involved?
+- **Traversal:** [Incident: 500389] -> involved -> [Equipment]
+- **Tests:** Spot-check of equipment extraction in a dropped ROV marker buoys scenario
+- **Data Density:** Single known record
+- **Expected Answer:** Marker buoys, floats, weights, chain, TMS
+- **Why This Query:** Exercises extraction for compound marine-equipment phrases.
+
+### SC-06
+- **Query:** In incident #8712, what equipment was involved?
+- **Traversal:** [Incident: 8712] -> involved -> [Equipment]
+- **Tests:** Spot-check of equipment extraction for a fall with head cuts on a barrier
+- **Data Density:** Single known record
+- **Expected Answer:** CEU 25 barrier (and related equipment if present)
+- **Why This Query:** Ensures barrier-related equipment is consistently extracted.
+
+### SC-07
+- **Query:** In incident #511771, what equipment was involved?
+- **Traversal:** [Incident: 511771] -> involved -> [Equipment]
+- **Tests:** Spot-check of equipment extraction for a wire sling and crane hook lip-cut incident
+- **Data Density:** Single known record
+- **Expected Answer:** Wire rope sling, crane hook
+- **Why This Query:** Validates extraction of rigging equipment combinations.
+
+### SC-08
+- **Query:** In incident #324, what equipment was involved?
+- **Traversal:** [Incident: 324] -> involved -> [Equipment]
+- **Tests:** Spot-check of equipment extraction for a forklift and truck collision
+- **Data Density:** Single known record
+- **Expected Answer:** 20T forklift and any involved truck equipment
+- **Why This Query:** Cross-check for multi-vehicle equipment extraction.
+
+### SC-09
+- **Query:** In incident #18312, what equipment was involved?
+- **Traversal:** [Incident: 18312] -> involved -> [Equipment]
+- **Tests:** Spot-check of equipment extraction for a crane-exit head-cut incident
+- **Data Density:** Single known record
+- **Expected Answer:** Crane and associated equipment such as sun visor
+- **Why This Query:** Additional crane-focused extraction regression case.
+
+### SC-04b
+- **Query:** In incident #14338, which body parts were affected?
+- **Traversal:** [Incident: 14338] -> affected -> [Body Part]
+- **Tests:** Spot-check of body-part extraction for press-related back pain
+- **Data Density:** Single known record
+- **Expected Answer:** Lower back (and any related body-part mentions)
+- **Why This Query:** Ensures body-part extraction aligns with equipment spot-checks.
+
+### SC-06b
+- **Query:** In incident #8712, which body parts were affected?
+- **Traversal:** [Incident: 8712] -> affected -> [Body Part]
+- **Tests:** Spot-check of body-part extraction for fall with head cuts
+- **Data Density:** Single known record
+- **Expected Answer:** Head, forehead, face
+- **Why This Query:** Validates body-part extraction on fall injuries.
+
+### SC-07b
+- **Query:** In incident #511771, which body parts were affected?
+- **Traversal:** [Incident: 511771] -> affected -> [Body Part]
+- **Tests:** Spot-check of body-part extraction for lip-cut incident
+- **Data Density:** Single known record
+- **Expected Answer:** Lower lip
+- **Why This Query:** Regression guard for fine-grained facial/body-part extraction.
+
+### SC-09b
+- **Query:** In incident #18312, which body parts were affected?
+- **Traversal:** [Incident: 18312] -> affected -> [Body Part]
+- **Tests:** Spot-check of body-part extraction for crane-exit head-cut incident
+- **Data Density:** Single known record
+- **Expected Answer:** Head (and related body-part mentions)
+- **Why This Query:** Ensures consistent body-part extraction alongside crane equipment checks.
 
 ---
 

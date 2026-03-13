@@ -31,7 +31,8 @@ METADATA FIELDS (direct columns on incident records, NOT graph entities):
 
 ## STRATEGIES
 
-Choose ONE strategy based on what the query needs:
+Choose ONE strategy. Valid values ONLY: entity_filter, meta_filter, narrative_filter, intersect, crosstab, custom, out_of_scope.
+- Do NOT use "aggregate" or "count_by_year" as strategy — those are output_mode values. Use output_mode for how to present results; strategy is how to filter/compute.
 
 1. "entity_filter" — Query involves filtering by ONE type of graph entity only.
    Example: "Show me forklift incidents" → filter by EQUIPMENT with pattern "forklift"
@@ -46,17 +47,21 @@ Choose ONE strategy based on what the query needs:
 4. "intersect" — Query combines multiple filter types (entity + meta, entity + entity, etc.).
    Example: "Crane incidents at offshore locations in 2023" → entity_filter for crane + meta for year + narrative for offshore
 
-5. "crosstab" — Query asks for a cross-tabulation of two metadata dimensions.
-   Example: "Break down incident types by business unit" → crosstab of incident_type × business_unit
+5. "crosstab" — Query asks for a cross-tabulation of two dimensions (both metadata, or breakdown by two axes).
+   Use for: "proportion of X by Y", "distribution of severity by impact type", "break down by type and severity", "how did incident types change over time" (year × incident_type).
+   Example: "What proportion of incidents in each impact type result in high severity?" → crosstab impact_type × severity_bin
+   Example: "How have incident types changed over time?" → crosstab year × incident_type
 
-6. "out_of_scope" — Query cannot be answered by this graph. Set confidence to 0.0.
+6. "custom" — Query matches a named custom analysis (e.g. "top injury types for each of the top 5 equipment" → custom_fn "top_injury_per_equipment"; "severity distribution for trucks vs cranes" → custom_fn "severity_comparison"). Set custom_fn to the function name; otherwise leave null.
+
+7. "out_of_scope" — Query cannot be answered by this graph. Set confidence to 0.0.
 
 ## OUTPUT MODES
 
 - "count_incidents" — Just count matching incidents. Use for "how many" questions.
-- "aggregate" — Group and count by an entity type. Use for "what are the most common X" or "break down by X". Requires aggregate_target.
-- "count_by_year" — Show trend over time. Use for "trend" or "over the years" questions.
-- "crosstab" — Cross-tabulate two metadata fields. Requires crosstab_target.
+- "aggregate" — Group and count by a graph ENTITY type (EQUIPMENT, BODY_PART, INJURY_TYPE, etc.). Use for "what are the most common X" or "break down by X". Requires aggregate_target. aggregate_target.entity_type must be an entity type only — never severity_bin, impact_type, or other metadata; for those use crosstab.
+- "count_by_year" — Show trend over time (single dimension). Use for "trend of X over the years". Strategy should be entity_filter/meta_filter/narrative_filter as appropriate; never use "count_by_year" as strategy.
+- "crosstab" — Cross-tabulate two dimensions (metadata or time × type). Use for proportions, severity by category, or "how did X change over time by Y". Requires crosstab_target. Always set output_top_n to an integer (e.g. 10).
 - "list_incidents" — Return individual incident details. Use for "show me" or "list" requests.
 
 ## ENTITY FILTER PATTERNS
@@ -172,6 +177,80 @@ User: "Break down incident types by severity level"
 }
 ```
 
+User: "What proportion of incidents in each impact type category result in high-severity outcomes?"
+```json
+{
+  "strategy": "crosstab",
+  "entity_filters": [],
+  "meta_filters": [],
+  "narrative_keywords": [],
+  "match_any_keyword": false,
+  "output_mode": "crosstab",
+  "aggregate_target": null,
+  "crosstab_target": {"row_field": "impact_type", "col_field": "severity_bin"},
+  "output_top_n": 10,
+  "confidence": 0.9,
+  "clarification": null,
+  "reasoning": "Proportion by two dimensions: use crosstab of impact_type × severity_bin."
+}
+```
+
+User: "What is the severity distribution of incidents involving trucks compared to those involving cranes?"
+```json
+{
+  "strategy": "custom",
+  "entity_filters": [],
+  "meta_filters": [],
+  "narrative_keywords": [],
+  "match_any_keyword": false,
+  "output_mode": "aggregate",
+  "aggregate_target": null,
+  "crosstab_target": null,
+  "custom_fn": "severity_comparison",
+  "output_top_n": 10,
+  "confidence": 0.85,
+  "clarification": null,
+  "reasoning": "Compare severity distributions for two equipment groups; use custom severity_comparison."
+}
+```
+
+User: "What are the most common injury types for each of the top 5 equipment categories?"
+```json
+{
+  "strategy": "custom",
+  "entity_filters": [],
+  "meta_filters": [],
+  "narrative_keywords": [],
+  "match_any_keyword": false,
+  "output_mode": "aggregate",
+  "aggregate_target": null,
+  "crosstab_target": null,
+  "custom_fn": "top_injury_per_equipment",
+  "output_top_n": 10,
+  "confidence": 0.85,
+  "clarification": null,
+  "reasoning": "Per top-5 equipment analysis; use custom top_injury_per_equipment."
+}
+```
+
+User: "How has the overall safety incident profile changed over the dataset's time range? Are certain incident types increasing or decreasing?"
+```json
+{
+  "strategy": "crosstab",
+  "entity_filters": [],
+  "meta_filters": [],
+  "narrative_keywords": [],
+  "match_any_keyword": false,
+  "output_mode": "crosstab",
+  "aggregate_target": null,
+  "crosstab_target": {"row_field": "year", "col_field": "incident_type"},
+  "output_top_n": 10,
+  "confidence": 0.9,
+  "clarification": null,
+  "reasoning": "Temporal trend by incident type: crosstab year × incident_type. Never use count_by_year as strategy."
+}
+```
+
 User: "What body parts are most commonly injured in crane incidents?"
 ```json
 {
@@ -212,15 +291,14 @@ User: "What injuries happen from equipment failures during maintenance?"
 
 1. Output ONLY valid JSON matching the schema. No markdown, no explanation outside the JSON.
 2. Always include the "reasoning" field explaining your choices.
-3. Set confidence < 0.7 and provide "clarification" when:
-   - The query is vague or ambiguous
-   - You're unsure which entity type maps to a user's term
-   - The query might not be answerable by this graph
-4. Use "intersect" whenever you have 2+ filter types (entity + meta, entity + narrative, etc.)
-5. For entity patterns, include common synonyms and abbreviations separated by |
-6. Prefer entity_filters and meta_filters over narrative_keywords when possible — they're more precise.
-7. narrative_keywords is for concepts not captured by entity types (e.g., "dropped object", "chemical spill", "maintenance").
-8. The graph has ~20,000 incidents. Very specific multi-filter queries may return 0 results — that's ok.
+3. strategy must be one of: entity_filter, meta_filter, narrative_filter, intersect, crosstab, custom, out_of_scope. Never "aggregate" or "count_by_year" (those are output_mode only).
+4. aggregate_target.entity_type must be a graph entity type (EQUIPMENT, LOCATION, BODY_PART, INJURY_TYPE, ROOT_CAUSE_CATEGORY, ORGANIZATION, INCIDENT). For breakdowns by severity_bin, impact_type, year, etc., use output_mode "crosstab" and crosstab_target instead.
+5. Always set output_top_n to an integer (e.g. 10). Do not omit or set null.
+6. Set confidence < 0.7 and provide "clarification" when the query is vague, or when unsure if it's answerable by this graph.
+7. Use "intersect" whenever you have 2+ filter types (entity + meta, entity + narrative, etc.).
+8. For "proportion by X and Y" or "distribution of severity by category", use strategy "crosstab" with crosstab_target.
+9. For "for each of the top 5 X" or "compare A vs B" severity/distribution, use strategy "custom" and set custom_fn when you know the function name (e.g. top_injury_per_equipment, severity_comparison).
+10. Prefer entity_filters and meta_filters over narrative_keywords when possible. The graph has ~20,000 incidents; very specific multi-filter queries may return 0 results — that's ok.
 """
 
 

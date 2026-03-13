@@ -149,11 +149,16 @@ class NLQueryOutput(BaseModel):
         description="Required when output_mode is 'crosstab'. "
         "Specifies the two metadata fields."
     )
-    output_top_n: int = Field(
+    custom_fn: Optional[str] = Field(
+        default=None,
+        description="When strategy is 'custom', the name of the custom query function "
+        "(e.g. 'top_injury_per_equipment', 'severity_comparison'). Leave null otherwise."
+    )
+    output_top_n: Optional[int] = Field(
         default=10,
         ge=1,
         le=50,
-        description="Number of top results to return for aggregations."
+        description="Number of top results to return for aggregations. Use 10 if unsure."
     )
     confidence: float = Field(
         default=0.9,
@@ -173,11 +178,22 @@ class NLQueryOutput(BaseModel):
         "and these filters."
     )
 
-    @field_validator("strategy")
+    @field_validator("strategy", mode="before")
     @classmethod
-    def validate_strategy(cls, v, info):
-        """Auto-upgrade to intersect if multiple filter types used."""
-        # This runs after all fields are set; we handle in the bridge.
+    def coerce_strategy(cls, v):
+        """Coerce common LLM mistakes: 'aggregate' and 'count_by_year' are output_modes."""
+        if v == "aggregate":
+            return "entity_filter"  # aggregation is expressed via output_mode
+        if v == "count_by_year":
+            return "meta_filter"  # temporal trend is output_mode count_by_year
+        return v
+
+    @field_validator("output_top_n", mode="before")
+    @classmethod
+    def default_output_top_n(cls, v):
+        """Coerce None to 10 so LLM omitting the field still validates."""
+        if v is None:
+            return 10
         return v
 
 
@@ -245,10 +261,10 @@ def to_query_spec(nl: NLQueryOutput, query_id: str = "NL-00",
         "require_connected": None,
         "output_mode": output_mode,
         "output_target": output_target,
-        "output_top_n": nl.output_top_n,
+        "output_top_n": nl.output_top_n or 10,
         "coverage_thresholds": (1, 0),
         "diagnosis_rule": "auto",
-        "custom_fn": "",
+        "custom_fn": (nl.custom_fn or "").strip(),
         "ground_truth": set(),
         "notes": nl.reasoning or "",
         "expected_count": None,

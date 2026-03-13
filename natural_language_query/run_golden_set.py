@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run the NL translator over the golden set of dashboard queries.
 
-Tests translation quality (NL -> QuerySpec) for all 30 golden set questions
+Tests translation quality (NL -> QuerySpec) for all 44 golden set questions
 without requiring graph execution. Optionally runs execute_query when
 pipeline_v2 data is available.
 
@@ -42,6 +42,20 @@ GOLDEN_SET = [
     ("SH-04", "Which locations reported valve-related incidents?", "Single-Hop"),
     ("SH-05", "What types of injuries resulted from incidents at offshore installations?", "Single-Hop"),
     ("SH-06", "What incidents were reported by client SHELL OFFSHORE INC.?", "Single-Hop"),
+    # Spot-check (13)
+    ("SC-01", "In incident #623703, what equipment was involved?", "Spot-check"),
+    ("SC-02", "In incident #570187, what equipment was involved?", "Spot-check"),
+    ("SC-03", "In incident #602346, what equipment was involved?", "Spot-check"),
+    ("SC-04", "In incident #14338, what equipment was involved?", "Spot-check"),
+    ("SC-05", "In incident #500389, what equipment was involved?", "Spot-check"),
+    ("SC-06", "In incident #8712, what equipment was involved?", "Spot-check"),
+    ("SC-07", "In incident #511771, what equipment was involved?", "Spot-check"),
+    ("SC-08", "In incident #324, what equipment was involved?", "Spot-check"),
+    ("SC-09", "In incident #18312, what equipment was involved?", "Spot-check"),
+    ("SC-04b", "In incident #14338, which body parts were affected?", "Spot-check"),
+    ("SC-06b", "In incident #8712, which body parts were affected?", "Spot-check"),
+    ("SC-07b", "In incident #511771, which body parts were affected?", "Spot-check"),
+    ("SC-09b", "In incident #18312, which body parts were affected?", "Spot-check"),
     # Aggregation (6)
     ("AG-01", "What are the most common root causes of dropped object incidents?", "Aggregation"),
     ("AG-02", "Which countries have the highest rate of high-severity incidents?", "Aggregation"),
@@ -63,13 +77,14 @@ GOLDEN_SET = [
     ("GL-02", "Are there systemic patterns where the same type of equipment failure recurs across different geographic regions?", "Global"),
     ("GL-03", "How has the overall safety incident profile changed over the dataset's time range? Are certain incident types increasing or decreasing?", "Global"),
     ("GL-04", "What entities serve as the most connected hubs in the knowledge graph, and what does their centrality reveal about systemic risk?", "Global"),
-    # Conjunctive (6)
+    # Conjunctive (7)
     ("CJ-01", "Which incidents match the pattern of corrosion-induced equipment failure leading to fire?", "Conjunctive"),
     ("CJ-02", "Find all high-severity incidents where a crane was involved AND a back injury was sustained AND the location was offshore.", "Conjunctive"),
     ("CJ-03", "Identify incidents where maintenance procedures failed, involving pipe equipment, resulting in environmental impact at locations in the Middle East.", "Conjunctive"),
     ("CJ-04", "Which equipment types have caused both injuries AND near-misses at the same location within the same year?", "Conjunctive"),
     ("CJ-05", "Find the causal chain pattern: procedural non-compliance -> dropped object -> head/hand injury. How many incidents match?", "Conjunctive"),
     ("CJ-06", "Which incidents involve the co-occurrence of slip/fall events AND vehicle/transportation equipment at construction sites?", "Conjunctive"),
+    ("CJ-07", "What are the primary effects of corrosion on equipment and incidents in the dataset?", "Conjunctive"),
 ]
 
 
@@ -172,7 +187,7 @@ def print_summary(results: list) -> None:
         if r["success"]:
             by_family[f]["pass"] += 1
     print("\nBy family:")
-    for fam in ("Single-Hop", "Aggregation", "Multi-Hop", "Global", "Conjunctive"):
+    for fam in ("Single-Hop", "Spot-check", "Aggregation", "Multi-Hop", "Global", "Conjunctive"):
         if fam in by_family:
             info = by_family[fam]
             print(f"  {fam}: {info['pass']}/{info['total']}")
