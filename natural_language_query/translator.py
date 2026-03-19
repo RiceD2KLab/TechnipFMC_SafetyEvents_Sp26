@@ -31,21 +31,28 @@ import re
 import time
 from typing import Optional
 
-from .prompt import SYSTEM_PROMPT, USER_PROMPT_TEMPLATE
+from .prompt import SYSTEM_PROMPT, SYSTEM_PROMPT_OLLAMA_COMPACT, USER_PROMPT_TEMPLATE
 from .schema import NLQueryOutput, to_query_spec
 
 
 # ── LLM backends ─────────────────────────────────────────────────────────
 
 
-def _call_ollama(query: str, model: str, base_url: str, temperature: float) -> str:
+def _call_ollama(
+    query: str,
+    model: str,
+    base_url: str,
+    temperature: float,
+    system_prompt: str,
+) -> str:
     """Call local Ollama endpoint."""
     import requests
 
+    timeout_sec = int(os.environ.get("OLLAMA_TIMEOUT_SEC", "900"))
     payload = {
         "model": model,
         "prompt": USER_PROMPT_TEMPLATE.format(query=query),
-        "system": SYSTEM_PROMPT,
+        "system": system_prompt,
         "stream": False,
         "options": {
             "temperature": temperature,
@@ -57,7 +64,7 @@ def _call_ollama(query: str, model: str, base_url: str, temperature: float) -> s
     # (e.g. qwen3.5) that return empty responses with structured output mode.
     payload["format"] = "json"
     resp = requests.post(
-        f"{base_url}/api/generate", json=payload, timeout=300,
+        f"{base_url}/api/generate", json=payload, timeout=timeout_sec,
     )
     resp.raise_for_status()
     text = resp.json()["response"]
@@ -67,13 +74,13 @@ def _call_ollama(query: str, model: str, base_url: str, temperature: float) -> s
     # Retry without format constraint
     del payload["format"]
     resp = requests.post(
-        f"{base_url}/api/generate", json=payload, timeout=300,
+        f"{base_url}/api/generate", json=payload, timeout=timeout_sec,
     )
     resp.raise_for_status()
     return resp.json()["response"]
 
 
-def _call_anthropic(query: str, model: str, temperature: float) -> str:
+def _call_anthropic(query: str, model: str, temperature: float, system_prompt: str) -> str:
     """Call Anthropic Messages API."""
     import anthropic
 
@@ -85,18 +92,20 @@ def _call_anthropic(query: str, model: str, temperature: float) -> str:
         model=model,
         max_tokens=1024,
         temperature=temperature,
-        system=SYSTEM_PROMPT,
+        system=system_prompt,
         messages=[
             {
                 "role": "user",
                 "content": USER_PROMPT_TEMPLATE.format(query=query),
             }
         ],
+        # Ask Anthropic to return a single JSON object with no extra text
+        response_format={"type": "json_object"},
     )
     return message.content[0].text
 
 
-def _call_gemini(query: str, model: str, temperature: float) -> str:
+def _call_gemini(query: str, model: str, temperature: float, system_prompt: str) -> str:
     """Call Google Gemini API."""
     from google import genai
 
@@ -106,7 +115,7 @@ def _call_gemini(query: str, model: str, temperature: float) -> str:
         model=model,
         contents=USER_PROMPT_TEMPLATE.format(query=query),
         config={
-            "system_instruction": SYSTEM_PROMPT,
+            "system_instruction": system_prompt,
             "temperature": temperature,
             "max_output_tokens": 1024,
             "response_mime_type": "application/json",
@@ -143,10 +152,186 @@ def _clean_json(raw: str) -> str:
     return raw
 
 
+def _normalize_for_schema(data: dict) -> dict:
+    """Best-effort normalization to avoid hard failures on minor LLM slip-ups.
+
+    This should only fix/drop obviously invalid values (e.g., empty relations),
+    not invent semantics.
+    """
+    if not isinstance(data, dict):
+        return data
+
+    # Drop invalid/incomplete entity_filters entries rather than failing validation.
+    efs = data.get("entity_filters")
+    if isinstance(efs, list):
+        entity_type_aliases = {
+            # Natural-language aliases
+            "CLIENT": "ORGANIZATION",
+            "CUSTOMER": "ORGANIZATION",
+            "COMPANY": "ORGANIZATION",
+            "FIRM": "ORGANIZATION",
+        }
+        valid_entity_types = {
+            "EQUIPMENT",
+            "LOCATION",
+            "BODY_PART",
+            "INJURY_TYPE",
+            "ROOT_CAUSE_CATEGORY",
+            "ORGANIZATION",
+            "INCIDENT",
+        }
+        valid_relations = {
+            "INVOLVED",
+            "OCCURRED_AT",
+            "RESULTED_IN",
+            "REPORTED_BY",
+            "CATEGORIZED_AS",
+            "AFFECTED",
+            "LOCATED_IN",
+        }
+
+        cleaned_efs = []
+        for ef in efs:
+            if not isinstance(ef, dict):
+                continue
+            et = ef.get("entity_type")
+            pat = ef.get("pattern")
+            rel = ef.get("relation")
+            if et is None or pat is None or rel is None:
+                continue
+
+            # Map common aliases (e.g., "client" -> ORGANIZATION)
+            if isinstance(et, str):
+                et_norm = et.strip().upper()
+                et_norm = entity_type_aliases.get(et_norm, et_norm)
+                if et_norm not in valid_entity_types:
+                    # If it's not a known entity type, drop this filter.
+                    continue
+                ef["entity_type"] = et_norm
+
+            if isinstance(rel, str) and not rel.strip():
+                continue
+
+            # Drop empty/invalid relation strings.
+            if isinstance(rel, str):
+                rel_norm = rel.strip().upper()
+                if rel_norm not in valid_relations:
+                    continue
+                ef["relation"] = rel_norm
+
+            cleaned_efs.append(ef)
+        data["entity_filters"] = cleaned_efs
+
+    # Drop invalid/incomplete meta_filters entries; map "=~" → "contains".
+    mfs = data.get("meta_filters")
+    if isinstance(mfs, list):
+        valid_ops = {"==", "!=", ">", ">=", "<", "<=", "contains"}
+        cleaned_mfs = []
+        for mf in mfs:
+            if not isinstance(mf, dict):
+                continue
+            field = mf.get("field")
+            op = mf.get("op")
+            value = mf.get("value")
+            # Some models emit regex op; we only support contains for string match.
+            if op == "=~":
+                op = "contains"
+            # Some models use a single '=' (common mistake) instead of '=='.
+            if op == "=":
+                op = "=="
+            if field is None or op is None or value is None:
+                continue
+            if isinstance(op, str):
+                op_norm = op.strip()
+                if op_norm not in valid_ops:
+                    continue
+                mf["op"] = op_norm
+            if isinstance(value, str):
+                cleaned_mfs.append({"field": field, "op": op, "value": value})
+            else:
+                continue
+        data["meta_filters"] = cleaned_mfs
+
+    # Normalize crosstab_target: some small models emit it as a list or as
+    # a different object shape. Since it's optional, we can safely drop it
+    # when it's not a proper {row_field, col_field} object.
+    ct = data.get("crosstab_target")
+    if isinstance(ct, list):
+        data["crosstab_target"] = None
+    elif isinstance(ct, dict):
+        if ct.get("row_field") is None or ct.get("col_field") is None:
+            data["crosstab_target"] = None
+        else:
+            # Normalize key names if the model used different fields.
+            # If it doesn't look right, drop it.
+            if "row_field" not in ct or "col_field" not in ct:
+                data["crosstab_target"] = None
+            else:
+                data["crosstab_target"] = {
+                    "row_field": ct.get("row_field"),
+                    "col_field": ct.get("col_field"),
+                }
+
+    # Normalize aggregate_target: if it's present but incomplete (nulls),
+    # drop it. This avoids enum validation errors while keeping execution possible.
+    at = data.get("aggregate_target")
+    if isinstance(at, dict):
+        if at.get("entity_type") is None or at.get("relation") is None:
+            data["aggregate_target"] = None
+
+    # If aggregate_target is present but relation missing/invalid, fill from entity_type.
+    # This prevents frequent small-model mistakes (None/empty/unknown relation).
+    at = data.get("aggregate_target")
+    if isinstance(at, dict):
+        et = at.get("entity_type")
+        rel = at.get("relation")
+        relation_by_entity_type = {
+            "EQUIPMENT": "INVOLVED",
+            "LOCATION": "OCCURRED_AT",
+            "BODY_PART": "AFFECTED",
+            "INJURY_TYPE": "RESULTED_IN",
+            "ROOT_CAUSE_CATEGORY": "CATEGORIZED_AS",
+            "ORGANIZATION": "REPORTED_BY",
+            "INCIDENT": "INVOLVED",
+        }
+        if et in relation_by_entity_type and (rel is None or not str(rel).strip() or rel in {"HAS_INCIDENT", "INCIDENT_ID"}):
+            at["relation"] = relation_by_entity_type[et]
+            data["aggregate_target"] = at
+
+    # Coerce confidence: some small models emit null.
+    if "confidence" in data and data.get("confidence") is None:
+        data["confidence"] = 0.9
+    elif "confidence" in data:
+        conf = data.get("confidence")
+        # Accept numeric strings too.
+        if isinstance(conf, str):
+            try:
+                data["confidence"] = float(conf)
+            except ValueError:
+                data["confidence"] = 0.9
+        # If it's another non-null type, fallback.
+        elif not isinstance(conf, (int, float)):
+            data["confidence"] = 0.9
+
+    return data
+
+
 def _parse_and_validate(raw: str) -> NLQueryOutput:
     """Parse raw LLM output into validated NLQueryOutput."""
     cleaned = _clean_json(raw)
-    data = json.loads(cleaned)
+
+    # First, try strict JSON parsing
+    try:
+        data = json.loads(cleaned)
+    except json.JSONDecodeError:
+        # Fallback: allow control characters like raw newlines inside strings.
+        # This is not strictly valid JSON, but many LLMs emit it; Python can
+        # still parse it with strict=False, which is good enough for schema validation.
+        data = json.loads(cleaned, strict=False)
+
+    if isinstance(data, dict):
+        data = _normalize_for_schema(data)
+
     return NLQueryOutput.model_validate(data)
 
 
@@ -196,7 +381,17 @@ def translate(
         model = default_models.get(backend, "qwen3:8b")
 
     call_fn = BACKENDS[backend]
-    call_kwargs = {"query": query, "model": model, "temperature": temperature}
+    # Use a compact system prompt for small local models to reduce timeouts and schema drift.
+    system_prompt = SYSTEM_PROMPT
+    if backend == "ollama" and any(s in (model or "").lower() for s in ("qwen2.5:3b", "3b")):
+        system_prompt = SYSTEM_PROMPT_OLLAMA_COMPACT
+
+    call_kwargs = {
+        "query": query,
+        "model": model,
+        "temperature": temperature,
+        "system_prompt": system_prompt,
+    }
     if backend == "ollama":
         call_kwargs["base_url"] = base_url
 
@@ -211,7 +406,9 @@ def translate(
             call_kwargs["query"] = (
                 f"{query}\n\n"
                 f"[RETRY: Your previous response had a JSON error: "
-                f"{last_error}. Please output ONLY valid JSON.]"
+                f"{last_error}. Please output ONLY valid JSON, with no text "
+                f"before or after the JSON object, and escape any newlines "
+                f"inside string values (use \\n).]"
             )
 
         try:

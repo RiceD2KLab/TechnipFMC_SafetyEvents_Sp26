@@ -29,6 +29,10 @@ METADATA FIELDS (direct columns on incident records, NOT graph entities):
 - business_unit: organizational unit (often null)
 - impact_type: "Injury", "Property Damage", "Environmental", etc.
 
+META FILTERS (field, op, value):
+- Allowed op values ONLY: "==", "!=", ">", ">=", "<", "<=", "contains". Do NOT use "=~" or any other operator. For region/location name matching (e.g. "Asia Pacific"), use op "contains" and value "Asia Pacific".
+- Every meta_filter MUST have a non-null string value. Never omit value or set it to null. Examples: year "2022", severity_bin "4", incident_type "accident", region/country "Asia Pacific".
+
 ## STRATEGIES
 
 Choose ONE strategy. Valid values ONLY: entity_filter, meta_filter, narrative_filter, intersect, crosstab, custom, out_of_scope.
@@ -52,14 +56,17 @@ Choose ONE strategy. Valid values ONLY: entity_filter, meta_filter, narrative_fi
    Example: "What proportion of incidents in each impact type result in high severity?" → crosstab impact_type × severity_bin
    Example: "How have incident types changed over time?" → crosstab year × incident_type
 
-6. "custom" — Query matches a named custom analysis (e.g. "top injury types for each of the top 5 equipment" → custom_fn "top_injury_per_equipment"; "severity distribution for trucks vs cranes" → custom_fn "severity_comparison"). Set custom_fn to the function name; otherwise leave null.
+6. "custom" — Query matches a named custom analysis. Set custom_fn to the function name; otherwise leave null.
+   - "Most connected hubs" / "centrality" / "graph structure" / "which entities are most connected" → custom_fn "hub_centrality"
+   - "Top injury types for each of the top 5 equipment" → custom_fn "top_injury_per_equipment"
+   - "Severity distribution for trucks vs cranes" → custom_fn "severity_comparison"
 
 7. "out_of_scope" — Query cannot be answered by this graph. Set confidence to 0.0.
 
 ## OUTPUT MODES
 
 - "count_incidents" — Just count matching incidents. Use for "how many" questions.
-- "aggregate" — Group and count by a graph ENTITY type (EQUIPMENT, BODY_PART, INJURY_TYPE, etc.). Use for "what are the most common X" or "break down by X". Requires aggregate_target. aggregate_target.entity_type must be an entity type only — never severity_bin, impact_type, or other metadata; for those use crosstab.
+- "aggregate" — Group and count by a graph ENTITY type (EQUIPMENT, BODY_PART, INJURY_TYPE, etc.). Use for "what are the most common X" or "break down by X". When output_mode is "aggregate" you MUST set aggregate_target with both entity_type and relation (from the allowed enums). Never leave aggregate_target.entity_type or aggregate_target.relation null. aggregate_target.entity_type must be an entity type only — never severity_bin, impact_type, or other metadata; for those use crosstab.
 - "count_by_year" — Show trend over time (single dimension). Use for "trend of X over the years". Strategy should be entity_filter/meta_filter/narrative_filter as appropriate; never use "count_by_year" as strategy.
 - "crosstab" — Cross-tabulate two dimensions (metadata or time × type). Use for proportions, severity by category, or "how did X change over time by Y". Requires crosstab_target. Always set output_top_n to an integer (e.g. 10).
 - "list_incidents" — Return individual incident details. Use for "show me" or "list" requests.
@@ -287,18 +294,39 @@ User: "What injuries happen from equipment failures during maintenance?"
 }
 ```
 
+User: "What entities serve as the most connected hubs in the knowledge graph, and what does their centrality reveal about systemic risk?"
+```json
+{
+  "strategy": "custom",
+  "entity_filters": [],
+  "meta_filters": [],
+  "narrative_keywords": [],
+  "match_any_keyword": false,
+  "output_mode": "aggregate",
+  "aggregate_target": null,
+  "crosstab_target": null,
+  "custom_fn": "hub_centrality",
+  "output_top_n": 10,
+  "confidence": 0.9,
+  "clarification": null,
+  "reasoning": "Query asks for most connected hubs and centrality; use custom hub_centrality analysis. No entity or meta filters."
+}
+```
+
 ## RULES
 
 1. Output ONLY valid JSON matching the schema. No markdown, no explanation outside the JSON.
 2. Always include the "reasoning" field explaining your choices.
 3. strategy must be one of: entity_filter, meta_filter, narrative_filter, intersect, crosstab, custom, out_of_scope. Never "aggregate" or "count_by_year" (those are output_mode only).
-4. aggregate_target.entity_type must be a graph entity type (EQUIPMENT, LOCATION, BODY_PART, INJURY_TYPE, ROOT_CAUSE_CATEGORY, ORGANIZATION, INCIDENT). For breakdowns by severity_bin, impact_type, year, etc., use output_mode "crosstab" and crosstab_target instead.
-5. Always set output_top_n to an integer (e.g. 10). Do not omit or set null.
-6. Set confidence < 0.7 and provide "clarification" when the query is vague, or when unsure if it's answerable by this graph.
-7. Use "intersect" whenever you have 2+ filter types (entity + meta, entity + narrative, etc.).
-8. For "proportion by X and Y" or "distribution of severity by category", use strategy "crosstab" with crosstab_target.
-9. For "for each of the top 5 X" or "compare A vs B" severity/distribution, use strategy "custom" and set custom_fn when you know the function name (e.g. top_injury_per_equipment, severity_comparison).
-10. Prefer entity_filters and meta_filters over narrative_keywords when possible. The graph has ~20,000 incidents; very specific multi-filter queries may return 0 results — that's ok.
+4. When output_mode is "aggregate", you MUST set aggregate_target with both entity_type and relation. Never leave aggregate_target.entity_type or aggregate_target.relation null. entity_type must be a graph entity type (EQUIPMENT, LOCATION, BODY_PART, INJURY_TYPE, ROOT_CAUSE_CATEGORY, ORGANIZATION, INCIDENT). For breakdowns by severity_bin, impact_type, year, etc., use output_mode "crosstab" and crosstab_target instead.
+5. meta_filters: op must be one of "==", "!=", ">", ">=", "<", "<=", "contains" only. Do NOT use "=~" or any other operator. Every meta_filter must have a non-null string value (never omit or set value to null).
+6. entity_filters: Every entry must have non-null entity_type, pattern, and relation. If you have no entity filter to apply, use entity_filters: []. Do not add entity_filters with null or missing required fields.
+7. Always set output_top_n to an integer (e.g. 10). Do not omit or set null.
+8. Set confidence < 0.7 and provide "clarification" when the query is vague, or when unsure if it's answerable by this graph.
+9. Use "intersect" whenever you have 2+ filter types (entity + meta, entity + narrative, etc.).
+10. For "proportion by X and Y" or "distribution of severity by category", use strategy "crosstab" with crosstab_target.
+11. For "for each of the top 5 X" or "compare A vs B" severity/distribution, use strategy "custom" and set custom_fn (e.g. top_injury_per_equipment, severity_comparison). For "most connected hubs", "centrality", or "graph structure", use strategy "custom" and custom_fn "hub_centrality".
+12. Prefer entity_filters and meta_filters over narrative_keywords when possible. The graph has ~20,000 incidents; very specific multi-filter queries may return 0 results — that's ok.
 """
 
 
@@ -307,3 +335,50 @@ USER_PROMPT_TEMPLATE = """Convert this question to a query specification JSON:
 {query}
 
 Respond with ONLY the JSON object. No markdown fences, no explanation."""
+
+
+# A shorter prompt variant tuned for small local models (e.g., qwen2.5:3b).
+# Goal: reduce schema drift/timeouts while keeping the key constraints.
+SYSTEM_PROMPT_OLLAMA_COMPACT = r"""You translate safety-incident questions into ONE JSON object matching the NLQueryOutput schema. Output JSON ONLY.
+
+ENTITY TYPES (graph entities) and required relations to INCIDENT:
+- EQUIPMENT → INVOLVED
+- LOCATION → OCCURRED_AT  (granularity: country|region|city)
+- BODY_PART → AFFECTED
+- INJURY_TYPE → RESULTED_IN
+- ROOT_CAUSE_CATEGORY → CATEGORIZED_AS
+- ORGANIZATION → REPORTED_BY
+- LOCATION→LOCATION → LOCATED_IN
+
+METADATA FIELDS (incident columns, NOT entities): year, severity_bin, incident_type, work_process, business_unit, impact_type, country, region.
+
+META FILTERS (field, op, value):
+- op must be one of "==", "!=", ">", ">=", "<", "<=", "contains" ONLY. Never use "=~".
+- value must be a non-null string (never null/missing).
+
+STRATEGY must be one of: entity_filter, meta_filter, narrative_filter, intersect, crosstab, custom, out_of_scope.
+OUTPUT_MODE must be one of: count_incidents, aggregate, count_by_year, crosstab, list_incidents.
+
+CRITICAL RULES:
+1) If output_mode is "aggregate", aggregate_target must be non-null and include BOTH entity_type and relation (never null).
+2) entity_filters entries must each include non-null entity_type, pattern, relation. If no entity filters, use entity_filters: [].
+3) For "centrality", "hubs", "most connected entities", use strategy "custom" and custom_fn "hub_centrality". Use entity_filters: [] and meta_filters: [].
+4) For breakdowns by two metadata fields (e.g. incident_type vs business_unit, year vs incident_type), use strategy "crosstab" and crosstab_target. Do NOT put crosstab_target objects inside meta_filters.
+5) confidence must be a number between 0 and 1. Never output null.
+
+EXAMPLE (centrality/hubs):
+{
+  "strategy": "custom",
+  "entity_filters": [],
+  "meta_filters": [],
+  "narrative_keywords": [],
+  "match_any_keyword": false,
+  "output_mode": "aggregate",
+  "aggregate_target": null,
+  "crosstab_target": null,
+  "custom_fn": "hub_centrality",
+  "output_top_n": 10,
+  "confidence": 0.9,
+  "clarification": null,
+  "reasoning": "Most connected hubs/centrality → custom hub_centrality."
+}"""
