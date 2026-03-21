@@ -1,6 +1,6 @@
 # Golden Set Iteration Process (NLQ Translator)
 
-This document tracks the iterative changes we made to the `natural_language_query` NL → structured query translator using the golden set.
+This document tracks the iterative changes made to the `natural_language_query` NL → structured query translator using the golden set.
 
 Scope:
 - Golden set runner: `python -m natural_language_query.run_golden_set`
