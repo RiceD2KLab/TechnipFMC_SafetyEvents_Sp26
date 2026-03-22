@@ -204,8 +204,7 @@ def containment_injury_offshore(spec, G, entities_df, relations_df,
         f"Equipment in those incidents:",
     ] + [f"  {eq}: {cnt}" for eq, cnt in equip_counts.most_common(10)]
 
-    coverage = ("\u2705" if len(equip_counts) >= 3
-                else ("\u26a0\ufe0f" if equip_counts else "\u274c"))
+    coverage = "\u2705" if equip_counts else "\u274c"
     diag = "CLEAN" if equip_counts else "DATA_SPARSE"
 
     return {
@@ -656,6 +655,95 @@ def corrosion_effects(spec, G, entities_df, relations_df, metadata_df,
     }
 
 
+# ── IOGP-05: Electrical incidents with LOTO failures (L2 FAILED_CONTROL) ─
+
+def loto_failures_l2(spec, G, entities_df, relations_df, metadata_df,
+                     *, results=None):
+    """Find electrical/LOTO incidents and trace FAILED_CONTROL edges via L2."""
+    if relations_df is None or "relation" not in relations_df.columns:
+        return {
+            "coverage": "❌",
+            "diagnosis": "L2_REQUIRED",
+            "result_summary": "0 FAILED_CONTROL edges — L2 merge needed",
+            "detail": "No relations data available. Run merge_l2_edges.py first.",
+        }
+    failed_ctrl_edges = relations_df[relations_df["relation"] == "FAILED_CONTROL"]
+
+    if len(failed_ctrl_edges) == 0:
+        return {
+            "coverage": "❌",
+            "diagnosis": "L2_REQUIRED",
+            "result_summary": "0 FAILED_CONTROL edges — L2 merge needed",
+            "detail": "No L2 FAILED_CONTROL edges found. Run merge_l2_edges.py first.",
+        }
+
+    # Step 1: Find electrical/LOTO incidents via narrative keywords
+    loto_keywords = ["lock out", "lockout", "tag out", "tagout", "loto",
+                     "energized", "arc flash", "electrical isolation",
+                     "de-energi", "deenergiz"]
+    loto_record_nos = incidents_matching_narrative(
+        metadata_df, loto_keywords, match_all=False)
+    loto_incident_ids = {f"INCIDENT::{rn}" for rn in loto_record_nos} & set(G.nodes())
+
+    # Step 2: Filter FAILED_CONTROL edges to LOTO incidents
+    loto_fc = failed_ctrl_edges[
+        failed_ctrl_edges["record_no"].astype(str).isin(
+            {str(rn) for rn in loto_record_nos})]
+
+    # Step 3: Categorize the failed controls (targets of FAILED_CONTROL edges)
+    control_counts = Counter()
+    sample_edges = []
+    seen_keys = set()
+    for _, e in loto_fc.iterrows():
+        src_val = str(safe_get_node_value(G, e["source"], "") or "")
+        tgt_val = str(safe_get_node_value(G, e["target"], "") or "")
+        control_counts[tgt_val] += 1
+        key = (src_val, tgt_val)
+        if key not in seen_keys and len(sample_edges) < 12:
+            sample_edges.append((src_val, tgt_val, str(e.get("record_no", "")),
+                                 str(e.get("evidence", ""))))
+            seen_keys.add(key)
+
+    # Step 4: All FAILED_CONTROL edges (not just LOTO) for overview
+    all_fc_counts = Counter()
+    for _, e in failed_ctrl_edges.iterrows():
+        tgt_val = str(safe_get_node_value(G, e["target"], "") or "")
+        if tgt_val:
+            all_fc_counts[tgt_val] += 1
+
+    lines = [
+        f"Total FAILED_CONTROL edges in graph: {len(failed_ctrl_edges):,}",
+        f"LOTO/electrical incidents (narrative match): {len(loto_incident_ids):,}",
+        f"  With FAILED_CONTROL edges: {loto_fc['record_no'].nunique():,}",
+        f"  FAILED_CONTROL edges in LOTO incidents: {len(loto_fc):,}",
+        "",
+        "Top failed controls in LOTO incidents:",
+    ]
+    for ctrl, cnt in control_counts.most_common(10):
+        lines.append(f"  {ctrl or '(unknown)'}: {cnt}")
+
+    if sample_edges:
+        lines.extend(["", "Sample edges (hazard --FAILED_CONTROL--> barrier):"])
+        for src, tgt, rn, evid in sample_edges:
+            evid_str = f" | \"{evid[:60]}\"" if evid and evid != "nan" else ""
+            lines.append(f"  [{rn}] {src} --> {tgt}{evid_str}")
+
+    lines.extend(["", "Top failed controls across all incidents:"])
+    for ctrl, cnt in all_fc_counts.most_common(10):
+        lines.append(f"  {ctrl or '(unknown)'}: {cnt}")
+
+    has_results = len(loto_incident_ids) > 0 and len(loto_fc) > 0
+    return {
+        "coverage": "✅" if has_results else "⚠️",
+        "diagnosis": "CLEAN" if has_results else "DATA_SPARSE",
+        "result_summary": (
+            f"{len(loto_incident_ids):,} incidents; "
+            f"{len(loto_fc):,} FAILED_CONTROL edges"
+            if has_results else f"{len(loto_incident_ids):,} incidents, 0 FAILED_CONTROL edges"),
+        "detail": "\n".join(lines),
+    }
+
+
 # ── Registry ─────────────────────────────────────────────────────────────
 
 CUSTOM_REGISTRY = {
@@ -669,4 +757,5 @@ CUSTOM_REGISTRY = {
     "dual_risk_detection": dual_risk_detection,
     "procedural_dropped_injury": procedural_dropped_injury,
     "corrosion_effects": corrosion_effects,
+    "loto_failures_l2": loto_failures_l2,
 }

@@ -22,6 +22,7 @@ _kg_cache = {
 
 # Color scheme for entity types (colorblind-friendly)
 ENTITY_COLORS = {
+    # L1 types
     "INCIDENT": "#E74C3C",
     "EQUIPMENT": "#3498DB",
     "BODY_PART": "#E67E22",
@@ -29,9 +30,17 @@ ENTITY_COLORS = {
     "LOCATION": "#27AE60",
     "ORGANIZATION": "#1ABC9C",
     "ROOT_CAUSE_CATEGORY": "#F1C40F",
+    # L2 causal entity types
+    "EVENT": "#C0392B",
+    "CONDITION": "#95A5A6",
+    "ACTION": "#5DADE2",
+    "MATERIAL": "#A9CCE3",
+    "PERSON": "#A569BD",
+    "INJURY": "#E59866",
 }
 
 ENTITY_TYPE_LABELS = {
+    # L1 types
     "INCIDENT": "Incident",
     "EQUIPMENT": "Equipment",
     "BODY_PART": "Body Part",
@@ -39,6 +48,13 @@ ENTITY_TYPE_LABELS = {
     "LOCATION": "Location",
     "ORGANIZATION": "Organization",
     "ROOT_CAUSE_CATEGORY": "Root Cause",
+    # L2 causal entity types
+    "EVENT": "Event",
+    "CONDITION": "Condition",
+    "ACTION": "Action",
+    "MATERIAL": "Material",
+    "PERSON": "Person",
+    "INJURY": "Injury",
 }
 
 # Max nodes to return in a subgraph (prevents mega-hub browser freeze)

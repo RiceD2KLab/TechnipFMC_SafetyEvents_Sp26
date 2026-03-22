@@ -342,7 +342,10 @@ def _output_crosstab(spec, metadata_df):
         col1 = metadata_df[field1].astype(str)
         col1_name = field1
 
-    col2 = metadata_df[field2].astype(str)
+    if field2 == "year":
+        col2 = metadata_df["reported_date"].apply(parse_year).astype(str)
+    else:
+        col2 = metadata_df[field2].astype(str)
 
     crosstab = defaultdict(Counter)
     null_count = 0
@@ -470,7 +473,8 @@ def _execute_spot_check(spec, G, entities_df):
     entities = get_entities_for_incident(
         G, inc_id, entity_type=etype, relation_type=relation)
     found_vals = sorted(
-        [safe_get_node_value(G, e) for e in entities if e in G])
+        v for e in entities if e in G
+        for v in [safe_get_node_value(G, e)] if v is not None)
     found_lower = {v.lower() for v in found_vals}
 
     missing = spec.ground_truth - found_lower

@@ -6,7 +6,7 @@ from datetime import date
 from pathlib import Path
 
 
-def generate_report(results, G, entities_df, metadata_df, output_path):
+def generate_report(results, G, entities_df, metadata_df, output_path, relations_df=None):
     """Generate benchmark_results.md from query results."""
     lines = []
     lines.append("# L1 Benchmark Query Results")
@@ -20,8 +20,18 @@ def generate_report(results, G, entities_df, metadata_df, output_path):
     lines.append(
         f"**Records:** {len(metadata_df):,} metadata rows, "
         f"{inc_count:,} incident nodes")
-    lines.append(
-        "**Layer:** L1 only (pre-ER, pre-Layer 2 causal enrichment)")
+    l2_count = 0
+    if relations_df is not None and "relation" in relations_df.columns:
+        l2_count = len(
+            relations_df[relations_df["relation"].isin(
+                ["CAUSAL", "PRECEDED_BY", "FAILED_CONTROL", "MITIGATED_BY"]
+            )]
+        )
+    layer_label = (
+        f"L1 + L2 ({l2_count:,} causal edges)" if l2_count > 0
+        else "L1 only (pre-Layer 2 causal enrichment)"
+    )
+    lines.append(f"**Layer:** {layer_label}")
     lines.append("")
 
     # ── Summary Table ────────────────────────────────────────────────
@@ -170,6 +180,24 @@ def generate_report(results, G, entities_df, metadata_df, output_path):
             lines.append(
                 f"- **{qid}** ({r['name']}): "
                 "metadata coverage too low for reliable results")
+    lines.append("")
+
+    lines.append("### Extraction gaps (actionable — would improve with better L1)")
+    lines.append("")
+    for qid, r in sorted(results.items()):
+        if r["diagnosis"] == "EXTRACTION_GAP":
+            lines.append(
+                f"- **{qid}** ({r['name']}): "
+                f"{r['result_summary']}")
+    lines.append("")
+
+    lines.append("### Confirmed sparse (correct result — data does not contain these intersections)")
+    lines.append("")
+    for qid, r in sorted(results.items()):
+        if r["diagnosis"] == "KNOWN_SPARSE":
+            lines.append(
+                f"- **{qid}** ({r['name']}): "
+                "conjunction too specific for dataset — 0 results confirmed")
     lines.append("")
 
     # ── Regression Snapshot ────────────────────────────────────────────

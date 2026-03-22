@@ -37,7 +37,7 @@ def main():
         custom_registry=CUSTOM_REGISTRY)
 
     print("\n\nGenerating benchmark_results.md...")
-    generate_report(results, G, entities_df, metadata_df, REPORT_PATH)
+    generate_report(results, G, entities_df, metadata_df, REPORT_PATH, relations_df=relations_df)
     print("Done.")
 
 
