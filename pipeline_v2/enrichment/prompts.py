@@ -59,9 +59,13 @@ Narrative: "Fire started in electrical panel due to short circuiting of wires. T
 → Event("fire") FAILED_CONTROL Equipment("smoke detector") — evidence: "smoke detector in the room was not functioning"
 
 Narrative: "The crane operator moved the load before receiving the signal from the banksman. The load struck the scaffolding, and the safety net had been removed for maintenance."
-→ Action("crane operator moved load before receiving signal") PRECEDED_BY Event("load struck scaffolding") — evidence: "moved the load before receiving the signal"
 → Action("crane operator moved load before receiving signal") CAUSAL Event("load struck scaffolding") — evidence: "The load struck the scaffolding"
 → Equipment("safety net") FAILED_CONTROL Event("load struck scaffolding") — evidence: "safety net had been removed for maintenance"
+
+Narrative: "A short circuit in the junction box caused a fire. The technician used a CO2 extinguisher to put out the fire before it spread to adjacent equipment."
+→ Condition("short circuit in the junction box") CAUSAL Event("fire") — evidence: "short circuit in the junction box caused a fire"
+→ Event("fire") MITIGATED_BY Equipment("CO2 extinguisher") — evidence: "used a CO2 extinguisher to put out the fire"
+NOTE: Do NOT write CAUSAL(fire → CO2 extinguisher). The extinguisher stopped the fire — that is MITIGATED_BY, not a causal consequence.
 
 Narrative: "The gas leak was detected by the H2S monitor, which triggered the emergency shutdown and prevented any injuries."
 → Event("gas leak") MITIGATED_BY Equipment("H2S monitor") — evidence: "gas leak was detected by the H2S monitor"
