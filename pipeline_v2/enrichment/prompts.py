@@ -20,14 +20,21 @@ TASK: Given an incident narrative and a list of pre-identified entities, extract
 
 RELATIONS (use exactly these strings):
 - CAUSAL: one thing caused, led to, or contributed to another (source=cause, target=effect). Covers direct cause, consequence, and contributing factors. Look for: "due to", "caused by", "because of", "resulted in", "causing", "leading to", "contributed to", "was a factor"
-- PRECEDED_BY: a temporal sequence with causal relevance — one event happened before and set the stage for another. Look for: "before", "prior to", "led to", "followed by", "then", "after", "earlier", "previously", "when", "during"
-- FAILED_CONTROL: a safety barrier, procedure, or control that was supposed to prevent the incident but failed or was absent. Look for: "failed to", "did not prevent", "bypassed", "overridden", "inadequate", "missing", "not in place", "not functioning", "was not worn", "not followed"
-- MITIGATED_BY: harm/event was prevented or reduced by a control or barrier (source=event, target=control). Look for: "prevented", "stopped", "contained", "caught", "PPE protected", "barrier held", "alarm alerted", "detected", "shut down", "isolated"
+- PRECEDED_BY: a temporal sequence with causal relevance — one event happened before and set the stage for another, but the link is not strictly causal. Look for: "before", "prior to", "followed by", "earlier", "previously". Only use when the relationship is NOT better described as CAUSAL.
+- FAILED_CONTROL: a safety barrier, procedure, PPE, or interlock that was supposed to prevent the incident but failed or was absent (source=event/hazard, target=failed control). Look for: "failed to", "did not prevent", "bypassed", "not functioning", "was not worn", "not in place", "not followed", "missing", "inadequate"
+- MITIGATED_BY: a safety control, device, or barrier that successfully stopped or reduced the harm (source=event/harm, target=control that worked). Look for: "extinguished by", "put out by", "stopped by", "contained by", "prevented by", "PPE protected", "safety belt held", "alarm triggered", "tripped" (circuit breakers/ELCB/MCB), "shut down", "isolated by", "detected by"
 
-DIRECTION RULE: For CAUSAL edges, source is always the CAUSE and target is always the EFFECT.
-- "fire due to corrosion" → source="corrosion", target="fire"
-- "leak caused damage" → source="leak", target="damage"
-- "rain contributed to slippery surface" → source="rain", target="slippery surface"
+DIRECTION RULES:
+- CAUSAL: source=cause, target=effect. "fire due to corrosion" → source="corrosion", target="fire"
+- FAILED_CONTROL: source=the hazard/event that occurred, target=the safety control that failed to prevent it. "smoke detector was not functioning" → source="fire/smoke", target="smoke detector"
+- MITIGATED_BY: source=the harm/event, target=the control that stopped it. "fire extinguisher put out the fire" → source="fire", target="fire extinguisher"
+
+CRITICAL DISTINCTION — CAUSAL vs MITIGATED_BY:
+CAUSAL is for harm PROGRESSION (A caused harm B to occur or worsen).
+MITIGATED_BY is for harm TERMINATION (safety control B stopped or contained harm A).
+When a fire is put out by a fire extinguisher: extract [cause CAUSAL fire] AND [fire MITIGATED_BY fire extinguisher].
+Do NOT create CAUSAL(fire → fire extinguisher) — that loses the mitigation signal entirely.
+Same applies to: MCB/ELCB tripping, safety belt catching a fall, spill pads containing a spill, gas valve closure stopping ignition.
 
 ENTITY TYPES (source and target must be one of these):
 Incident, Event, Equipment, Location, Person, Injury, Material, Condition, Action

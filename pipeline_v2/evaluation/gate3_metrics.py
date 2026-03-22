@@ -1,25 +1,69 @@
 """Gate 3 metrics for Layer 2 causal enrichment evaluation.
 
-Uses the CAUSAL relation schema (source=cause, target=effect) with:
-1. Direction-agnostic entity matching for CAUSAL edges (tries both alignments).
-2. Precision@K: Per record, only the top-K predicted edges are scored
-   where K = number of GT edges for that record.
-3. Causal presence: Fraction of GT records where production has at least
-   one matching CAUSAL edge.
+Gate design:
+- CAUSAL edges are the primary gate signal (blocking pass/fail).
+- FAILED_CONTROL, MITIGATED_BY, PRECEDED_BY are reported as advisory stats
+  but do not affect the gate verdict. These relation types have low model
+  production volume and entity phrasing that differs systematically from
+  annotator style — making them unsuitable as blocking criteria.
+
+Matching:
+- Entity similarity = max(token_overlap, sequence_similarity, tfidf_cosine)
+  so word-level, character-level, or TF-IDF weighted similarity can satisfy
+  the threshold.
+- Token overlap uses stop-word removal + light stemming (no external deps).
+- Sequence similarity uses stdlib difflib (Ratcliff/Obershelp).
+- TF-IDF cosine: IDF built from all predicted + GT edges before scoring;
+  smoothed log-IDF (log(N / df + 1)).
+- GT is deduplicated before scoring to remove exact duplicate annotations.
+
+Bipartite matching:
+- Per-record optimal matching via backtracking with pruning for records with
+  ≤12 edges per side. Falls back to greedy for larger inputs.
+- Records are independent so per-record optimal = globally optimal.
+- Upper-bound pruning: branch is cut when remaining capacity cannot exceed
+  current best weight.
+
+Chain compression credit (advisory):
+- For unmatched GT CAUSAL edges A→C, checks if predictions contain a 2-hop
+  path A→B→C (both hops above threshold). Chain TPs are reported and added
+  to chain-adjusted recall, but NOT used for gate pass/fail.
+
+Primary metrics (CAUSAL only):
+1. Precision: TP / all predicted CAUSAL (in GT records). No cherry-picking.
+2. Recall: TP / GT CAUSAL edges. GT files must only contain records that
+   appear in the prediction set — dead records (no L1 entities, failed pre-filter)
+   should be removed from GT upstream so they don't inflate the denominator.
+3. F1: harmonic mean of precision and recall.
+4. Causal presence: fraction of GT CAUSAL records with ≥1 matched edge.
+5. Evidence F1: token-level F1 on matched evidence spans.
+
+Known evaluation limitations (see docs/l2_review_2026-03-21.md):
+- GT covers only ~1.6% of processed records, skewed toward fire incidents.
+- Chain compression: model writes A→C, GT writes A→B + B→C — recall is penalised.
+  Chain-adjusted recall (advisory) quantifies this effect.
+- Matching threshold sensitivity: ~14pp P/R swing from t=0.30 to t=0.60.
+- Informational oracle_precision_at_k (oracle P@K) is reported but NOT used for
+  gating — it selects predictions by GT similarity, making it circular.
 """
 from __future__ import annotations
 
 import argparse
+import difflib
 import json
+import math
 import re
 import sys
 from collections import defaultdict
 from pathlib import Path
-from typing import Any, Dict, List, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 # ── Preprocessing ────────────────────────────────────────────────────────────
 
 _TYPE_WRAPPER_RE = re.compile(r'^[A-Za-z]+\("(.+?)"\)$')
+
+_GATE_RELATIONS: Set[str] = {"CAUSAL"}
+_ADVISORY_RELATIONS: Set[str] = {"FAILED_CONTROL", "MITIGATED_BY", "PRECEDED_BY"}
 
 
 def _strip_type_wrapper(s: str) -> str:
@@ -35,26 +79,125 @@ def _prepare_edge(edge: dict) -> dict:
     return out
 
 
+def _dedup_gt(edges: List[dict]) -> List[dict]:
+    """Remove exact duplicate GT edges (same record, relation, source, target)."""
+    seen: Set[Tuple] = set()
+    result = []
+    for e in edges:
+        key = (
+            str(e.get("record_no") or ""),
+            str(e.get("relation") or ""),
+            str(e.get("source") or "").lower().strip(),
+            str(e.get("target") or "").lower().strip(),
+        )
+        if key not in seen:
+            seen.add(key)
+            result.append(e)
+    return result
+
+
 # ── Similarity ───────────────────────────────────────────────────────────────
 
-# Common English stop-words to ignore in entity matching.
 _STOPWORDS = frozenset({
     "a", "an", "the", "of", "in", "on", "for", "to", "was", "is", "are",
     "were", "by", "with", "and", "or", "at", "from", "into", "that", "this",
     "its", "it", "be", "been", "being", "had", "has", "have", "not", "no",
 })
 
+# Module-level IDF dict; set in compute_gate3_metrics before scoring.
+_IDF: Optional[Dict[str, float]] = None
+
+
+def _stem(word: str) -> str:
+    """Minimal suffix stripping for English inflections (no external deps).
+
+    Handles -ing, -ed, -er, -es, -s, -tion/-sion.
+    Preserves short words (≤4 chars) to avoid over-stemming.
+    """
+    w = word
+    if len(w) <= 4:
+        return w
+    if w.endswith("tion") and len(w) > 6:
+        return w[:-3]
+    if w.endswith("sion") and len(w) > 6:
+        return w[:-3]
+    if w.endswith("ing") and len(w) > 6:
+        stem = w[:-3]
+        if len(stem) >= 2 and stem[-1] == stem[-2]:
+            stem = stem[:-1]
+        return stem
+    if w.endswith("ed") and len(w) > 5:
+        stem = w[:-2]
+        if len(stem) >= 2 and stem[-1] == stem[-2]:
+            stem = stem[:-1]
+        return stem
+    if w.endswith("er") and len(w) > 5:
+        return w[:-2]
+    if w.endswith("es") and len(w) > 5:
+        return w[:-2]
+    if w.endswith("s") and len(w) > 4 and not w.endswith("ss"):
+        return w[:-1]
+    return w
+
 
 def _tokenize(s: str) -> Set[str]:
-    """Lowercase, split on whitespace, remove stop-words."""
-    return {t for t in s.lower().split() if t not in _STOPWORDS}
+    """Lowercase, split on whitespace, remove stop-words, apply light stemming."""
+    return {_stem(t) for t in s.lower().split() if t not in _STOPWORDS}
+
+
+def _build_idf(edges: List[dict]) -> Dict[str, float]:
+    """Build smoothed log-IDF from all source+target strings in edges.
+
+    idf[term] = log(N / (df[term] + 1)) where N = number of documents
+    (each source+target string is one document).
+    """
+    docs: List[Set[str]] = []
+    for e in edges:
+        src = str(e.get("source") or "")
+        tgt = str(e.get("target") or "")
+        if src:
+            docs.append(_tokenize(src))
+        if tgt:
+            docs.append(_tokenize(tgt))
+
+    n = len(docs)
+    if n == 0:
+        return {}
+
+    df: Dict[str, int] = defaultdict(int)
+    for doc in docs:
+        for term in doc:
+            df[term] += 1
+
+    return {term: math.log(n / (count + 1)) for term, count in df.items()}
+
+
+def _cosine_tfidf(a: str, b: str) -> float:
+    """TF-IDF cosine similarity between two strings.
+
+    Returns 0.0 if the module-level _IDF dict is not set.
+    TF is raw term count (1 for set membership since _tokenize returns a set).
+    """
+    if _IDF is None:
+        return 0.0
+    tokens_a = _tokenize(a)
+    tokens_b = _tokenize(b)
+    if not tokens_a or not tokens_b:
+        return 0.0
+    common = tokens_a & tokens_b
+    if not common:
+        return 0.0
+    # TF=1 for each term (binary), weight by IDF; dot product = sum(idf_a * idf_b)
+    dot = sum(_IDF.get(t, 0.0) ** 2 for t in common)
+    norm_a = math.sqrt(sum(_IDF.get(t, 0.0) ** 2 for t in tokens_a))
+    norm_b = math.sqrt(sum(_IDF.get(t, 0.0) ** 2 for t in tokens_b))
+    if norm_a == 0.0 or norm_b == 0.0:
+        return 0.0
+    return dot / (norm_a * norm_b)
 
 
 def _token_overlap(a: str, b: str) -> float:
-    """Token overlap: |intersection| / min(|a|, |b|) after stop-word removal.
-
-    Returns 1.0 if both empty, 0.0 if only one is empty.
-    """
+    """Token overlap: |intersection| / min(|a|, |b|) after stop-word removal + stemming."""
     tokens_a = _tokenize(a)
     tokens_b = _tokenize(b)
     if not tokens_a and not tokens_b:
@@ -64,14 +207,25 @@ def _token_overlap(a: str, b: str) -> float:
     return len(tokens_a & tokens_b) / min(len(tokens_a), len(tokens_b))
 
 
+def _seq_similarity(a: str, b: str) -> float:
+    """Character-level Ratcliff/Obershelp similarity via stdlib difflib."""
+    if not a and not b:
+        return 1.0
+    if not a or not b:
+        return 0.0
+    return difflib.SequenceMatcher(None, a.lower(), b.lower()).ratio()
+
+
+def _entity_sim(a: str, b: str) -> float:
+    """Combined entity similarity: max of token overlap, sequence similarity, and TF-IDF cosine."""
+    return max(_token_overlap(a, b), _seq_similarity(a, b), _cosine_tfidf(a, b))
+
+
 def _edge_similarity(pred: dict, gt: dict) -> float:
     """Similarity between two edges (0-1).
 
-    CAUSAL edges use direction-agnostic matching: both (src↔src, tgt↔tgt)
-    and (src↔tgt, tgt↔src) are tried, and the better alignment wins.
-
-    Other relations: require same relation, compare source↔source
-    and target↔target.
+    CAUSAL: direction-agnostic — tries both alignments and returns the better one.
+    Other relations: direct alignment only.
     Returns 0.0 if relations don't match.
     """
     p_rel = pred.get("relation", "")
@@ -84,12 +238,10 @@ def _edge_similarity(pred: dict, gt: dict) -> float:
     gt_src = str(gt.get("source") or "")
     gt_tgt = str(gt.get("target") or "")
 
-    direct = (_token_overlap(pred_src, gt_src)
-              + _token_overlap(pred_tgt, gt_tgt)) / 2
+    direct = (_entity_sim(pred_src, gt_src) + _entity_sim(pred_tgt, gt_tgt)) / 2
 
     if p_rel == "CAUSAL":
-        swapped = (_token_overlap(pred_src, gt_tgt)
-                   + _token_overlap(pred_tgt, gt_src)) / 2
+        swapped = (_entity_sim(pred_src, gt_tgt) + _entity_sim(pred_tgt, gt_src)) / 2
         return max(direct, swapped)
 
     return direct
@@ -98,9 +250,8 @@ def _edge_similarity(pred: dict, gt: dict) -> float:
 def _edges_match(pred: dict, gt: dict, threshold: float) -> bool:
     """True if pred and gt edges match above threshold.
 
-    For CAUSAL edges: direction-agnostic — tries both alignments and
-    accepts if either has both entity overlaps >= threshold.
-    For other relations: both source and target must meet threshold.
+    Uses max(token_overlap, seq_similarity, tfidf_cosine) for each entity pair
+    so any of the three similarity measures can satisfy the threshold.
     """
     p_rel = pred.get("relation", "")
     g_rel = gt.get("relation", "")
@@ -115,15 +266,13 @@ def _edges_match(pred: dict, gt: dict, threshold: float) -> bool:
     gt_src = str(gt.get("source") or "")
     gt_tgt = str(gt.get("target") or "")
 
-    # Direct alignment
-    if (_token_overlap(pred_src, gt_src) >= threshold
-            and _token_overlap(pred_tgt, gt_tgt) >= threshold):
+    if (_entity_sim(pred_src, gt_src) >= threshold
+            and _entity_sim(pred_tgt, gt_tgt) >= threshold):
         return True
 
-    # Direction-agnostic for CAUSAL (entity-set matching)
     if p_rel == "CAUSAL":
-        if (_token_overlap(pred_src, gt_tgt) >= threshold
-                and _token_overlap(pred_tgt, gt_src) >= threshold):
+        if (_entity_sim(pred_src, gt_tgt) >= threshold
+                and _entity_sim(pred_tgt, gt_src) >= threshold):
             return True
 
     return False
@@ -136,15 +285,10 @@ def _greedy_match(
     ground_truth: List[dict],
     threshold: float,
 ) -> Tuple[int, List[Tuple[dict, dict]]]:
-    """Greedy bipartite matching: each GT edge matched at most once.
-
-    Predicted edges are sorted by best similarity to any unmatched GT edge,
-    highest first, to improve match quality over naive iteration order.
-    """
+    """Greedy bipartite matching: each GT edge matched at most once."""
     if not predicted or not ground_truth:
         return 0, []
 
-    # Pre-compute similarity matrix
     scores: List[Tuple[float, int, int]] = []
     for pi, pred in enumerate(predicted):
         for gi, gt in enumerate(ground_truth):
@@ -153,7 +297,6 @@ def _greedy_match(
             sim = _edge_similarity(pred, gt)
             scores.append((sim, pi, gi))
 
-    # Sort by similarity descending → greedy assignment
     scores.sort(key=lambda x: x[0], reverse=True)
 
     gt_matched: Set[int] = set()
@@ -170,15 +313,124 @@ def _greedy_match(
     return len(matches), matches
 
 
-def _select_top_k_per_record(
+def _backtrack_match(
+    adj: Dict[int, List[Tuple[int, float]]],
+    pred_list: List[int],
+    idx: int,
+    gt_used: Set[int],
+    weight: float,
+    assign: List[Tuple[int, int]],
+    best: Dict[str, Any],
+) -> None:
+    """Backtracking bipartite match with upper-bound pruning.
+
+    Args:
+        adj: {pred_idx: [(gt_idx, sim), ...]} sorted by sim desc
+        pred_list: ordered list of pred indices to assign
+        idx: current position in pred_list
+        gt_used: set of already-assigned GT indices
+        weight: accumulated similarity weight so far
+        assign: current partial assignment [(pred_idx, gt_idx), ...]
+        best: mutable dict with keys 'weight' and 'assign' for the best found so far
+    """
+    # Upper bound: remaining preds can each contribute at most 1.0
+    if weight + (len(pred_list) - idx) <= best["weight"]:
+        return
+    if idx == len(pred_list):
+        if weight > best["weight"]:
+            best["weight"] = weight
+            best["assign"] = assign[:]
+        return
+    pi = pred_list[idx]
+    # Branch: skip this pred (contribute 0)
+    _backtrack_match(adj, pred_list, idx + 1, gt_used, weight, assign, best)
+    # Branch: assign to each compatible GT
+    for gi, sim in adj.get(pi, []):
+        if gi not in gt_used:
+            assign.append((pi, gi))
+            gt_used.add(gi)
+            _backtrack_match(adj, pred_list, idx + 1, gt_used, weight + sim, assign, best)
+            assign.pop()
+            gt_used.remove(gi)
+
+
+def _optimal_match(
+    predicted: List[dict],
+    ground_truth: List[dict],
+    threshold: float,
+) -> Tuple[int, List[Tuple[dict, dict]]]:
+    """Per-record optimal bipartite matching with backtracking (n≤12) or greedy fallback.
+
+    For records with ≤12 edges per side, uses exact backtracking with upper-bound
+    pruning to find the globally optimal assignment. Falls back to greedy for
+    larger records.
+
+    Records are independent, so per-record optimal = globally optimal.
+
+    Returns (total_tp, [(pred_dict, gt_dict), ...]).
+    """
+    if not predicted or not ground_truth:
+        return 0, []
+
+    # Group by record_no
+    pred_by_rec: Dict[str, List[Tuple[int, dict]]] = defaultdict(list)
+    for pi, p in enumerate(predicted):
+        pred_by_rec[str(p.get("record_no") or "")].append((pi, p))
+
+    gt_by_rec: Dict[str, List[Tuple[int, dict]]] = defaultdict(list)
+    for gi, g in enumerate(ground_truth):
+        gt_by_rec[str(g.get("record_no") or "")].append((gi, g))
+
+    total_tp = 0
+    all_matches: List[Tuple[dict, dict]] = []
+
+    all_records = set(pred_by_rec) | set(gt_by_rec)
+    for rec in all_records:
+        rec_pred = pred_by_rec.get(rec, [])
+        rec_gt = gt_by_rec.get(rec, [])
+        if not rec_pred or not rec_gt:
+            continue
+
+        # Fall back to greedy for large records
+        if len(rec_pred) > 12 or len(rec_gt) > 12:
+            pred_dicts = [p for _, p in rec_pred]
+            gt_dicts = [g for _, g in rec_gt]
+            tp, matches = _greedy_match(pred_dicts, gt_dicts, threshold)
+            total_tp += tp
+            all_matches.extend(matches)
+            continue
+
+        # Build adjacency: {local_pred_idx: [(local_gt_idx, sim), ...]} sorted desc
+        adj: Dict[int, List[Tuple[int, float]]] = {}
+        for lpi, (pi, p) in enumerate(rec_pred):
+            neighbors = []
+            for lgi, (gi, g) in enumerate(rec_gt):
+                if _edges_match(p, g, threshold):
+                    sim = _edge_similarity(p, g)
+                    neighbors.append((lgi, sim))
+            neighbors.sort(key=lambda x: x[1], reverse=True)
+            adj[lpi] = neighbors
+
+        pred_list = list(range(len(rec_pred)))
+        best: Dict[str, Any] = {"weight": 0.0, "assign": []}
+        _backtrack_match(adj, pred_list, 0, set(), 0.0, [], best)
+
+        for lpi, lgi in best["assign"]:
+            all_matches.append((rec_pred[lpi][1], rec_gt[lgi][1]))
+        total_tp += len(best["assign"])
+
+    return total_tp, all_matches
+
+
+def _oracle_select_top_k(
     pred_edges: List[dict],
     gt_edges: List[dict],
 ) -> List[dict]:
-    """For each record, keep the top-K predicted edges (K = GT count).
+    """ORACLE ONLY — selects top-K predictions per record by GT similarity.
 
-    Edges are ranked by their maximum similarity to any GT edge in that
-    record.  Records with fewer predictions than K keep all of them.
-    Records with 0 GT edges (K=0) are skipped (no edges selected).
+    WARNING: This is circular — predictions are ranked by similarity to the
+    answer before scoring. It inflates precision by ~17pp vs honest micro-precision.
+    Used only to compute oracle_precision_at_k for reference, NOT for gating.
     """
     gt_by_record: Dict[str, List[dict]] = defaultdict(list)
     for e in gt_edges:
@@ -192,16 +444,11 @@ def _select_top_k_per_record(
     for rno, gt_list in gt_by_record.items():
         pred_list = pred_by_record.get(rno, [])
         k = len(gt_list)
-
-        # Skip records with no GT edges (K=0)
         if k == 0:
             continue
-
         if len(pred_list) <= k:
             selected.extend(pred_list)
             continue
-
-        # Rank by best similarity to any GT edge
         scored = []
         for pred in pred_list:
             best_sim = max((_edge_similarity(pred, gt) for gt in gt_list), default=0.0)
@@ -210,6 +457,72 @@ def _select_top_k_per_record(
         selected.extend(edge for _, edge in scored[:k])
 
     return selected
+
+
+# ── Chain compression credit ──────────────────────────────────────────────────
+
+def _chain_credit(
+    unmatched_gt: List[dict],
+    pred_causal: List[dict],
+    threshold: float,
+) -> int:
+    """Count unmatched GT CAUSAL edges A→C covered by a 2-hop predicted path A→B→C.
+
+    For each unmatched GT edge (A→C), checks whether the predictions for the
+    same record contain both pred(A→B) and pred(B→C) with entity sim ≥ threshold.
+    Direction-agnostic for CAUSAL (tries A→B→C and C→B→A alignments).
+
+    Returns the count of GT edges covered by chain paths (advisory — not used
+    for gate pass/fail).
+    """
+    if not unmatched_gt or not pred_causal:
+        return 0
+
+    # Group predictions by record
+    pred_by_rec: Dict[str, List[dict]] = defaultdict(list)
+    for p in pred_causal:
+        pred_by_rec[str(p.get("record_no") or "")].append(p)
+
+    chain_count = 0
+    for gt_edge in unmatched_gt:
+        rec = str(gt_edge.get("record_no") or "")
+        rec_preds = pred_by_rec.get(rec, [])
+        if not rec_preds:
+            continue
+
+        gt_a = str(gt_edge.get("source") or "")
+        gt_c = str(gt_edge.get("target") or "")
+
+        covered = False
+        for p1 in rec_preds:
+            if covered:
+                break
+            p1_src = str(p1.get("source") or "")
+            p1_tgt = str(p1.get("target") or "")
+            # Try A→B: p1 matches A at source end
+            for a_end, b_end in [(p1_src, p1_tgt), (p1_tgt, p1_src)]:
+                if _entity_sim(a_end, gt_a) < threshold:
+                    continue
+                # b_end is the intermediate node B; look for pred B→C
+                for p2 in rec_preds:
+                    if p2 is p1:
+                        continue
+                    p2_src = str(p2.get("source") or "")
+                    p2_tgt = str(p2.get("target") or "")
+                    for b2_end, c_end in [(p2_src, p2_tgt), (p2_tgt, p2_src)]:
+                        if (_entity_sim(b2_end, b_end) >= threshold
+                                and _entity_sim(c_end, gt_c) >= threshold):
+                            covered = True
+                            break
+                    if covered:
+                        break
+                if covered:
+                    break
+
+        if covered:
+            chain_count += 1
+
+    return chain_count
 
 
 # ── Evidence ─────────────────────────────────────────────────────────────────
@@ -237,28 +550,38 @@ def compute_gate3_metrics(
     ground_truth_edges: List[dict],
     threshold: float = 0.45,
 ) -> Dict[str, Any]:
-    """Compute Gate 3 metrics with causal normalisation and precision@K.
+    """Compute Gate 3 metrics.
+
+    Gate pass/fail is determined by CAUSAL edges only.
+    FAILED_CONTROL, MITIGATED_BY, PRECEDED_BY are reported as advisory stats.
+
+    Precision is honest micro-precision: TP / all predicted CAUSAL edges in GT
+    records. No cherry-picking or GT-similarity-based selection.
+
+    Recall denominator is all GT CAUSAL edges. The GT files must already be
+    filtered to records that exist in the pipeline (records with no L1 entities
+    should have been removed from GT before running this script).
+
+    Matching uses per-record optimal backtracking (≤12 edges/side) with greedy
+    fallback. Entity similarity = max(token_overlap, seq_similarity, tfidf_cosine).
+    IDF is built from all predicted + GT edges before scoring.
+
+    Chain-adjusted recall (advisory) credits unmatched GT CAUSAL edges A→C when
+    the predictions contain a 2-hop path A→B→C. Not used for gate pass/fail.
 
     Args:
         predicted_edges: List of predicted edge dicts
         ground_truth_edges: List of ground truth edge dicts
-        threshold: Token overlap threshold [0, 1] for matching (default: 0.45)
+        threshold: Entity similarity threshold [0, 1] for matching (default: 0.45)
 
     Returns:
         Dict with metrics and pass/fail status
     """
-    # Validate threshold at entry point
+    global _IDF
+
     if not (0.0 <= threshold <= 1.0):
         raise ValueError(f"threshold must be in [0, 1], got {threshold}")
 
-    # Returns a dict with:
-    # - json_validity_rate
-    # - causal_recall: TP / |GT| using all predicted edges
-    # - precision_at_k: TP_k / |selected_k| using top-K per record
-    # - causal_presence: fraction of GT records with ≥1 matched edge
-    # - mean_evidence_f1: token-level F1 on matched evidence spans
-    # - raw_precision: TP / |all pred in GT records| (for reference)
-    # - per_original_relation: P/R by original relation labels
     required_keys = {"source", "source_type", "target", "target_type", "relation", "evidence"}
 
     # ── JSON validity ──
@@ -269,57 +592,74 @@ def compute_gate3_metrics(
     total_predicted = len(predicted_edges)
     json_validity_rate = valid_count / total_predicted if total_predicted else 1.0
 
-    # ── Prepare all edges (strip Type() wrappers) ──
+    # ── Prepare edges ──
     prep_pred = [_prepare_edge(e) for e in predicted_edges if isinstance(e, dict)]
-    prep_gt = [_prepare_edge(e) for e in ground_truth_edges if isinstance(e, dict)]
+    prep_gt_raw = [_prepare_edge(e) for e in ground_truth_edges if isinstance(e, dict)]
+
+    # Deduplicate GT
+    prep_gt = _dedup_gt(prep_gt_raw)
+    gt_dupes_removed = len(prep_gt_raw) - len(prep_gt)
+
+    # Build IDF from all edges (predicted + GT) before computing any similarities
+    _IDF = _build_idf(prep_pred + prep_gt)
 
     # Filter predictions to records present in GT
     gt_records = set(str(e.get("record_no") or "") for e in prep_gt)
     pred_in_gt = [e for e in prep_pred if str(e.get("record_no") or "") in gt_records]
 
-    # ── Raw matching (all pred in GT records) ──
-    tp_raw, matched_raw = _greedy_match(pred_in_gt, prep_gt, threshold)
-    raw_precision = tp_raw / len(pred_in_gt) if pred_in_gt else 0.0
-    causal_recall = tp_raw / len(prep_gt) if prep_gt else 0.0
+    # ── Split CAUSAL vs advisory ──
+    causal_gt = [e for e in prep_gt if e.get("relation") in _GATE_RELATIONS]
+    causal_pred = [e for e in pred_in_gt if e.get("relation") in _GATE_RELATIONS]
 
-    # ── Precision@K matching ──
-    selected_k = _select_top_k_per_record(pred_in_gt, prep_gt)
-    tp_k, matched_k = _greedy_match(selected_k, prep_gt, threshold)
-    precision_at_k = tp_k / len(selected_k) if selected_k else 0.0
-    recall_at_k = tp_k / len(prep_gt) if prep_gt else 0.0
+    causal_gt_records = set(str(e.get("record_no") or "") for e in causal_gt)
 
-    # ── Causal presence ──
-    matched_records = set()
-    for pred, gt in matched_raw:
-        matched_records.add(str(gt.get("record_no") or ""))
-    gt_record_count = len(gt_records)
-    causal_presence = len(matched_records) / gt_record_count if gt_record_count else 0.0
+    # ── CAUSAL matching (precision + recall) ──
+    tp_causal, matched_causal = _optimal_match(causal_pred, causal_gt, threshold)
 
-    # ── Evidence F1 ──
-    evidence_f1_scores = []
-    for pred, gt in matched_raw:
-        f1 = _evidence_f1(
-            str(pred.get("evidence") or ""),
-            str(gt.get("evidence") or ""),
-        )
-        evidence_f1_scores.append(f1)
+    precision = tp_causal / len(causal_pred) if causal_pred else 0.0
+    recall = tp_causal / len(causal_gt) if causal_gt else 0.0
+    f1 = (
+        2 * precision * recall / (precision + recall)
+        if (precision + recall) > 0 else 0.0
+    )
+
+    # Causal presence
+    matched_causal_records = set(str(gt.get("record_no") or "") for _, gt in matched_causal)
+    causal_presence = (
+        len(matched_causal_records) / len(causal_gt_records)
+        if causal_gt_records else 0.0
+    )
+
+    # Evidence F1 on matched edges
+    evidence_f1_scores = [
+        _evidence_f1(str(p.get("evidence") or ""), str(g.get("evidence") or ""))
+        for p, g in matched_causal
+    ]
     mean_evidence_f1 = (
         sum(evidence_f1_scores) / len(evidence_f1_scores)
         if evidence_f1_scores else 0.0
     )
 
-    # ── Per-relation breakdown ──
-    per_relation: Dict[str, Dict[str, Any]] = {}
-    for rel in sorted(set(e.get("relation", "") for e in pred_in_gt + prep_gt)):
-        if not rel:
-            continue
+    # Oracle P@K — circular selection, informational only, NOT used for gating
+    oracle_selected = _oracle_select_top_k(causal_pred, causal_gt)
+    tp_oracle, _ = _greedy_match(oracle_selected, causal_gt, threshold)
+    oracle_precision_at_k = tp_oracle / len(oracle_selected) if oracle_selected else 0.0
+
+    # ── Chain compression credit (advisory) ──
+    matched_gt_ids = {id(g) for _, g in matched_causal}
+    unmatched_gt_causal = [g for g in causal_gt if id(g) not in matched_gt_ids]
+    chain_tp = _chain_credit(unmatched_gt_causal, causal_pred, threshold)
+    chain_adjusted_recall = (tp_causal + chain_tp) / len(causal_gt) if causal_gt else 0.0
+
+    # ── Advisory relation stats ──
+    advisory: Dict[str, Dict[str, Any]] = {}
+    for rel in sorted(_ADVISORY_RELATIONS):
         rel_pred = [e for e in pred_in_gt if e.get("relation") == rel]
         rel_gt = [e for e in prep_gt if e.get("relation") == rel]
         rel_tp, _ = _greedy_match(rel_pred, rel_gt, threshold)
-
         rel_prec = rel_tp / len(rel_pred) if rel_pred else (1.0 if not rel_gt else 0.0)
         rel_rec = rel_tp / len(rel_gt) if rel_gt else (1.0 if not rel_pred else 0.0)
-        per_relation[rel] = {
+        advisory[rel] = {
             "precision": round(rel_prec, 4),
             "recall": round(rel_rec, 4),
             "predicted": len(rel_pred),
@@ -327,43 +667,51 @@ def compute_gate3_metrics(
             "true_positives": rel_tp,
         }
 
-    # ── Gate 3 thresholds ──
+    # ── Gate thresholds ──
     json_pass = json_validity_rate >= 0.99
-    pk_pass = precision_at_k >= 0.50
-    recall_pass = causal_recall >= 0.35
+    precision_pass = precision >= 0.50
+    recall_pass = recall >= 0.60
+    f1_pass = f1 >= 0.55
     evidence_pass = mean_evidence_f1 >= 0.60
     presence_pass = causal_presence >= 0.75
-    gate3_pass = json_pass and pk_pass and recall_pass and evidence_pass and presence_pass
+    gate3_pass = json_pass and precision_pass and recall_pass and f1_pass and evidence_pass and presence_pass
 
     return {
-        "json_validity_rate": round(json_validity_rate, 4),
-        "precision_at_k": round(precision_at_k, 4),
-        "recall_at_k": round(recall_at_k, 4),
-        "causal_recall": round(causal_recall, 4),
-        "raw_precision": round(raw_precision, 4),
-        "causal_presence": round(causal_presence, 4),
+        # Primary metrics
+        "precision": round(precision, 4),
+        "recall": round(recall, 4),
+        "f1": round(f1, 4),
         "mean_evidence_f1": round(mean_evidence_f1, 4),
+        "causal_presence": round(causal_presence, 4),
+        "json_validity_rate": round(json_validity_rate, 4),
+        # Reference / informational
+        "oracle_precision_at_k": round(oracle_precision_at_k, 4),
+        "chain_tp": chain_tp,
+        "chain_adjusted_recall": round(chain_adjusted_recall, 4),
         "matching_threshold": threshold,
+        # Counts
         "total_predicted": total_predicted,
-        "predicted_in_gt_records": len(pred_in_gt),
-        "selected_at_k": len(selected_k),
-        "total_ground_truth": len(prep_gt),
-        "true_positives_raw": tp_raw,
-        "true_positives_at_k": tp_k,
-        "gt_records_matched": len(matched_records),
-        "gt_records_total": gt_record_count,
-        "per_relation": per_relation,
+        "causal_predicted_in_gt_records": len(causal_pred),
+        "causal_ground_truth": len(causal_gt),
+        "causal_true_positives": tp_causal,
+        "causal_gt_records_matched": len(matched_causal_records),
+        "causal_gt_records_total": len(causal_gt_records),
+        "gt_total_after_dedup": len(prep_gt),
+        "gt_duplicates_removed": gt_dupes_removed,
+        "advisory": advisory,
         "thresholds": {
             "json_validity": 0.99,
-            "precision_at_k": 0.50,
-            "causal_recall": 0.35,
+            "precision": 0.50,
+            "recall": 0.60,
+            "f1": 0.55,
             "evidence_f1": 0.60,
             "causal_presence": 0.75,
         },
         "pass": {
             "json_validity": json_pass,
-            "precision_at_k": pk_pass,
-            "causal_recall": recall_pass,
+            "precision": precision_pass,
+            "recall": recall_pass,
+            "f1": f1_pass,
             "evidence_f1": evidence_pass,
             "causal_presence": presence_pass,
             "gate3": gate3_pass,
@@ -371,11 +719,43 @@ def compute_gate3_metrics(
     }
 
 
+def compute_threshold_sweep(
+    predicted_edges: List[dict],
+    ground_truth_edges: List[dict],
+    thresholds: Optional[List[float]] = None,
+) -> List[Dict[str, Any]]:
+    """Run compute_gate3_metrics at multiple thresholds.
+
+    Returns a list of {threshold, precision, recall, f1,
+    mean_evidence_f1, causal_presence, chain_tp, chain_adjusted_recall,
+    gate3_pass} dicts — one per threshold.
+    """
+    if thresholds is None:
+        thresholds = [0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60]
+    rows = []
+    for t in thresholds:
+        m = compute_gate3_metrics(predicted_edges, ground_truth_edges, threshold=t)
+        rows.append({
+            "threshold": t,
+            "precision": m["precision"],
+            "recall": m["recall"],
+            "f1": m["f1"],
+            "oracle_precision_at_k": m["oracle_precision_at_k"],
+            "mean_evidence_f1": m["mean_evidence_f1"],
+            "causal_presence": m["causal_presence"],
+            "chain_tp": m["chain_tp"],
+            "chain_adjusted_recall": m["chain_adjusted_recall"],
+            "gate3_pass": m["pass"]["gate3"],
+        })
+    return rows
+
+
 # ── Report generation ────────────────────────────────────────────────────────
 
 def generate_gate3_report(
     metrics: Dict[str, Any],
     output_path: Path,
+    sweep_rows: Optional[List[Dict[str, Any]]] = None,
 ) -> None:
     """Write a Markdown Gate 3 evaluation report."""
     output_path = Path(output_path)
@@ -389,40 +769,65 @@ def generate_gate3_report(
         "",
         f"## Verdict: **{verdict}**",
         "",
-        f"Matching: causal-normalised, token overlap >= {metrics['matching_threshold']}, stop-words removed",
+        f"Matching: max(token_overlap, sequence_similarity, tfidf_cosine) >= {metrics['matching_threshold']},"
+        " stop-words removed, light stemming",
+        f"GT deduplication: {metrics['gt_duplicates_removed']} duplicate edges removed",
         "",
-        "## Primary Metrics",
+        "## Primary Metrics (CAUSAL edges — gate blocking)",
         "",
         "| Metric | Value | Threshold | Status |",
         "|--------|------:|-----------|--------|",
         f"| JSON validity | {metrics['json_validity_rate']:.1%} | >= 99% | {'PASS' if p['json_validity'] else 'FAIL'} |",
-        f"| Precision@K | {metrics['precision_at_k']:.1%} | >= 50% | {'PASS' if p['precision_at_k'] else 'FAIL'} |",
-        f"| Causal recall | {metrics['causal_recall']:.1%} | >= 35% | {'PASS' if p['causal_recall'] else 'FAIL'} |",
+        f"| Precision | {metrics['precision']:.1%} | >= 50% | {'PASS' if p['precision'] else 'FAIL'} |",
+        f"| Recall | {metrics['recall']:.1%} | >= 60% | {'PASS' if p['recall'] else 'FAIL'} |",
+        f"| F1 | {metrics['f1']:.1%} | >= 55% | {'PASS' if p['f1'] else 'FAIL'} |",
         f"| Evidence F1 | {metrics['mean_evidence_f1']:.1%} | >= 60% | {'PASS' if p['evidence_f1'] else 'FAIL'} |",
         f"| Causal presence | {metrics['causal_presence']:.1%} | >= 75% | {'PASS' if p['causal_presence'] else 'FAIL'} |",
         "",
-        "## Counts",
+        "## CAUSAL Counts",
         "",
-        f"- Predicted edges (total): {metrics['total_predicted']:,}",
-        f"- Predicted in GT records: {metrics['predicted_in_gt_records']}",
-        f"- Selected at K (top-K per record): {metrics['selected_at_k']}",
-        f"- Ground truth edges: {metrics['total_ground_truth']}",
-        f"- True positives (raw): {metrics['true_positives_raw']}",
-        f"- True positives (@K): {metrics['true_positives_at_k']}",
-        f"- GT records matched: {metrics['gt_records_matched']}/{metrics['gt_records_total']}",
-        f"- Raw precision (reference): {metrics['raw_precision']:.1%}",
+        f"- Predicted CAUSAL in GT records: {metrics['causal_predicted_in_gt_records']}",
+        f"- GT CAUSAL edges (after dedup): {metrics['causal_ground_truth']}",
+        f"- True positives: {metrics['causal_true_positives']}",
+        f"- GT records matched: {metrics['causal_gt_records_matched']}/{metrics['causal_gt_records_total']}",
         "",
-        "## Per-Relation Breakdown",
+        "## Informational (not used for gating)",
+        "",
+        f"- Oracle P@K (circular — GT-similarity selection): {metrics['oracle_precision_at_k']:.1%}",
+        f"- Chain-adjusted recall (advisory): {metrics['chain_adjusted_recall']:.1%} (+{metrics['chain_tp']} chain TPs)",
+        "",
+        "## Advisory Relation Stats (informational only — do not affect gate)",
         "",
         "| Relation | Precision | Recall | Pred | GT | TP |",
         "|----------|----------:|-------:|-----:|---:|---:|",
     ]
 
-    for rel, data in sorted(metrics.get("per_relation", {}).items()):
+    for rel, data in sorted(metrics.get("advisory", {}).items()):
         lines.append(
             f"| {rel} | {data['precision']:.1%} | {data['recall']:.1%} "
             f"| {data['predicted']} | {data['ground_truth']} | {data['true_positives']} |"
         )
+
+    if sweep_rows:
+        lines.extend([
+            "",
+            "## Threshold Sensitivity Sweep",
+            "",
+            "| Threshold | P | R | F1 | Oracle-P@K | Evidence-F1 | Presence | Chain-Adj-R | PASS |",
+            "|----------:|----:|----:|---:|-----------:|------------:|--------:|------------:|------|",
+        ])
+        for row in sweep_rows:
+            lines.append(
+                f"| {row['threshold']:.2f}"
+                f" | {row['precision']:.1%}"
+                f" | {row['recall']:.1%}"
+                f" | {row['f1']:.1%}"
+                f" | {row['oracle_precision_at_k']:.1%}"
+                f" | {row['mean_evidence_f1']:.1%}"
+                f" | {row['causal_presence']:.1%}"
+                f" | {row['chain_adjusted_recall']:.1%}"
+                f" | {'✓' if row['gate3_pass'] else '✗'} |"
+            )
 
     lines.extend([
         "",
@@ -459,12 +864,13 @@ def main() -> None:
     parser.add_argument("--ground-truth", required=True, type=Path,
                         help="Ground truth edges (JSONL)")
     parser.add_argument("--threshold", type=float, default=0.45,
-                        help="Token-overlap threshold for matching (default: 0.45)")
+                        help="Entity similarity threshold for matching (default: 0.45)")
+    parser.add_argument("--sweep", action="store_true",
+                        help="Also run threshold sensitivity sweep (0.30–0.60)")
     parser.add_argument("--output", type=Path, default=None,
                         help="Output report path (default: alongside predicted)")
     args = parser.parse_args()
 
-    # Load predicted edges
     if not args.predicted.exists():
         print(f"Error: Predicted file/directory not found: {args.predicted}", file=sys.stderr)
         sys.exit(1)
@@ -489,24 +895,48 @@ def main() -> None:
 
     metrics = compute_gate3_metrics(predicted, gt, threshold=args.threshold)
 
+    sweep_rows = None
+    if args.sweep:
+        print("Running threshold sweep...")
+        sweep_rows = compute_threshold_sweep(predicted, gt)
+
     if args.output is None:
         if args.predicted.is_dir():
             args.output = args.predicted / "gate3_report.md"
         else:
             args.output = args.predicted.with_name("gate3_report.md")
 
-    generate_gate3_report(metrics, args.output)
+    generate_gate3_report(metrics, args.output, sweep_rows=sweep_rows)
     args.output.with_suffix(".json").write_text(
         json.dumps(metrics, indent=2) + "\n", encoding="utf-8",
     )
 
     verdict = "PASS" if metrics["pass"]["gate3"] else "FAIL"
     print(f"\nGate 3: {verdict}")
-    print(f"  Precision@K:      {metrics['precision_at_k']:.1%}")
-    print(f"  Causal recall:    {metrics['causal_recall']:.1%}")
-    print(f"  Evidence F1:      {metrics['mean_evidence_f1']:.1%}")
-    print(f"  Causal presence:  {metrics['causal_presence']:.1%}")
-    print(f"  Raw precision:    {metrics['raw_precision']:.1%}")
+    print(f"  Precision:   {metrics['precision']:.1%}  (>= 50%)")
+    print(f"  Recall:      {metrics['recall']:.1%}  (>= 60%)")
+    print(f"  F1:          {metrics['f1']:.1%}  (>= 55%)")
+    print(f"  Evidence F1:       {metrics['mean_evidence_f1']:.1%}  (>= 60%)")
+    print(f"  Causal presence:   {metrics['causal_presence']:.1%}  (>= 75%)")
+    print(f"  Oracle P@K (ref):  {metrics['oracle_precision_at_k']:.1%}  [circular, not gating]")
+    print(f"  Chain TPs (advisory): {metrics['chain_tp']}  "
+          f"chain-adj recall: {metrics['chain_adjusted_recall']:.1%}")
+    print()
+    print("  Advisory (not blocking):")
+    for rel, d in sorted(metrics.get("advisory", {}).items()):
+        print(f"    {rel}: P={d['precision']:.1%} R={d['recall']:.1%} "
+              f"(pred={d['predicted']} gt={d['ground_truth']} tp={d['true_positives']})")
+
+    if sweep_rows:
+        print("\nThreshold sweep:")
+        print(f"  {'t':>4}  {'P':>8}  {'R':>8}  {'F1':>6}  {'OracleP@K':>10}  {'ChainAdjR':>10}  {'PASS':>5}")
+        for row in sweep_rows:
+            print(f"  {row['threshold']:.2f}  {row['precision']:>8.1%}"
+                  f"  {row['recall']:>8.1%}"
+                  f"  {row['f1']:>6.1%}"
+                  f"  {row['oracle_precision_at_k']:>10.1%}"
+                  f"  {row['chain_adjusted_recall']:>10.1%}"
+                  f"  {'Y' if row['gate3_pass'] else 'N':>5}")
 
 
 if __name__ == "__main__":
