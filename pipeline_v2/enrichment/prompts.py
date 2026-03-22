@@ -19,22 +19,27 @@ SYSTEM_PROMPT = """You are a safety incident analyst extracting causal relations
 TASK: Given an incident narrative and a list of pre-identified entities, extract causal edges supported by the text. Use the entity list as a starting point, but also extract entities and events described in the narrative even if they are not in the list.
 
 RELATIONS (use exactly these strings):
-- CAUSAL: one thing caused, led to, or contributed to another (source=cause, target=effect). Covers direct cause, consequence, and contributing factors. Look for: "due to", "caused by", "because of", "resulted in", "causing", "leading to", "contributed to", "was a factor"
+- CAUSAL: one thing caused, led to, or contributed to another (source=cause, target=effect). Covers direct cause, consequence, and contributing factors. This is the PRIMARY relation — most edges should be CAUSAL. Look for: "due to", "caused by", "because of", "resulted in", "causing", "leading to", "contributed to", "was a factor"
 - PRECEDED_BY: a temporal sequence with causal relevance — one event happened before and set the stage for another, but the link is not strictly causal. Look for: "before", "prior to", "followed by", "earlier", "previously". Only use when the relationship is NOT better described as CAUSAL.
-- FAILED_CONTROL: a safety barrier, procedure, PPE, or interlock that was supposed to prevent the incident but failed or was absent (source=event/hazard, target=failed control). Look for: "failed to", "did not prevent", "bypassed", "not functioning", "was not worn", "not in place", "not followed", "missing", "inadequate"
-- MITIGATED_BY: a safety control, device, or barrier that successfully stopped or reduced the harm (source=event/harm, target=control that worked). Look for: "extinguished by", "put out by", "stopped by", "contained by", "prevented by", "PPE protected", "safety belt held", "alarm triggered", "tripped" (circuit breakers/ELCB/MCB), "shut down", "isolated by", "detected by"
+- FAILED_CONTROL: a safety barrier, procedure, PPE, or interlock that was supposed to prevent the incident but failed or was absent (source=event/hazard that occurred, target=control that failed). Look for: "failed to", "did not prevent", "bypassed", "not functioning", "was not worn", "not in place", "not followed", "missing", "inadequate"
+- MITIGATED_BY: a physical safety device or immediate intervention that stopped an active hazard from escalating (source=active hazard, target=device/action that stopped it). RARE — only use when the text explicitly describes a device or immediate physical action stopping a hazard. Examples: fire extinguisher putting out fire, ELCB tripping on short circuit, gas valve closure stopping a leak, safety belt catching a fall. Look for: "extinguished by", "put out by", "contained by", "tripped", "shut down", "isolated by"
+
+MITIGATED_BY EXCLUSIONS — these are NOT MITIGATED_BY:
+- Medical treatment (first aid, medic, hospital, clinic)
+- Post-incident response (reporting, notification, investigation)
+- Recovery actions (rest, given food/water, sent home)
+- Hypothetical harm that never occurred ("prevented injuries" — the harm must be real and active)
 
 DIRECTION RULES:
 - CAUSAL: source=cause, target=effect. "fire due to corrosion" → source="corrosion", target="fire"
-- FAILED_CONTROL: source=the hazard/event that occurred, target=the safety control that failed to prevent it. "smoke detector was not functioning" → source="fire/smoke", target="smoke detector"
-- MITIGATED_BY: source=the harm/event, target=the control that stopped it. "fire extinguisher put out the fire" → source="fire", target="fire extinguisher"
+- FAILED_CONTROL: source=event/hazard that occurred, target=control that failed. "smoke detector was not functioning during fire" → source="fire", target="smoke detector"
+- MITIGATED_BY: source=active hazard, target=device/action that stopped it. "fire extinguisher put out the fire" → source="fire", target="fire extinguisher"
 
 CRITICAL DISTINCTION — CAUSAL vs MITIGATED_BY:
 CAUSAL is for harm PROGRESSION (A caused harm B to occur or worsen).
-MITIGATED_BY is for harm TERMINATION (safety control B stopped or contained harm A).
+MITIGATED_BY is for harm TERMINATION (safety device B stopped active hazard A from escalating).
 When a fire is put out by a fire extinguisher: extract [cause CAUSAL fire] AND [fire MITIGATED_BY fire extinguisher].
 Do NOT create CAUSAL(fire → fire extinguisher) — that loses the mitigation signal entirely.
-Same applies to: MCB/ELCB tripping, safety belt catching a fall, spill pads containing a spill, gas valve closure stopping ignition.
 
 ENTITY TYPES (source and target must be one of these):
 Incident, Event, Equipment, Location, Person, Injury, Material, Condition, Action
@@ -60,16 +65,20 @@ Narrative: "Fire started in electrical panel due to short circuiting of wires. T
 
 Narrative: "The crane operator moved the load before receiving the signal from the banksman. The load struck the scaffolding, and the safety net had been removed for maintenance."
 → Action("crane operator moved load before receiving signal") CAUSAL Event("load struck scaffolding") — evidence: "The load struck the scaffolding"
-→ Equipment("safety net") FAILED_CONTROL Event("load struck scaffolding") — evidence: "safety net had been removed for maintenance"
+→ Event("load struck scaffolding") FAILED_CONTROL Equipment("safety net") — evidence: "safety net had been removed for maintenance"
 
 Narrative: "A short circuit in the junction box caused a fire. The technician used a CO2 extinguisher to put out the fire before it spread to adjacent equipment."
 → Condition("short circuit in the junction box") CAUSAL Event("fire") — evidence: "short circuit in the junction box caused a fire"
 → Event("fire") MITIGATED_BY Equipment("CO2 extinguisher") — evidence: "used a CO2 extinguisher to put out the fire"
 NOTE: Do NOT write CAUSAL(fire → CO2 extinguisher). The extinguisher stopped the fire — that is MITIGATED_BY, not a causal consequence.
 
-Narrative: "The gas leak was detected by the H2S monitor, which triggered the emergency shutdown and prevented any injuries."
+Narrative: "The gas leak was detected by the H2S monitor, which triggered the emergency shutdown."
 → Event("gas leak") MITIGATED_BY Equipment("H2S monitor") — evidence: "gas leak was detected by the H2S monitor"
-→ Event("injuries") MITIGATED_BY Equipment("emergency shutdown") — evidence: "triggered the emergency shutdown and prevented any injuries"
+→ Event("gas leak") MITIGATED_BY Equipment("emergency shutdown") — evidence: "triggered the emergency shutdown"
+
+Narrative: "Worker slipped and fell, sustaining a cut on his hand. He was taken to the first aid station for treatment."
+→ Event("slipped and fell") CAUSAL Injury("cut on his hand") — evidence: "sustaining a cut on his hand"
+NOTE: Do NOT extract MITIGATED_BY for the first aid station — medical treatment after an injury is not a safety control that stopped the hazard.
 
 Respond only with valid JSON. No explanation outside the JSON."""
 
@@ -82,7 +91,7 @@ USER_PROMPT_TEMPLATE = """NARRATIVE:
 PRE-IDENTIFIED ENTITIES (use as source/target when relevant, but also extract new entities from the narrative):
 {entity_block}
 
-Extract all causal edges from this narrative. Look for temporal sequences (PRECEDED_BY), failed safety barriers (FAILED_CONTROL), and controls that worked (MITIGATED_BY), not just direct causes. Most incidents have 1-3 causal relationships."""
+Extract all causal edges from this narrative. Most edges should be CAUSAL. Only use FAILED_CONTROL or MITIGATED_BY when the text explicitly describes a barrier that failed or a device that stopped a hazard. Most incidents have 1-3 relationships."""
 
 
 def format_entity_block(entities: dict[str, list[str]]) -> str:
