@@ -160,7 +160,10 @@ def _add_secondary_labels(session, chunk: pd.DataFrame) -> None:
     """Add entity_type as a secondary label via APOC (best-effort)."""
     by_type: dict[str, list[str]] = {}
     for row in chunk.to_dict("records"):
-        etype = str(row.get("entity_type") or "")
+        etype = _clean(row.get("entity_type"))
+        if etype is None:
+            continue
+        etype = str(etype)
         if etype:
             by_type.setdefault(etype, []).append(row["entity_id"])
 
