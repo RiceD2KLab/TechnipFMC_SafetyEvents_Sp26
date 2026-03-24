@@ -6,12 +6,12 @@ This is a CSV-driven benchmark system for the v2 safety knowledge graph. Adding 
 query means adding a row to `benchmark_queries.csv`. No Python changes are required
 unless the query logic cannot be expressed via CSV (see Section 5).
 
-**43 total queries:**
-- 35 are fully CSV-driven (strategies: entity_filter, meta_filter,
+**52 total queries (includes IOGP queries):**
+- 41 are fully CSV-driven (strategies: entity_filter, meta_filter,
   narrative_filter, intersect, crosstab, spot_check)
-- 8 use custom Python functions registered in `custom_queries.py`
-- 9 metadata-verifiable queries have `expected_count` for ground truth validation
-- 13 spot-check queries verify per-record extraction quality (SC-01 through SC-09b)
+- 11 use custom Python functions registered in `custom_queries.py`
+- 12 metadata-verifiable queries have `expected_count` for ground truth validation
+- 14 spot-check queries verify per-record extraction quality (SH-02 and SC-01 through SC-09b)
 
 **Query types covered:** Single-hop, Aggregation, Multi-hop, Global, Conjunctive
 
