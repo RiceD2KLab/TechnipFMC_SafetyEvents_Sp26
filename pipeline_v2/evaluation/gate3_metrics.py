@@ -24,24 +24,41 @@ Bipartite matching:
 - Upper-bound pruning: branch is cut when remaining capacity cannot exceed
   current best weight.
 
-Chain compression credit (advisory):
+Chain compression credit (gate-blocking):
 - For unmatched GT CAUSAL edges A→C, checks if predictions contain a 2-hop
-  path A→B→C (both hops above threshold). Chain TPs are reported and added
-  to chain-adjusted recall, but NOT used for gate pass/fail.
+  path A→B→C (both hops above threshold). Chain TPs are added to
+  chain-adjusted recall and F1, which ARE used for the gate pass/fail decision.
 
 Primary metrics (CAUSAL only):
 1. Precision: TP / all predicted CAUSAL (in GT records). No cherry-picking.
-2. Recall: TP / GT CAUSAL edges. GT files must only contain records that
-   appear in the prediction set — dead records (no L1 entities, failed pre-filter)
-   should be removed from GT upstream so they don't inflate the denominator.
-3. F1: harmonic mean of precision and recall.
+2. Chain-adjusted recall (gate-blocking): (TP + chain_TP) / GT CAUSAL edges.
+   See "Raw vs chain-adjusted recall" below.
+3. Chain-adjusted F1: harmonic mean of precision and chain-adjusted recall.
 4. Causal presence: fraction of GT CAUSAL records with ≥1 matched edge.
-5. Evidence F1: token-level F1 on matched evidence spans.
+5. Evidence F1/P/R: token-level scores on matched evidence spans.
+
+Raw vs chain-adjusted recall:
+  Raw recall counts only direct 1:1 matches between predicted and GT edges.
+  It systematically underestimates model quality when the model decomposes a
+  causal chain more finely than the annotator.
+
+  Example: GT annotates one edge  A → C  ("short circuit caused fire").
+  The model extracts two edges    A → B  ("short circuit damaged insulation")
+                                  B → C  ("damaged insulation caused fire").
+  Both representations are correct, but raw recall scores this as a miss on
+  A→C. The model is not wrong — it is *more granular* than the annotation.
+
+  Chain-adjusted recall credits this 2-hop A→B→C path as covering the GT
+  edge A→C, adding it to the TP count before computing recall. The gate uses
+  chain-adjusted recall because it is a fairer measure of whether the model
+  captured the causal relationship, regardless of granularity level.
+
+  Raw recall is still reported as an informational lower bound. The difference
+  between raw and chain-adjusted recall quantifies how much granularity
+  mismatch exists between model output and annotations.
 
 Known evaluation limitations (see docs/l2_review_2026-03-21.md):
 - GT covers only ~1.6% of processed records, skewed toward fire incidents.
-- Chain compression: model writes A→C, GT writes A→B + B→C — recall is penalised.
-  Chain-adjusted recall (advisory) quantifies this effect.
 - Matching threshold sensitivity: ~14pp P/R swing from t=0.30 to t=0.60.
 - Informational oracle_precision_at_k (oracle P@K) is reported but NOT used for
   gating — it selects predictions by GT similarity, making it circular.
@@ -527,20 +544,27 @@ def _chain_credit(
 
 # ── Evidence ─────────────────────────────────────────────────────────────────
 
-def _evidence_f1(pred_evidence: str, gt_evidence: str) -> float:
-    """Token-level F1 between predicted and GT evidence spans."""
+def _evidence_scores(pred_evidence: str, gt_evidence: str) -> Tuple[float, float, float]:
+    """Token-level precision, recall, F1 between predicted and GT evidence spans.
+
+    Returns (precision, recall, f1).
+    Precision: fraction of model-cited tokens that appear in GT evidence
+               (high = model is not over-citing irrelevant text).
+    Recall:    fraction of GT-cited tokens that the model included
+               (high = model captured the right passage).
+    F1:        harmonic mean.
+    """
     pred_tokens = set(pred_evidence.lower().split())
     gt_tokens = set(gt_evidence.lower().split())
     if not pred_tokens and not gt_tokens:
-        return 1.0
+        return 1.0, 1.0, 1.0
     if not pred_tokens or not gt_tokens:
-        return 0.0
+        return 0.0, 0.0, 0.0
     intersection = len(pred_tokens & gt_tokens)
     precision = intersection / len(pred_tokens)
     recall = intersection / len(gt_tokens)
-    if precision + recall == 0:
-        return 0.0
-    return 2 * precision * recall / (precision + recall)
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
+    return precision, recall, f1
 
 
 # ── Main metrics ─────────────────────────────────────────────────────────────
@@ -630,14 +654,22 @@ def compute_gate3_metrics(
         if causal_gt_records else 0.0
     )
 
-    # Evidence F1 on matched edges
-    evidence_f1_scores = [
-        _evidence_f1(str(p.get("evidence") or ""), str(g.get("evidence") or ""))
+    # Evidence precision, recall, F1 on matched edges
+    evidence_scores = [
+        _evidence_scores(str(p.get("evidence") or ""), str(g.get("evidence") or ""))
         for p, g in matched_causal
     ]
+    mean_evidence_precision = (
+        sum(s[0] for s in evidence_scores) / len(evidence_scores)
+        if evidence_scores else 0.0
+    )
+    mean_evidence_recall = (
+        sum(s[1] for s in evidence_scores) / len(evidence_scores)
+        if evidence_scores else 0.0
+    )
     mean_evidence_f1 = (
-        sum(evidence_f1_scores) / len(evidence_f1_scores)
-        if evidence_f1_scores else 0.0
+        sum(s[2] for s in evidence_scores) / len(evidence_scores)
+        if evidence_scores else 0.0
     )
 
     # Oracle P@K — circular selection, informational only, NOT used for gating
@@ -645,11 +677,15 @@ def compute_gate3_metrics(
     tp_oracle, _ = _greedy_match(oracle_selected, causal_gt, threshold)
     oracle_precision_at_k = tp_oracle / len(oracle_selected) if oracle_selected else 0.0
 
-    # ── Chain compression credit (advisory) ──
+    # ── Chain compression credit (gate-blocking) ──
     matched_gt_ids = {id(g) for _, g in matched_causal}
     unmatched_gt_causal = [g for g in causal_gt if id(g) not in matched_gt_ids]
     chain_tp = _chain_credit(unmatched_gt_causal, causal_pred, threshold)
     chain_adjusted_recall = (tp_causal + chain_tp) / len(causal_gt) if causal_gt else 0.0
+    chain_adjusted_f1 = (
+        2 * precision * chain_adjusted_recall / (precision + chain_adjusted_recall)
+        if (precision + chain_adjusted_recall) > 0 else 0.0
+    )
 
     # ── Advisory relation stats ──
     advisory: Dict[str, Dict[str, Any]] = {}
@@ -670,8 +706,8 @@ def compute_gate3_metrics(
     # ── Gate thresholds ──
     json_pass = json_validity_rate >= 0.99
     precision_pass = precision >= 0.50
-    recall_pass = recall >= 0.60
-    f1_pass = f1 >= 0.55
+    recall_pass = chain_adjusted_recall >= 0.60
+    f1_pass = chain_adjusted_f1 >= 0.55
     evidence_pass = mean_evidence_f1 >= 0.60
     presence_pass = causal_presence >= 0.75
     gate3_pass = json_pass and precision_pass and recall_pass and f1_pass and evidence_pass and presence_pass
@@ -681,13 +717,17 @@ def compute_gate3_metrics(
         "precision": round(precision, 4),
         "recall": round(recall, 4),
         "f1": round(f1, 4),
+        "mean_evidence_precision": round(mean_evidence_precision, 4),
+        "mean_evidence_recall": round(mean_evidence_recall, 4),
         "mean_evidence_f1": round(mean_evidence_f1, 4),
         "causal_presence": round(causal_presence, 4),
         "json_validity_rate": round(json_validity_rate, 4),
+        # Chain-adjusted (gate-blocking)
+        "chain_adjusted_recall": round(chain_adjusted_recall, 4),
+        "chain_adjusted_f1": round(chain_adjusted_f1, 4),
+        "chain_tp": chain_tp,
         # Reference / informational
         "oracle_precision_at_k": round(oracle_precision_at_k, 4),
-        "chain_tp": chain_tp,
-        "chain_adjusted_recall": round(chain_adjusted_recall, 4),
         "matching_threshold": threshold,
         # Counts
         "total_predicted": total_predicted,
@@ -702,16 +742,16 @@ def compute_gate3_metrics(
         "thresholds": {
             "json_validity": 0.99,
             "precision": 0.50,
-            "recall": 0.60,
-            "f1": 0.55,
+            "chain_adjusted_recall": 0.60,
+            "chain_adjusted_f1": 0.55,
             "evidence_f1": 0.60,
             "causal_presence": 0.75,
         },
         "pass": {
             "json_validity": json_pass,
             "precision": precision_pass,
-            "recall": recall_pass,
-            "f1": f1_pass,
+            "chain_adjusted_recall": recall_pass,
+            "chain_adjusted_f1": f1_pass,
             "evidence_f1": evidence_pass,
             "causal_presence": presence_pass,
             "gate3": gate3_pass,
@@ -745,6 +785,7 @@ def compute_threshold_sweep(
             "causal_presence": m["causal_presence"],
             "chain_tp": m["chain_tp"],
             "chain_adjusted_recall": m["chain_adjusted_recall"],
+            "chain_adjusted_f1": m["chain_adjusted_f1"],
             "gate3_pass": m["pass"]["gate3"],
         })
     return rows
@@ -779,9 +820,11 @@ def generate_gate3_report(
         "|--------|------:|-----------|--------|",
         f"| JSON validity | {metrics['json_validity_rate']:.1%} | >= 99% | {'PASS' if p['json_validity'] else 'FAIL'} |",
         f"| Precision | {metrics['precision']:.1%} | >= 50% | {'PASS' if p['precision'] else 'FAIL'} |",
-        f"| Recall | {metrics['recall']:.1%} | >= 60% | {'PASS' if p['recall'] else 'FAIL'} |",
-        f"| F1 | {metrics['f1']:.1%} | >= 55% | {'PASS' if p['f1'] else 'FAIL'} |",
+        f"| Chain-adjusted Recall | {metrics['chain_adjusted_recall']:.1%} | >= 60% | {'PASS' if p['chain_adjusted_recall'] else 'FAIL'} |",
+        f"| Chain-adjusted F1 | {metrics['chain_adjusted_f1']:.1%} | >= 55% | {'PASS' if p['chain_adjusted_f1'] else 'FAIL'} |",
         f"| Evidence F1 | {metrics['mean_evidence_f1']:.1%} | >= 60% | {'PASS' if p['evidence_f1'] else 'FAIL'} |",
+        f"| Evidence Precision | {metrics['mean_evidence_precision']:.1%} | — | (informational) |",
+        f"| Evidence Recall | {metrics['mean_evidence_recall']:.1%} | — | (informational) |",
         f"| Causal presence | {metrics['causal_presence']:.1%} | >= 75% | {'PASS' if p['causal_presence'] else 'FAIL'} |",
         "",
         "## CAUSAL Counts",
@@ -789,12 +832,14 @@ def generate_gate3_report(
         f"- Predicted CAUSAL in GT records: {metrics['causal_predicted_in_gt_records']}",
         f"- GT CAUSAL edges (after dedup): {metrics['causal_ground_truth']}",
         f"- True positives: {metrics['causal_true_positives']}",
+        f"- Chain TPs (2-hop A→B→C covering GT A→C): {metrics['chain_tp']}",
         f"- GT records matched: {metrics['causal_gt_records_matched']}/{metrics['causal_gt_records_total']}",
         "",
         "## Informational (not used for gating)",
         "",
+        f"- Raw recall (before chain credit): {metrics['recall']:.1%}",
+        f"- Raw F1 (before chain credit): {metrics['f1']:.1%}",
         f"- Oracle P@K (circular — GT-similarity selection): {metrics['oracle_precision_at_k']:.1%}",
-        f"- Chain-adjusted recall (advisory): {metrics['chain_adjusted_recall']:.1%} (+{metrics['chain_tp']} chain TPs)",
         "",
         "## Advisory Relation Stats (informational only — do not affect gate)",
         "",
@@ -813,8 +858,8 @@ def generate_gate3_report(
             "",
             "## Threshold Sensitivity Sweep",
             "",
-            "| Threshold | P | R | F1 | Oracle-P@K | Evidence-F1 | Presence | Chain-Adj-R | PASS |",
-            "|----------:|----:|----:|---:|-----------:|------------:|--------:|------------:|------|",
+            "| Threshold | P | Raw-R | Raw-F1 | Chain-Adj-R | Chain-Adj-F1 | Oracle-P@K | Evidence-F1 | Presence | PASS |",
+            "|----------:|----:|------:|-------:|------------:|-------------:|-----------:|------------:|---------:|------|",
         ])
         for row in sweep_rows:
             lines.append(
@@ -822,10 +867,11 @@ def generate_gate3_report(
                 f" | {row['precision']:.1%}"
                 f" | {row['recall']:.1%}"
                 f" | {row['f1']:.1%}"
+                f" | {row['chain_adjusted_recall']:.1%}"
+                f" | {row['chain_adjusted_f1']:.1%}"
                 f" | {row['oracle_precision_at_k']:.1%}"
                 f" | {row['mean_evidence_f1']:.1%}"
                 f" | {row['causal_presence']:.1%}"
-                f" | {row['chain_adjusted_recall']:.1%}"
                 f" | {'✓' if row['gate3_pass'] else '✗'} |"
             )
 
@@ -913,14 +959,12 @@ def main() -> None:
 
     verdict = "PASS" if metrics["pass"]["gate3"] else "FAIL"
     print(f"\nGate 3: {verdict}")
-    print(f"  Precision:   {metrics['precision']:.1%}  (>= 50%)")
-    print(f"  Recall:      {metrics['recall']:.1%}  (>= 60%)")
-    print(f"  F1:          {metrics['f1']:.1%}  (>= 55%)")
-    print(f"  Evidence F1:       {metrics['mean_evidence_f1']:.1%}  (>= 60%)")
-    print(f"  Causal presence:   {metrics['causal_presence']:.1%}  (>= 75%)")
-    print(f"  Oracle P@K (ref):  {metrics['oracle_precision_at_k']:.1%}  [circular, not gating]")
-    print(f"  Chain TPs (advisory): {metrics['chain_tp']}  "
-          f"chain-adj recall: {metrics['chain_adjusted_recall']:.1%}")
+    print(f"  Precision:             {metrics['precision']:.1%}  (>= 50%)")
+    print(f"  Chain-adj Recall:      {metrics['chain_adjusted_recall']:.1%}  (>= 60%)  [+{metrics['chain_tp']} chain TPs over raw {metrics['recall']:.1%}]")
+    print(f"  Chain-adj F1:          {metrics['chain_adjusted_f1']:.1%}  (>= 55%)  [raw F1: {metrics['f1']:.1%}]")
+    print(f"  Evidence F1:           {metrics['mean_evidence_f1']:.1%}  (>= 60%)  [P={metrics['mean_evidence_precision']:.1%}  R={metrics['mean_evidence_recall']:.1%}]")
+    print(f"  Causal presence:       {metrics['causal_presence']:.1%}  (>= 75%)")
+    print(f"  Oracle P@K (ref):      {metrics['oracle_precision_at_k']:.1%}  [circular, not gating]")
     print()
     print("  Advisory (not blocking):")
     for rel, d in sorted(metrics.get("advisory", {}).items()):
