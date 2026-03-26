@@ -15,7 +15,7 @@ count reduced significantly from raw extraction by type filtering and title
 normalization.
 
 Decision: informed production guardrail gate design for the v2 pipeline; the
-filtering logic here was ported directly into pipeline_v2/guardrail.py.
+filtering logic here was ported directly into pipeline/guardrail.py.
 """
 
 from __future__ import annotations

@@ -2,7 +2,7 @@
 
 This module implements the **Tier 1 event similarity methods** described in
 Section 4.3 of the Spring 2026 Capstone Report.  It operates entirely on
-artifacts produced by `pipeline_v2` (post-ER entities and relations) and
+artifacts produced by `pipeline` (post-ER entities and relations) and
 requires no additional model training.
 
 ---
@@ -87,13 +87,13 @@ event_similarity/
 
 ## Prerequisites
 
-The following `pipeline_v2` outputs must exist before running:
+The following `pipeline` outputs must exist before running:
 
 | File | Created by |
 |------|-----------|
-| `pipeline_v2/outputs/metadata_parsed.parquet` | `pipeline_v2/run_gliner_pipeline.py` |
-| `pipeline_v2/er_execution/outputs/entities_post_er.parquet` | `pipeline_v2/er_execution/run_er_execution.py` |
-| `pipeline_v2/er_execution/outputs/relations_post_er.parquet` | `pipeline_v2/er_execution/run_er_execution.py` |
+| `pipeline/outputs/metadata_parsed.parquet` | `pipeline/run_gliner_pipeline.py` |
+| `pipeline/er_execution/outputs/entities_post_er.parquet` | `pipeline/er_execution/run_er_execution.py` |
+| `pipeline/er_execution/outputs/relations_post_er.parquet` | `pipeline/er_execution/run_er_execution.py` |
 
 ---
 
@@ -186,8 +186,8 @@ Edit `config.py` to:
 
 | Module | Relationship |
 |--------|-------------|
-| `pipeline_v2/er_execution/` | Produces the post-ER entity/relation parquets consumed here |
-| `pipeline_v2/outputs/metadata_parsed.parquet` | Source of narrative text for embeddings |
+| `pipeline/er_execution/` | Produces the post-ER entity/relation parquets consumed here |
+| `pipeline/outputs/metadata_parsed.parquet` | Source of narrative text for embeddings |
 | `incident-embedding-analysis/` | Tier 2 (TransE / Node2Vec) prototypes; activated if graph quality thresholds are met |
 | `evaluation/semantic_similar_distance.py` | Fall 2025 semantic–structural correlation baseline |
 | `natural_language_query/golden_set_queries.md` | Defines the query families that informed gold standard selection |

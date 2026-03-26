@@ -1,7 +1,7 @@
 """Relation entropy report — measures edge-type diversity in the graph.
 
 Usage:
-    python pipeline_v2/evaluation/relation_entropy.py EDGES_FILE [--baseline EDGES_FILE2]
+    python pipeline/evaluation/relation_entropy.py EDGES_FILE [--baseline EDGES_FILE2]
 
 Reads a Parquet or CSV edges file, computes Shannon entropy over the
 ``relation`` column, and prints a compact report.  Optionally compares

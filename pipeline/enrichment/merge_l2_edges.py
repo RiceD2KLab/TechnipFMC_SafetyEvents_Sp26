@@ -6,11 +6,11 @@ nodes for L2-only entities, resolves entity IDs, and appends to the existing
 entities and relations parquet files.
 
 Usage:
-    python pipeline_v2/enrichment/merge_l2_edges.py \
+    python pipeline/enrichment/merge_l2_edges.py \
         --l2-dir output/l2 \
-        --entities-parquet pipeline_v2/outputs/entities.parquet \
-        --relations-parquet pipeline_v2/outputs/relations.parquet \
-        --output-dir pipeline_v2/outputs/merged
+        --entities-parquet pipeline/outputs/entities.parquet \
+        --relations-parquet pipeline/outputs/relations.parquet \
+        --output-dir pipeline/outputs/merged
 
 Outputs:
     merged/entities.parquet   — L1 entities + new L2 entities

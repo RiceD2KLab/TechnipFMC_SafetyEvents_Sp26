@@ -13,15 +13,15 @@ from kg_schema import L1_ENTITY_TYPE_NAMES
 # ── Project root ──────────────────────────────────────────────────────────
 ROOT = Path(__file__).resolve().parent.parent
 
-# ── Input data (pipeline_v2 outputs) ──────────────────────────────────────
+# ── Input data (pipeline outputs) ──────────────────────────────────────
 # narratives + incident properties (record_no, narrative, severity_bin, …)
-METADATA_PATH = ROOT / "pipeline_v2" / "outputs" / "metadata_parsed.parquet"
+METADATA_PATH = ROOT / "pipeline" / "outputs" / "metadata_parsed.parquet"
 
 # post-ER entity nodes  (entity_id, entity_type, value, …)
-ENTITIES_PATH = ROOT / "pipeline_v2" / "er_execution" / "outputs" / "entities_post_er.parquet"
+ENTITIES_PATH = ROOT / "pipeline" / "er_execution" / "outputs" / "entities_post_er.parquet"
 
 # post-ER edges  (source INCIDENT::X  →  target ENTITY_TYPE::Y, relation, …)
-RELATIONS_PATH = ROOT / "pipeline_v2" / "er_execution" / "outputs" / "relations_post_er.parquet"
+RELATIONS_PATH = ROOT / "pipeline" / "er_execution" / "outputs" / "relations_post_er.parquet"
 
 # ── Output directory ──────────────────────────────────────────────────────
 OUTPUT_DIR = ROOT / "event_similarity" / "outputs"

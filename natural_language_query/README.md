@@ -39,7 +39,7 @@ python -m natural_language_query.eval_harness -o eval_results.json
 
 ```python
 from natural_language_query.translator import translate
-from pipeline_v2.benchmark.query_engine import QuerySpec, execute_query
+from pipeline.benchmark.query_engine import QuerySpec, execute_query
 
 # Step 1: Translate NL → QuerySpec
 result = translate("How many forklift incidents in 2022?")
@@ -81,7 +81,7 @@ python -m natural_language_query.run_golden_set
 # Save detailed results to JSON
 python -m natural_language_query.run_golden_set -o golden_set_results.json
 
-# Execute each translated query against the pipeline_v2 graph (if data is present)
+# Execute each translated query against the pipeline graph (if data is present)
 python -m natural_language_query.run_golden_set --execute -o results.json
 ```
 

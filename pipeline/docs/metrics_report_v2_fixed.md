@@ -119,7 +119,7 @@ The test-set GLiNER output was accidentally overwritten (the full-run GLiNER ext
 **Next step:** Re-run the full pipeline end-to-end:
 
 ```bash
-.venv/bin/python pipeline_v2/run_gliner_pipeline.py --full
+.venv/bin/python pipeline/run_gliner_pipeline.py --full
 ```
 
 **Expected time:** ~90 minutes (GLiNER extraction dominates).

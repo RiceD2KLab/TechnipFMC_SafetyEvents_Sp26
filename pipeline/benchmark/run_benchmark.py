@@ -5,10 +5,10 @@ Runs 30 benchmark queries against the v2 safety knowledge graph.
 Query definitions live in kg_schema/golden_set.csv; custom query logic
 lives in custom_queries.py.
 
-Output: pipeline_v2/benchmark/benchmark_results.md
+Output: pipeline/benchmark/benchmark_results.md
 
 Usage:
-    cd pipeline_v2
+    cd pipeline
     python -m benchmark.run_benchmark
 """
 

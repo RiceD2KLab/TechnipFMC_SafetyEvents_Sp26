@@ -5,10 +5,10 @@ Extracts entities via GLiNER, parses metadata, assembles a property graph,
 and runs Gate 1 topology evaluation.
 
 Usage:
-    python pipeline_v2/run_gliner_pipeline.py --test                    # First 1000 records (~5 min)
-    python pipeline_v2/run_gliner_pipeline.py --full                    # Full dataset (~90 min)
-    python pipeline_v2/run_gliner_pipeline.py --full --skip-gliner      # Skip GLiNER, use existing output
-    python pipeline_v2/run_gliner_pipeline.py --test --data-path /path  # Custom dataset path
+    python pipeline/run_gliner_pipeline.py --test                    # First 1000 records (~5 min)
+    python pipeline/run_gliner_pipeline.py --full                    # Full dataset (~90 min)
+    python pipeline/run_gliner_pipeline.py --full --skip-gliner      # Skip GLiNER, use existing output
+    python pipeline/run_gliner_pipeline.py --test --data-path /path  # Custom dataset path
 """
 from __future__ import annotations
 

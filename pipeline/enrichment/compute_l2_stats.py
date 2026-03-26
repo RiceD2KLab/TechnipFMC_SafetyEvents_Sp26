@@ -6,9 +6,9 @@ a Markdown report with relation distributions, entity type distributions,
 per-shard breakdowns, and timing stats.
 
 Usage:
-    python pipeline_v2/enrichment/compute_l2_stats.py \
+    python pipeline/enrichment/compute_l2_stats.py \
         --l2-dir output/l2/qwen3_30b_a3b_ollama \
-        --output pipeline_v2/enrichment/l2_results_qwen3_30b_a3b.md
+        --output pipeline/enrichment/l2_results_qwen3_30b_a3b.md
 """
 from __future__ import annotations
 

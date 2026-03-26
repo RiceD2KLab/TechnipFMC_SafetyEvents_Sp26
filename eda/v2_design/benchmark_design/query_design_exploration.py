@@ -19,7 +19,7 @@ injured; strong query candidates include crane-hand, pipe-back, vessel-injury
 combinations with >= 50 co-occurrences; pipe/pipeline/piping and
 forklift/fork-lift/FLT show the highest surface form fragmentation.
 
-Decision: directly informed the 30 benchmark queries in pipeline_v2/benchmark/,
+Decision: directly informed the 30 benchmark queries in pipeline/benchmark/,
 providing the data-grounded entity/relation combinations, co-occurrence counts,
 and causal language coverage that determine query difficulty and expected recall.
 """

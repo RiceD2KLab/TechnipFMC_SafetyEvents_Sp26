@@ -6,10 +6,10 @@ local LLM via Ollama to extract causal relationships, validates them, and
 outputs L2 edges as JSONL. Can run on L1 outputs directly or post-ER data.
 
 Usage:
-    python pipeline_v2/enrichment/run_l2_enrichment.py \
-        --nodes-csv pipeline_v2/outputs/entities.parquet \
-        --edges-csv pipeline_v2/outputs/relations.parquet \
-        --metadata-csv pipeline_v2/outputs/metadata_parsed.parquet \
+    python pipeline/enrichment/run_l2_enrichment.py \
+        --nodes-csv pipeline/outputs/entities.parquet \
+        --edges-csv pipeline/outputs/relations.parquet \
+        --metadata-csv pipeline/outputs/metadata_parsed.parquet \
         --output-dir output/l2 \
         --model qwen3:8b
 """

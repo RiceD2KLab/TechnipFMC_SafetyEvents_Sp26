@@ -6,7 +6,7 @@ Produces annotation templates for evaluating Layer 2 causal extraction.
 Selects 200 records stratified by category and causal language density,
 pulls pre-extracted entities, and generates annotation CSVs + guidelines.
 
-Outputs (all in pipeline_v2/annotation/):
+Outputs (all in pipeline/annotation/):
   - selected_records.csv
   - annotation_template.csv
   - annotation_guidelines.md
@@ -24,7 +24,7 @@ import pandas as pd
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-BASE = Path(__file__).resolve().parent.parent  # pipeline_v2/
+BASE = Path(__file__).resolve().parent.parent  # pipeline/
 OUT_DIR = BASE / "annotation"
 OUT_DIR.mkdir(exist_ok=True)
 

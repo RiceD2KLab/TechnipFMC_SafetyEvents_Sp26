@@ -1,8 +1,8 @@
 """Orchestrator for the Section 4.3 Event Similarity pipeline.
 
 Executes the full Tier 1 evaluation workflow:
-  1. Load incident narratives from pipeline_v2/outputs/metadata_parsed.parquet.
-  2. Load post-ER entity sets from pipeline_v2/er_execution/outputs/.
+  1. Load incident narratives from pipeline/outputs/metadata_parsed.parquet.
+  2. Load post-ER entity sets from pipeline/er_execution/outputs/.
   3. Select (or load) the 30 Gold Standard incident IDs.
   4. Compute sentence-transformer text embeddings (cached to outputs/).
   5. Run Tier 1 evaluation for both weight configurations:
@@ -68,12 +68,12 @@ def _check_inputs() -> None:
     if not METADATA_PATH.exists():
         missing.append(
             f"  {METADATA_PATH}\n"
-            "  → run:  python -m pipeline_v2.run_gliner_pipeline"
+            "  → run:  python -m pipeline.run_gliner_pipeline"
         )
     if not RELATIONS_PATH.exists():
         missing.append(
             f"  {RELATIONS_PATH}\n"
-            "  → run:  python -m pipeline_v2.er_execution.run_er_execution"
+            "  → run:  python -m pipeline.er_execution.run_er_execution"
         )
     if missing:
         raise FileNotFoundError(

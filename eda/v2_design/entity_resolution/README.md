@@ -8,7 +8,7 @@ what was risky, and what the production ER pipeline should look like.
 After schema enforcement, the v2 graph had clean entity types but massive duplication:
 "FORKLIFT", "Forklift", "Fork Lift", "FLT" all appeared as separate EQUIPMENT nodes.
 This exploration tested multiple ER approaches to understand the merging landscape
-before building `pipeline_v2/er_prep/` and `pipeline_v2/er_execution/`.
+before building `pipeline/er_prep/` and `pipeline/er_execution/`.
 
 ## Analysis Flow
 
@@ -81,7 +81,7 @@ but are completely different equipment. The `num_jaccard >= 0.8` guard catches t
 
 ## Decision Impact
 
-These findings shaped the production ER pipeline (`pipeline_v2/er_execution/`):
+These findings shaped the production ER pipeline (`pipeline/er_execution/`):
 - **Deterministic normalization first** (case, whitespace, suffix stripping)
 - **Strict number matching** for equipment entities
 - **Domain features** (equipment_class from taxonomy) for Splink blocking

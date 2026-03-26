@@ -11,11 +11,11 @@ downstream modules — nothing is duplicated across the pipeline.
 Centralise every schema decision so that a change to an entity type, relation type, or
 benchmark query propagates automatically to all consumers:
 
-- `pipeline_v2/extraction` — GLiNER labels and L1 type mappings
-- `pipeline_v2/enrichment` — L2 relation types and entity types
-- `pipeline_v2/assembly` — relation map and allowed relations
-- `pipeline_v2/evaluation` — gate/advisory relation classification, L2 relation names
-- `pipeline_v2/benchmark` — golden set CSV path
+- `pipeline/extraction` — GLiNER labels and L1 type mappings
+- `pipeline/enrichment` — L2 relation types and entity types
+- `pipeline/assembly` — relation map and allowed relations
+- `pipeline/evaluation` — gate/advisory relation classification, L2 relation names
+- `pipeline/benchmark` — golden set CSV path
 - `natural_language_query` — entity type and relation enums
 - `event_similarity` — entity type validation for schema weights
 
@@ -91,7 +91,7 @@ Each row contains the full natural language question in the `name` column, along
 structured query spec (strategy, entity filters, meta filters, expected counts, etc.).
 
 Used by:
-- `pipeline_v2/benchmark/run_benchmark.py` — automated benchmark execution
+- `pipeline/benchmark/run_benchmark.py` — automated benchmark execution
 - `natural_language_query/run_golden_set.py` — NLQ translation testing (44 of 52, excludes IOGP-*)
 - `natural_language_query/eval_harness.py` — scoring criteria reference
 

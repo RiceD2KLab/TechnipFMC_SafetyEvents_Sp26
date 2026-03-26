@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Pre-ER cleanup: garbage filter, multi-type resolution, merge candidates.
 
-Reads from pipeline_v2/outputs/ (does not modify).
-Writes to pipeline_v2/er_prep/.
+Reads from pipeline/outputs/ (does not modify).
+Writes to pipeline/er_prep/.
 """
 
 import re
@@ -13,7 +13,7 @@ import pandas as pd
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-BASE = Path(__file__).resolve().parent.parent  # pipeline_v2/
+BASE = Path(__file__).resolve().parent.parent  # pipeline/
 OUT_DIR = BASE / "er_prep"
 OUT_DIR.mkdir(exist_ok=True)
 
@@ -567,4 +567,4 @@ if len(merge_df) > 0:
     print(f"  Merge candidates per type:")
     for t, c in per_type.items():
         print(f"    {t}: {c:,}")
-print("\nDone. Outputs in pipeline_v2/er_prep/")
+print("\nDone. Outputs in pipeline/er_prep/")

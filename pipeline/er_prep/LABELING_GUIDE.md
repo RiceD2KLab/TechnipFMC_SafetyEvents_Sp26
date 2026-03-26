@@ -19,7 +19,7 @@ Each row is a candidate pair of entities. You fill in the `is_match` column:
 
 ## How to Open and Edit
 
-1. Open `pipeline_v2/er_prep/pairwise_labels_review_priority.csv` in Excel or Google Sheets
+1. Open `pipeline/er_prep/pairwise_labels_review_priority.csv` in Excel or Google Sheets
 2. The first column `is_match` is empty — that's what you fill in
 3. Save as CSV when done (do not change any other columns)
 
@@ -88,7 +88,7 @@ If a pair is genuinely ambiguous, label it `0` (don't merge). It's safer to leav
 
 Save the CSV and notify the team. The labeled file is consumed by:
 ```
-pipeline_v2/er_prep/splink_config/  (Splink model training configs)
+pipeline/er_prep/splink_config/  (Splink model training configs)
 ```
 
 With 200 labeled pairs, Splink can learn entity-type-specific merge thresholds that outperform the current fixed 0.90 similarity cutoff. The model uses your labels plus the similarity scores, number overlap, and blocking features to predict matches across all 10,140 candidate pairs.

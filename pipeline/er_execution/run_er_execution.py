@@ -9,8 +9,8 @@ Phase 2: Deterministic merge application (high-similarity candidates, sim >= 0.9
          highest-impact cases.
 Phase 3: Rebuild graph, compute Gate 2 metrics, spot-check merge quality.
 
-Reads from pipeline_v2/outputs/ and pipeline_v2/er_prep/.
-Writes to pipeline_v2/er_execution/outputs/.
+Reads from pipeline/outputs/ and pipeline/er_prep/.
+Writes to pipeline/er_execution/outputs/.
 """
 
 import re
@@ -26,7 +26,7 @@ random.seed(42)
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-BASE = Path(__file__).resolve().parent.parent  # pipeline_v2/
+BASE = Path(__file__).resolve().parent.parent  # pipeline/
 SRC_DIR = BASE / "outputs"
 PREP_DIR = BASE / "er_prep"
 OUT_DIR = Path(__file__).resolve().parent / "outputs"

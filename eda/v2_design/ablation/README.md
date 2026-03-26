@@ -29,7 +29,7 @@ assessment.
 ## Current Status
 
 The template exists but no variant has been evaluated yet — all metric cells are empty.
-The framework is ready to use once annotation data (from `pipeline_v2/annotation/`)
+The framework is ready to use once annotation data (from `pipeline/annotation/`)
 provides ground truth for precision/recall calculation.
 
 ## Files

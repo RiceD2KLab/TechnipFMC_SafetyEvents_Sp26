@@ -94,7 +94,7 @@ fi
 
 # ── Run L2 enrichment ───────────────────────────────────────────────────
 cmd=(
-  "${PYTHON_BIN}" "pipeline_v2/enrichment/run_l2_enrichment.py"
+  "${PYTHON_BIN}" "pipeline/enrichment/run_l2_enrichment.py"
   "--nodes-csv" "${NODES_CSV}"
   "--edges-csv" "${EDGES_CSV}"
   "--metadata-csv" "${METADATA_CSV}"

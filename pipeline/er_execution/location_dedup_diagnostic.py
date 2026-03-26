@@ -7,7 +7,7 @@ entities in the post-ER graph, then (if significant) performs a conservative
 exact-match merge.
 
 Usage:
-    .venv/bin/python pipeline_v2/er_execution/location_dedup_diagnostic.py
+    .venv/bin/python pipeline/er_execution/location_dedup_diagnostic.py
 """
 
 import os, textwrap, random

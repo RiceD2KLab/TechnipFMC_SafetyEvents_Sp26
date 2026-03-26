@@ -49,9 +49,9 @@ module load CUDA/12.6.0
 BACKEND="${BACKEND:-ollama}"
 
 # ── Data paths (same as production run) ──────────────────────────────────
-NODES_CSV="${NODES_CSV:-pipeline_v2/outputs/entities.parquet}"
-EDGES_CSV="${EDGES_CSV:-pipeline_v2/outputs/relations.parquet}"
-METADATA_CSV="${METADATA_CSV:-pipeline_v2/outputs/metadata_parsed.parquet}"
+NODES_CSV="${NODES_CSV:-pipeline/outputs/entities.parquet}"
+EDGES_CSV="${EDGES_CSV:-pipeline/outputs/relations.parquet}"
+METADATA_CSV="${METADATA_CSV:-pipeline/outputs/metadata_parsed.parquet}"
 SUBSET_CSV="${SUBSET_CSV:-comparison_subset_500.csv}"
 
 TEMPERATURE="${TEMPERATURE:-0.3}"
@@ -168,7 +168,7 @@ echo "  SUBSET_CSV=${SUBSET_CSV}"
 
 # ── Run L2 enrichment on subset ──────────────────────────────────────────
 cmd=(
-  "${PYTHON_BIN}" "pipeline_v2/enrichment/run_l2_enrichment.py"
+  "${PYTHON_BIN}" "pipeline/enrichment/run_l2_enrichment.py"
   "--nodes-csv" "${NODES_CSV}"
   "--edges-csv" "${EDGES_CSV}"
   "--metadata-csv" "${METADATA_CSV}"

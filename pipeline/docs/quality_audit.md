@@ -210,7 +210,7 @@
 #### Manual Merge Approval (2026-03-03)
 
 The 10 pairs listed above were manually approved and appended to
-`pipeline_v2/er_prep/merge_candidates.csv` with `merge_rule=manual_approved`
+`pipeline/er_prep/merge_candidates.csv` with `merge_rule=manual_approved`
 and `similarity_score=1.0`. Rationale per pair:
 
 | entity_type | entity_a | entity_b | rationale |

@@ -2,7 +2,7 @@
 Neo4j graph loader for the TechnipFMC Safety Events knowledge graph.
 
 Usage:
-    NEO4J_PASSWORD=<pw> python pipeline_v2/neo4j/load_graph.py \\
+    NEO4J_PASSWORD=<pw> python pipeline/neo4j/load_graph.py \\
         --uri bolt://localhost:7687 --user neo4j \\
         [--entities PATH] [--relations PATH] \\
         [--wipe] [--batch-size 500]
@@ -25,8 +25,8 @@ from neo4j import GraphDatabase
 # works regardless of cwd.
 # ---------------------------------------------------------------------------
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-_DEFAULT_ENTITIES = _REPO_ROOT / "pipeline_v2" / "outputs" / "entities.parquet"
-_DEFAULT_RELATIONS = _REPO_ROOT / "pipeline_v2" / "outputs" / "relations.parquet"
+_DEFAULT_ENTITIES = _REPO_ROOT / "pipeline" / "outputs" / "entities.parquet"
+_DEFAULT_RELATIONS = _REPO_ROOT / "pipeline" / "outputs" / "relations.parquet"
 
 # ---------------------------------------------------------------------------
 # Property columns that map directly to node properties (beyond id/type/value)

@@ -276,4 +276,4 @@ plt.savefig(OUT + "chart_er_compression.png", dpi=150, bbox_inches="tight")
 plt.close()
 print("✓ chart_er_compression.png")
 
-print("\n✅ All 6 charts saved to pipeline_v2/outputs/")
+print("\n✅ All 6 charts saved to pipeline/outputs/")

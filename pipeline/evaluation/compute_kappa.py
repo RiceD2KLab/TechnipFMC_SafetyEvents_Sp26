@@ -1,9 +1,9 @@
 """Compute Cohen's kappa for inter-annotator agreement on L2 causal annotations.
 
 Usage:
-    python pipeline_v2/evaluation/compute_kappa.py \
-        pipeline_v2/annotation/l2_gt_v2_claude.jsonl \
-        pipeline_v2/annotation/l2_gt_v2_codex.jsonl \
+    python pipeline/evaluation/compute_kappa.py \
+        pipeline/annotation/l2_gt_v2_claude.jsonl \
+        pipeline/annotation/l2_gt_v2_codex.jsonl \
         [--overlap-only]
 
 For each record, each relation type is binarised: 1 if the annotator

@@ -3,7 +3,7 @@
 
 Tests translation quality (NL -> QuerySpec) for all 44 golden set questions
 without requiring graph execution. Optionally runs execute_query when
-pipeline_v2 data is available.
+pipeline data is available.
 
 Usage:
     # Translation only (default), Ollama
@@ -18,7 +18,7 @@ Usage:
     # Fastest: use a cloud API (seconds per query)
     python -m natural_language_query.run_golden_set --backend anthropic -o results.json
 
-    # Run queries against the graph (requires pipeline_v2/outputs data)
+    # Run queries against the graph (requires pipeline/outputs data)
     python -m natural_language_query.run_golden_set --execute -o results.json
 """
 
@@ -76,8 +76,8 @@ def run_golden_set(
     if execute:
         try:
             sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-            from pipeline_v2.benchmark.helpers import load_data
-            from pipeline_v2.benchmark.query_engine import QuerySpec, execute_query
+            from pipeline.benchmark.helpers import load_data
+            from pipeline.benchmark.query_engine import QuerySpec, execute_query
             graph_data = load_data()
         except Exception as e:
             if verbose:
@@ -163,7 +163,7 @@ def main():
     parser.add_argument("--model", default=None, help="Model name (default per backend)")
     parser.add_argument("--base-url", default="http://localhost:11434", help="Ollama server URL")
     parser.add_argument("-o", "--output", default=None, help="Write results JSON to this path")
-    parser.add_argument("--execute", action="store_true", help="Execute each query against pipeline_v2 graph (if data available)")
+    parser.add_argument("--execute", action="store_true", help="Execute each query against pipeline graph (if data available)")
     parser.add_argument("-q", "--quiet", action="store_true", help="Less console output")
     args = parser.parse_args()
 

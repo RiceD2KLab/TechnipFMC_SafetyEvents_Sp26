@@ -8,7 +8,7 @@ Reads l2_edges.jsonl from multiple output directories and computes:
 - Token-overlap agreement between model pairs
 
 Usage:
-    python pipeline_v2/enrichment/compare_model_runs.py \
+    python pipeline/enrichment/compare_model_runs.py \
         --dirs output/l2/comparison/qwen3_30b_baseline \
                output/l2/comparison/qwen35_9b_dense \
                output/l2/comparison/qwen35_35b_moe

@@ -4,10 +4,10 @@
 Samples 500 qualifying records and prints SLURM commands for each model.
 
 Usage:
-    python pipeline_v2/enrichment/prepare_model_comparison.py \
-        --nodes-csv pipeline_v2/outputs/entities_pre_er.parquet \
-        --edges-csv pipeline_v2/outputs/relations_pre_er.parquet \
-        --metadata-csv pipeline_v2/outputs/metadata_parsed.parquet \
+    python pipeline/enrichment/prepare_model_comparison.py \
+        --nodes-csv pipeline/outputs/entities_pre_er.parquet \
+        --edges-csv pipeline/outputs/relations_pre_er.parquet \
+        --metadata-csv pipeline/outputs/metadata_parsed.parquet \
         --output comparison_subset_500.csv
 """
 from __future__ import annotations
@@ -121,10 +121,10 @@ srun --partition=commons --gres=gpu:1 --time=04:00:00 --mem=64G \\
     $SHARED_SCRATCH/$USER/bin/ollama serve &
     sleep 10
     ollama pull {model}
-    python pipeline_v2/enrichment/run_l2_enrichment.py \\
-      --nodes-csv pipeline_v2/outputs/entities_pre_er.parquet \\
-      --edges-csv pipeline_v2/outputs/relations_pre_er.parquet \\
-      --metadata-csv pipeline_v2/outputs/metadata_parsed.parquet \\
+    python pipeline/enrichment/run_l2_enrichment.py \\
+      --nodes-csv pipeline/outputs/entities_pre_er.parquet \\
+      --edges-csv pipeline/outputs/relations_pre_er.parquet \\
+      --metadata-csv pipeline/outputs/metadata_parsed.parquet \\
       --output-dir {out_dir} \\
       --model {model} \\
       --prompt-variant full \\

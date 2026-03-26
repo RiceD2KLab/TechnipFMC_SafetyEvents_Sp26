@@ -15,13 +15,13 @@ unless the query logic cannot be expressed via CSV (see Section 5).
 
 **Query types covered:** Single-hop, Aggregation, Multi-hop, Global, Conjunctive
 
-**Run command (from `pipeline_v2/`):**
+**Run command (from `pipeline/`):**
 
 ```bash
 python -m benchmark.run_benchmark
 ```
 
-Output is written to `pipeline_v2/benchmark/benchmark_results.md`.
+Output is written to `pipeline/benchmark/benchmark_results.md`.
 
 ---
 
@@ -224,7 +224,7 @@ All edges are directed from INCIDENT outward, except `LOCATED_IN`.
 
 ### Data Files
 
-Located in `pipeline_v2/outputs/`:
+Located in `pipeline/outputs/`:
 
 | File | Description |
 |------|-------------|
@@ -384,7 +384,7 @@ changes, data refreshes) without manual comparison.
 
 ## 8. Output
 
-Running the benchmark produces `pipeline_v2/benchmark/benchmark_results.md` with
+Running the benchmark produces `pipeline/benchmark/benchmark_results.md` with
 up to five sections:
 
 1. **Summary Table** — one row per query with coverage symbol, result summary,

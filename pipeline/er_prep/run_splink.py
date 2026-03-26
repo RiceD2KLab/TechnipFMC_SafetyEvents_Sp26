@@ -2,13 +2,13 @@
 """Splink probabilistic ER — trains per-type models using labeled pairs.
 
 Reads:
-  - pipeline_v2/outputs/entities.parquet  (source entities)
-  - pipeline_v2/er_prep/pairwise_labels_review.csv  (labeled pairs)
-  - pipeline_v2/er_prep/splink_config/*_config.py  (per-type settings)
+  - pipeline/outputs/entities.parquet  (source entities)
+  - pipeline/er_prep/pairwise_labels_review.csv  (labeled pairs)
+  - pipeline/er_prep/splink_config/*_config.py  (per-type settings)
 
 Writes:
-  - pipeline_v2/er_prep/splink_output/merge_decisions.csv
-  - pipeline_v2/er_prep/splink_output/threshold_report.txt
+  - pipeline/er_prep/splink_output/merge_decisions.csv
+  - pipeline/er_prep/splink_output/threshold_report.txt
 """
 
 import sys
@@ -27,7 +27,7 @@ SEED = 42
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-BASE = Path(__file__).resolve().parent.parent  # pipeline_v2/
+BASE = Path(__file__).resolve().parent.parent  # pipeline/
 ENTITIES_PATH = BASE / "outputs" / "entities.parquet"
 LABELS_PATH = BASE / "er_prep" / "pairwise_labels_review.csv"
 OUT_DIR = BASE / "er_prep" / "splink_output"
