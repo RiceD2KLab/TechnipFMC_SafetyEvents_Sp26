@@ -3,7 +3,7 @@
 Executes the full Tier 1 evaluation workflow:
   1. Load incident narratives from pipeline/outputs/metadata_parsed.parquet.
   2. Load post-ER entity sets from pipeline/er_execution/outputs/.
-  3. Select (or load) the 30 Gold Standard incident IDs.
+  3. Select (or load) the 50 Gold Standard incident IDs.
   4. Compute sentence-transformer text embeddings (cached to outputs/).
   5. Run Tier 1 evaluation for both weight configurations:
        - domain_informed (EQUIPMENT=0.25, INJURY_TYPE=0.25, …)

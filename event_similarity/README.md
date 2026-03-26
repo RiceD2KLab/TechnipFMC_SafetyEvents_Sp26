@@ -58,10 +58,10 @@ surface forms are treated as identical before Jaccard computation.
 ### Tier 2 — Contingent
 
 TransE, Node2Vec, and GraphSAGE embeddings are implemented in
-`incident-embedding-analysis/` and are activated only if the post-ER graph
-passes the connectivity threshold (giant component ratio ≥ 0.85).  If this
-threshold is not met the finding is reported as a pipeline diagnostic rather
-than a failure.
+`kg_embeddings.py` and `gnn_similarity.py` within this module. They are
+activated only if the post-ER graph passes the connectivity threshold
+(giant component ratio ≥ 0.85, mean degree ≥ 3.0). If this threshold is
+not met the finding is reported as a pipeline diagnostic rather than a failure.
 
 ---
 
@@ -118,7 +118,7 @@ The script prints a summary table to stdout and writes full results to
 ## Outputs
 
 ### `gold_standard_ids.json`
-List of 30 incident IDs selected by stratified sampling (incident_type ×
+List of 50 incident IDs selected by stratified sampling (incident_type ×
 severity_bin).  Fix this file to ensure reproducible evaluation across runs.
 
 ### `text_embeddings.pkl`
@@ -188,6 +188,6 @@ Edit `config.py` to:
 |--------|-------------|
 | `pipeline/er_execution/` | Produces the post-ER entity/relation parquets consumed here |
 | `pipeline/outputs/metadata_parsed.parquet` | Source of narrative text for embeddings |
-| `incident-embedding-analysis/` | Tier 2 (TransE / Node2Vec) prototypes; activated if graph quality thresholds are met |
+| `kg_embeddings.py` / `gnn_similarity.py` | Tier 2 (TransE, Node2Vec, GraphSAGE); activated if graph quality thresholds are met |
 | `fall2025/evaluation/semantic_similar_distance.py` | Fall 2025 semantic–structural correlation baseline |
 | `kg_schema/golden_set.csv` | 52 golden set queries that informed gold standard selection |
