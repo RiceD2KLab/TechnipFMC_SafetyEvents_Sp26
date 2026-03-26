@@ -100,6 +100,7 @@ def _build_graphsage_model(
 
     class GraphSAGEEncoder(nn.Module):
         def __init__(self):
+            """Build SAGEConv layer stack from the enclosing factory parameters."""
             super().__init__()
             self.convs = nn.ModuleList()
             dims = [in_channels] + [hidden_channels] * (num_layers - 1) + [out_channels]
@@ -107,6 +108,7 @@ def _build_graphsage_model(
                 self.convs.append(SAGEConv(dims[i], dims[i + 1]))
 
         def forward(self, x, edge_index):
+            """Run the multi-layer GraphSAGE forward pass with ReLU and dropout."""
             for i, conv in enumerate(self.convs):
                 x = conv(x, edge_index)
                 if i < len(self.convs) - 1:

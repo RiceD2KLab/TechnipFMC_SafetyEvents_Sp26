@@ -66,6 +66,7 @@ from .text_similarity import (
 
 
 def _cosine_matrix(emb_map: dict[str, np.ndarray], ids: list[str]) -> np.ndarray:
+    """Return the (N × N) cosine similarity matrix for the given embedding map and ID list."""
     from .text_similarity import text_similarity_matrix
     return text_similarity_matrix(emb_map, ids)
 
@@ -76,6 +77,17 @@ def _top_k_from_matrix(
     query_id: str,
     k: int,
 ) -> list[tuple[str, float]]:
+    """Return top-k (record_no, score) pairs for query_id from a precomputed similarity matrix.
+
+    Args:
+        mat: (N × N) similarity matrix where rows/cols correspond to ids.
+        ids: Ordered list of N incident IDs matching the matrix dimensions.
+        query_id: The query incident ID (excluded from results).
+        k: Number of results to return.
+
+    Returns:
+        List of (record_no, score) sorted descending, excluding the query itself.
+    """
     q_idx = ids.index(query_id)
     row   = mat[q_idx]
     pairs = [(ids[j], float(row[j])) for j in range(len(ids)) if ids[j] != query_id]
@@ -86,6 +98,15 @@ def _avg_hit_rates(
     topk_per_query: dict[str, list[tuple[str, float]]],
     entity_sets: dict[str, dict[str, set[str]]],
 ) -> dict[str, float | None]:
+    """Average structural hit rates across all queries for each HIGH_VALUE_TYPE.
+
+    Args:
+        topk_per_query: {query_id: [(record_no, score), …]} top-k results per query.
+        entity_sets: {record_no: {entity_type: {values}}} post-ER entity sets.
+
+    Returns:
+        {entity_type: mean_hit_rate} — None if no query had entities of that type.
+    """
     agg: dict[str, list[float]] = {et: [] for et in HIGH_VALUE_TYPES}
     for query_id, results in topk_per_query.items():
         hr = _structural_hit_rate(results, query_id, entity_sets, HIGH_VALUE_TYPES)
