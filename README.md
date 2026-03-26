@@ -205,8 +205,6 @@ PyTorch must be installed separately for your CUDA/CPU target before `requiremen
 
 ## Documentation
 
-- [docs/INDEX.md](docs/INDEX.md) — Central documentation hub
-- [docs/operational_runbook.md](docs/operational_runbook.md) — End-to-end operations guide
 - [kg_schema/README.md](kg_schema/README.md) — Schema reference
 - [pipeline/README.md](pipeline/README.md) — Pipeline architecture and step-by-step guide
 - [cluster/README.md](cluster/README.md) — HPC cluster setup and job submission
