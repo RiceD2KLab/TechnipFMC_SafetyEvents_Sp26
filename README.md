@@ -94,8 +94,8 @@ The pipeline expects a CSV/Excel file with at minimum these columns:
 - Metadata fields: `SEVERITY_DESC`, `INCIDENT_TYPE`, `IMPACT_TYPE`, `WORK_PROCESS`,
   `WORKPLACE`, `CLIENT`, `CASE_CATEGORIZATION`, `GENERAL_BUSINESS_UNIT`
 
-A dev sample (first 1,000 records) is available at `input/incidents.csv` for
-testing the pipeline without the full dataset.
+The full dataset (23,311 records) is tracked at `input/incidents.csv`. Use
+`--test` mode to run on the first 1,000 records for quick validation.
 
 ## Usage
 

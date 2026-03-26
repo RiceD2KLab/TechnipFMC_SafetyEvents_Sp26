@@ -33,7 +33,7 @@ provided the hard numbers to justify each change.
 ## How to Reproduce
 
 ```bash
-# Requires the dev_sample.csv dataset and v1 GLiNER extraction output
+# Requires input/incidents.csv and v1 GLiNER extraction output
 cd /path/to/repo
 python eda/schema_validation/schema_validation_analysis.py
 ```

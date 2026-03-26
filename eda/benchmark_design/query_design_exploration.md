@@ -1,6 +1,6 @@
 # Query Design Data Exploration Report
 
-**Dataset:** `dev_sample.csv` — 23311 records
+**Dataset:** `input/incidents.csv` — 23311 records
 
 **Purpose:** Ground truth data profiling to support design of 30 Gold Standard benchmark queries.
 

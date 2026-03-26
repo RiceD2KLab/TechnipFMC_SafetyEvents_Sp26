@@ -9,8 +9,7 @@ implementations: a FastAPI + React frontend, and a legacy Streamlit dashboard.
 visual_dashboard/
 ├── backend/        FastAPI server — serves KG data via REST endpoints
 ├── frontend/       React/TypeScript SPA — production UI
-├── dashboard/      Streamlit dashboard — legacy, functional
-└── logics_old/     Archived handlers (deprecated)
+└── dashboard/      Streamlit dashboard — legacy, functional
 ```
 
 ## Backend (FastAPI)

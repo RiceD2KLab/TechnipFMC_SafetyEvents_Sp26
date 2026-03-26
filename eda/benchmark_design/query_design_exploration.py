@@ -2,7 +2,7 @@
 """
 Data profiling of 23,311 safety incident records to ground benchmark query design.
 
-Runs six analyses on the dev_sample CSV and writes a markdown report to
+Runs six analyses on the incidents CSV and writes a markdown report to
 query_design_exploration.md: (1) entity landscape profiling — term frequency
 for equipment, injury/body part, and causal action terms across narratives;
 (2) CASE_CATEGORIZATION taxonomy — distribution and clustering of all incident
