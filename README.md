@@ -181,6 +181,19 @@ Key packages: `gliner`, `networkx`, `pandas`, `splink`, `duckdb`, `pydantic`,
 
 PyTorch must be installed separately for your CUDA/CPU target before `requirements_cluster.txt`.
 
+## Quick Walkthrough
+
+For a fast end-to-end validation (no GPU, ~5 minutes):
+
+```bash
+python pipeline/run_gliner_pipeline.py --test     # L1 extraction on 1K records
+cd pipeline && python -m benchmark.run_benchmark   # 52-query benchmark
+python -m event_similarity.run_similarity          # similarity evaluation
+```
+
+For full reproduction of every table and figure in the report, see
+[REPRODUCING_RESULTS.md](REPRODUCING_RESULTS.md).
+
 ## Documentation
 
 - [REPRODUCING_RESULTS.md](REPRODUCING_RESULTS.md) — Maps every report table/figure to the exact command

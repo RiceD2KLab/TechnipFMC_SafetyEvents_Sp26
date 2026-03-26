@@ -7,6 +7,38 @@ name = "technipfmc-safety"
 version = "2.0.0"
 description = "TechnipFMC Safety Incident Knowledge Graph"
 requires-python = ">=3.11"
+dependencies = [
+    "gliner==0.2.26",
+    "pandas==2.3.2",
+    "numpy==1.26.4",
+    "networkx==3.4.2",
+    "tqdm==4.67.0",
+    "scikit-learn==1.6.1",
+    "scipy==1.13.1",
+    "pydantic==2.10.0",
+    "splink==4.0.12",
+    "duckdb==1.1.0",
+    "rapidfuzz==3.10.0",
+    "requests==2.32.0",
+    "sentence-transformers==3.3.0",
+    "python-dateutil==2.9.0",
+    "PyYAML==6.0.2",
+]
+
+[project.optional-dependencies]
+llm = ["anthropic==0.50.0", "google-genai==1.0.0"]
+dashboard = [
+    "streamlit==1.40.0",
+    "plotly==5.24.0",
+    "wordcloud==1.9.4",
+    "seaborn==0.13.2",
+    "matplotlib==3.9.2",
+    "pillow==11.0.0",
+    "fastapi==0.115.0",
+    "uvicorn==0.32.0",
+]
+similarity = ["pykeen==1.10.2"]
+neo4j = ["neo4j==5.27.0"]
 
 [tool.setuptools.packages.find]
 include = [
