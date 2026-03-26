@@ -4,8 +4,8 @@ Canonical relation mapping and entity deduplication on raw GraphRAG Mistral outp
 Applies a keyword-based relation canonicalization map (e.g. CAUSE/LED_TO/DUE_TO
 all collapse to CAUSED_BY) and deduplicates entities by normalizing titles to
 uppercase alphanumeric form, keeping the highest-degree representative for each
-normalized key. Reads from graphRAG/output and writes cleaned parquet files to
-graphRAG/output_cleaned.
+normalized key. Reads from fall2025/graphRAG/output and writes cleaned parquet files to
+fall2025/graphRAG/output_cleaned.
 
 Key findings: 1,073 entity merges achieved via text normalization alone;
 relation types reduced from thousands of free-text strings to a small canonical
@@ -20,8 +20,8 @@ import re
 from pathlib import Path
 
 # --- Configuration ---
-INPUT_DIR = Path("graphRAG/output")
-OUTPUT_DIR = Path("graphRAG/output_cleaned")
+INPUT_DIR = Path("fall2025/graphRAG/output")
+OUTPUT_DIR = Path("fall2025/graphRAG/output_cleaned")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 # Canonical Relations Mapping (The "Schema")
@@ -130,7 +130,7 @@ def clean_topology():
     print(f"Final Avg Degree: {avg_degree:.2f}")
     
     # 5. Save
-    print("\nSaving to 'graphRAG/output_cleaned/'...")
+    print("\nSaving to 'fall2025/graphRAG/output_cleaned/'...")
     deduped_ents.to_parquet(OUTPUT_DIR / "entities.parquet")
     clean_rels.to_parquet(OUTPUT_DIR / "relationships.parquet")
     print("Done.")

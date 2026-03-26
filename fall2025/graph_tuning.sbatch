@@ -6,7 +6,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=16
 #SBATCH --mem-per-cpu=10G
-#SBATCH --time=08:20:00
+#SBATCH --time=04:20:00
 #SBATCH --partition=commons
 #SBATCH --gres=gpu:lovelace:1
 
@@ -90,7 +90,7 @@ fi
 # ---------------------
 echo "Preparing Input File"
 mkdir -p ./graphRAG/input
-# head -n 1001 ./data/cleaned_description_translated.csv > ./graphRAG/input/dev_sample.csv
+# head -n 1001 ./data/cleaned_description_translated.csv > ./input/incidents.csv
 
 echo "Preparing GraphRAG workspace..."
 mkdir -p ./graphRAG/input
@@ -100,7 +100,7 @@ fi
 
 echo "Running GraphRAG index..."
 pushd ./graphRAG >/dev/null
-python -m graphrag index
+python -m graphrag prompt-tune --root /home/cdm8/COMP449/technipfmc_safety/graphRAG --config /home/cdm8/COMP449/technipfmc_safety/graphRAG/settings.yaml
 popd >/dev/null
 
 # ---------------------

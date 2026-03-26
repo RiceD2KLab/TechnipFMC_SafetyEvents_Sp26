@@ -18,13 +18,13 @@ Raw Mistral output (83K nodes, 156K edges, 3,380 relation types)
     ├─ graph_diagnostics.py ──► Baseline health metrics
     │
     ├─ clean_graph_topology.py ──► Canonical relation mapping + entity dedup
-    │                               Output: graphRAG/output_cleaned/
+    │                               Output: fall2025/graphRAG/output_cleaned/
     │
     ├─ schema_filter.py ──► Strict 7-type entity filter
-    │                        Output: graphRAG/output_schema_only/
+    │                        Output: fall2025/graphRAG/output_schema_only/
     │
     ├─ guardrail_graph.py ──► Schema enforcement + normalization
-    │                          Output: graphRAG/output_guardrailed/
+    │                          Output: fall2025/graphRAG/output_guardrailed/
     │
     └─ litmus_test.py ──► Quick go/no-go feasibility check
 ```

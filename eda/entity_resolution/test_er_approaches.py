@@ -28,8 +28,8 @@ from collections import defaultdict, Counter
 from pathlib import Path
 import re
 
-BASE = Path(__file__).parent.parent
-OUTPUT_DIR = BASE / "graphRAG" / "output"
+BASE = Path(__file__).parent.parent.parent  # repo root
+OUTPUT_DIR = BASE / "fall2025" / "graphRAG" / "output"
 EDA_DIR = BASE / "eda"
 
 def load_data():

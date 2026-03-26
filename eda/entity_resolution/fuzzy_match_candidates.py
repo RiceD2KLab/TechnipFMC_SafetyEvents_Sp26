@@ -56,7 +56,7 @@ def num_jaccard(nums_a: List[str], nums_b: List[str]) -> float:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Find high-similarity entity pairs.")
-    parser.add_argument("--entities", default="graphRAG/output_schema_only/entities.parquet")
+    parser.add_argument("--entities", default="fall2025/graphRAG/output_schema_only/entities.parquet")
     parser.add_argument("--out", default="eda/fuzzy_match_candidates.csv")
     parser.add_argument("--threshold", type=float, default=0.9, help="Similarity threshold [0,1].")
     parser.add_argument("--length-bucket", type=int, default=4, help="Bucket size for length blocking.")

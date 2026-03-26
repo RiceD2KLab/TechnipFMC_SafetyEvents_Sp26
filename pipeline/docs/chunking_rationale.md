@@ -60,4 +60,4 @@ The production implementation uses GLiNER's own SentencePiece tokenizer to count
 
 ## Remaining Gap
 
-The ~88 Norwegian and ~109 other non-English narratives produce low-quality GLiNER output regardless of chunking. The translator pipeline (`translator/csv_translator_m2m100_gpu.py`) exists but is not wired in. Low priority (0.8% of data).
+The ~88 Norwegian and ~109 other non-English narratives produce low-quality GLiNER output regardless of chunking. The translator pipeline (`fall2025/translator/csv_translator_m2m100_gpu.py`) exists but is not wired in. Low priority (0.8% of data).

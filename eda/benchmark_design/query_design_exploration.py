@@ -32,8 +32,9 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-CSV_PATH = Path(__file__).resolve().parent.parent / "graphRAG" / "input" / "dev_sample.csv"
-OUTPUT_PATH = Path(__file__).resolve().parent.parent / "query_design_exploration.md"
+ROOT = Path(__file__).resolve().parent.parent.parent  # repo root
+CSV_PATH = ROOT / "input" / "incidents.csv"
+OUTPUT_PATH = Path(__file__).resolve().parent / "query_design_exploration.md"
 
 
 # ---------------------------------------------------------------------------

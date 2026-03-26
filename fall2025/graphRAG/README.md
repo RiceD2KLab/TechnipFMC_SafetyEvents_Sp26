@@ -39,5 +39,4 @@ entity extraction and LLM-based L2 causal enrichment under a controlled schema (
 The GraphRAG approach produced a large but noisy graph with ~156K edges and no schema
 enforcement. The v2 pipeline (`pipeline/`) uses GLiNER for precise NER under a fixed
 7-type L1 schema, deterministic relation assignment, and LLM-based L2 causal enrichment
-with evidence grounding. See `eda/v2_design/schema_validation/` for the empirical
-analysis that motivated the redesign.
+with evidence grounding. See `eda/schema_validation/` for the empirical analysis that motivated the redesign.

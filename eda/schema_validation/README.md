@@ -35,8 +35,8 @@ provided the hard numbers to justify each change.
 ```bash
 # Requires the dev_sample.csv dataset and v1 GLiNER extraction output
 cd /path/to/repo
-python eda/v2_design/schema_validation/schema_validation_analysis.py
+python eda/schema_validation/schema_validation_analysis.py
 ```
 
-The script reads from `graphRAG/input/dev_sample.csv` and the v1 extraction artifacts,
+The script reads from `input/incidents.csv` and the v1 extraction artifacts,
 then generates the evidence report with all 8 analyses.

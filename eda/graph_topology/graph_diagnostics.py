@@ -174,9 +174,9 @@ def read_relations_from_csv(path: Path) -> List[str]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Graph diagnostics for GraphRAG outputs.")
-    parser.add_argument("--rels", default="graphRAG/output/relationships_filtered.parquet")
-    parser.add_argument("--ents", default="graphRAG/output/entities_filtered.parquet")
-    parser.add_argument("--triples", default="graphRAG/output/incident_triples.csv")
+    parser.add_argument("--rels", default="fall2025/graphRAG/output/relationships_filtered.parquet")
+    parser.add_argument("--ents", default="fall2025/graphRAG/output/entities_filtered.parquet")
+    parser.add_argument("--triples", default="fall2025/graphRAG/output/incident_triples.csv")
     parser.add_argument("--json-out", default=None, help="Optional JSON output path.")
     parser.add_argument("--percentiles", default="0.95,0.975,0.99,0.995")
     args = parser.parse_args()

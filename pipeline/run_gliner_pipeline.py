@@ -25,7 +25,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 import pandas as pd
 
-DEFAULT_DATA_PATH = PROJECT_ROOT / "graphRAG" / "input" / "dev_sample.csv"
+DEFAULT_DATA_PATH = PROJECT_ROOT / "input" / "incidents.csv"
 OUTPUTS_DIR = PIPELINE_ROOT / "outputs"
 
 

@@ -24,19 +24,14 @@ enabling structured querying, causal chain analysis, and similar-incident retrie
 ```
 ├── pipeline/                   # Core KG construction pipeline (L1 + ER + L2)
 ├── kg_schema/                  # Single source of truth: entity/relation types, golden set
+├── input/                      # Incident dataset (incidents.csv, 23K records)
 ├── natural_language_query/     # NL question -> structured query translation
 ├── event_similarity/           # Similar incident retrieval (text + structural)
 ├── visual_dashboard/           # Dashboard: FastAPI backend, React frontend, Streamlit legacy
-├── graphRAG/                   # Fall 2025 pipeline (GraphRAG + Mistral 7B, superseded)
-├── eda/                        # Exploratory data analysis (fall2025/ and v2_design/)
-├── evaluation/                 # Fall 2025 graph evaluation framework
+├── eda/                        # Design-phase analysis (schema validation, ER, topology, ablation)
 ├── cluster/                    # Rice NOTS HPC scripts (SLURM, env setup)
 ├── incident-embedding-analysis/# Embedding comparison (text, Node2Vec, TransE)
-├── translator/                 # Multi-language translation (M2M100, GPU)
-├── docs/                       # Design decisions, reviews, operational runbook
-├── KG_Plumber/                 # Fall 2025: ThePlumber triple extraction
-├── KG_spaCy/                   # Fall 2025: spaCy rule-based extraction
-└── data/                       # Incident data (gitignored, see Data Setup below)
+└── fall2025/                   # Fall 2025 work (GraphRAG, evaluation, KG_Plumber, KG_spaCy, EDA, translator)
 ```
 
 Each directory has its own README with usage instructions and file descriptions.
@@ -99,7 +94,7 @@ The pipeline expects a CSV/Excel file with at minimum these columns:
 - Metadata fields: `SEVERITY_DESC`, `INCIDENT_TYPE`, `IMPACT_TYPE`, `WORK_PROCESS`,
   `WORKPLACE`, `CLIENT`, `CASE_CATEGORIZATION`, `GENERAL_BUSINESS_UNIT`
 
-A dev sample (first 1,000 records) is available at `graphRAG/input/dev_sample.csv` for
+A dev sample (first 1,000 records) is available at `input/incidents.csv` for
 testing the pipeline without the full dataset.
 
 ## Usage

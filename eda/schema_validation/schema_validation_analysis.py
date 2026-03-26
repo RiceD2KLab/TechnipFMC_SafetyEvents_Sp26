@@ -15,7 +15,8 @@ from typing import Any
 
 # ── Paths ──────────────────────────────────────────────────────────────────
 BASE = Path(__file__).resolve().parent
-RAW_CSV = BASE / "graphRAG" / "input" / "dev_sample.csv"
+ROOT = BASE.parent.parent  # repo root
+RAW_CSV = ROOT / "input" / "incidents.csv"
 ENTITIES_CSV = BASE / "gliner_output_production_v2" / "entities.csv"
 RELATIONS_CSV = BASE / "gliner_output_production_v2" / "relations.csv"
 TRIPLES_CSV = BASE / "gliner_output_production_v2" / "triples.csv"

@@ -25,7 +25,7 @@ def litmus_test():
     
     try:
         # Load Relationships
-        df = pd.read_parquet("graphRAG/output/relationships_filtered.parquet")
+        df = pd.read_parquet("fall2025/graphRAG/output/relationships_filtered.parquet")
         
         # 1. Check Connectivity (Is the graph dead?)
         node_count = len(set(df['source'].unique()) | set(df['target'].unique()))

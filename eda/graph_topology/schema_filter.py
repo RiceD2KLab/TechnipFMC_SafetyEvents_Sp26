@@ -6,8 +6,8 @@ Filters entities to the v1 canonical type allowlist (via schema.constants) and
 prunes any relationship whose source or target was removed. The --strict-v1 flag
 enables hard failure when raw entity types include values outside the allowlist
 (including legacy aliases like INCIDENT_TYPE), making the script suitable as a
-schema validation gate in automated pipelines. Reads from graphRAG/output and
-writes to graphRAG/output_schema_only by default.
+schema validation gate in automated pipelines. Reads from fall2025/graphRAG/output and
+writes to fall2025/graphRAG/output_schema_only by default.
 
 Key findings: strict mode reliably surfaces schema drift introduced by model
 hallucination; running without --strict-v1 performs a silent drop, which is
@@ -28,8 +28,8 @@ from schema.constants import V1_ENTITY_TYPES, canonicalize_entity_type, invalid_
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Filter entities/relationships to a strict schema.")
-    parser.add_argument("--input-dir", default="graphRAG/output")
-    parser.add_argument("--output-dir", default="graphRAG/output_schema_only")
+    parser.add_argument("--input-dir", default="fall2025/graphRAG/output")
+    parser.add_argument("--output-dir", default="fall2025/graphRAG/output_schema_only")
     parser.add_argument("--entities", default="entities_filtered.parquet")
     parser.add_argument("--relations", default="relationships_filtered.parquet")
     parser.add_argument(

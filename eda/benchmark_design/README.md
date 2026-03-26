@@ -49,7 +49,7 @@ Hazard Assessment (5.1%), Stored Energy/Dropped Objects (5.0%), Falls/Slips (4.4
 
 ```bash
 cd /path/to/repo
-python eda/v2_design/benchmark_design/query_design_exploration.py
+python eda/benchmark_design/query_design_exploration.py
 ```
 
-Reads from `graphRAG/input/dev_sample.csv` and the v2 pipeline graph outputs.
+Reads from `input/incidents.csv` and the v2 pipeline graph outputs.

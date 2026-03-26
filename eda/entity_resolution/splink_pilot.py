@@ -109,8 +109,8 @@ def estimate_degree_lift(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Splink pilot on entity titles.")
-    parser.add_argument("--entities", default="graphRAG/output_schema_only/entities.parquet")
-    parser.add_argument("--relations", default="graphRAG/output_schema_only/relationships.parquet")
+    parser.add_argument("--entities", default="fall2025/graphRAG/output_schema_only/entities.parquet")
+    parser.add_argument("--relations", default="fall2025/graphRAG/output_schema_only/relationships.parquet")
     parser.add_argument("--sample-size", type=int, default=30000)
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--thresholds", default="0.95,0.90")

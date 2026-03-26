@@ -7,7 +7,7 @@ the 7-type allowlist (INCIDENT, INJURY_TYPE, BODY_PART, EQUIPMENT, LOCATION,
 ORGANIZATION, DATE), maps legacy INCIDENT_TYPE alias, deduplicates entities via
 normalized title (keeping the highest-degree representative), canonicalizes all
 relation descriptions to the 7 allowed relation types, filters dangling edges,
-and recomputes degree on the cleaned graph. Writes to graphRAG/output_guardrailed.
+and recomputes degree on the cleaned graph. Writes to fall2025/graphRAG/output_guardrailed.
 
 Key findings: 65,233 entities and 105,521 relations retained after filtering;
 zero schema leakage in the output (all entity types within allowlist); entity
@@ -84,8 +84,8 @@ def map_relation(desc: str) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Apply schema + relation guardrails.")
-    parser.add_argument("--input-dir", default="graphRAG/output")
-    parser.add_argument("--output-dir", default="graphRAG/output_guardrailed")
+    parser.add_argument("--input-dir", default="fall2025/graphRAG/output")
+    parser.add_argument("--output-dir", default="fall2025/graphRAG/output_guardrailed")
     parser.add_argument("--entities", default="entities_filtered.parquet")
     parser.add_argument("--relations", default="relationships_filtered.parquet")
     parser.add_argument("--drop-related-to", action="store_true", help="Drop relations mapped to RELATED_TO.")

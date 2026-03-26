@@ -76,8 +76,8 @@ def component_stats(edges: Iterable[Tuple[str, str]], nodes: Iterable[str]) -> D
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Simulate merges and recompute graph metrics.")
-    parser.add_argument("--entities", default="graphRAG/output_schema_only/entities.parquet")
-    parser.add_argument("--relations", default="graphRAG/output_schema_only/relationships.parquet")
+    parser.add_argument("--entities", default="fall2025/graphRAG/output_schema_only/entities.parquet")
+    parser.add_argument("--relations", default="fall2025/graphRAG/output_schema_only/relationships.parquet")
     parser.add_argument("--candidates", default="eda/fuzzy_match_candidates_training.csv")
     parser.add_argument("--score-threshold", type=float, default=0.95)
     parser.add_argument("--num-jaccard-threshold", type=float, default=0.8)
