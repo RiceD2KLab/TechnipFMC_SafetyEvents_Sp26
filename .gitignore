@@ -65,5 +65,8 @@ graphRAG/cache/*
 graphRAG/shard
 
 
-# Draft Files 
+# Docs (untracked, local only)
+docs/
+
+# Draft Files
 draft
