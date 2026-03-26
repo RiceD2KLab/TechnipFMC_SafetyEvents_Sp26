@@ -30,8 +30,7 @@ enabling structured querying, causal chain analysis, and similar-incident retrie
 ├── visual_dashboard/           # Dashboard: FastAPI backend, React frontend, Streamlit legacy
 ├── eda/                        # Design-phase analysis (schema validation, ER, topology, ablation)
 ├── cluster/                    # Rice NOTS HPC scripts (SLURM, env setup)
-├── incident-embedding-analysis/# Embedding comparison (text, Node2Vec, TransE)
-└── fall2025/                   # Fall 2025 work (GraphRAG, evaluation, KG_Plumber, KG_spaCy, EDA, translator)
+└── fall2025/                   # Fall 2025 work (GraphRAG, evaluation, embeddings, KG_Plumber, KG_spaCy, EDA, translator)
 ```
 
 Each directory has its own README with usage instructions and file descriptions.

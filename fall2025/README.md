@@ -14,6 +14,7 @@ GLiNER NER under a controlled schema (`kg_schema/`) instead of free-form LLM ext
 | `KG_Plumber/` | ThePlumber-based triple extraction (Docker-based) |
 | `KG_spaCy/` | spaCy rule-based subject-verb-object extraction |
 | `translator/` | M2M100 multi-language translation for international incident data |
+| `incident-embedding-analysis/` | Embedding comparison (text, Node2Vec, TransE) — exploratory research |
 | `logics_old/` | Archived dashboard logic handlers (replaced by `visual_dashboard/dashboard/`) |
 
 ## Why it was replaced
