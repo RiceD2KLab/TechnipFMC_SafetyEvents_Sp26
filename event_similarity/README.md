@@ -190,4 +190,4 @@ Edit `config.py` to:
 | `pipeline/outputs/metadata_parsed.parquet` | Source of narrative text for embeddings |
 | `incident-embedding-analysis/` | Tier 2 (TransE / Node2Vec) prototypes; activated if graph quality thresholds are met |
 | `evaluation/semantic_similar_distance.py` | Fall 2025 semantic–structural correlation baseline |
-| `natural_language_query/golden_set_queries.md` | Defines the query families that informed gold standard selection |
+| `kg_schema/golden_set.csv` | 52 golden set queries that informed gold standard selection |
