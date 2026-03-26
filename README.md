@@ -51,6 +51,7 @@ cd TechnipFMC_SafetyEvents_Sp26
 python3.11 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+pip install -e .                # makes kg_schema, pipeline, etc. importable
 ```
 
 ### Ollama Setup (for L2 enrichment and NLQ)

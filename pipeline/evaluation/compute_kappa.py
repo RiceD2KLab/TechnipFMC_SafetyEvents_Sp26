@@ -84,13 +84,11 @@ def _binarize_jsonl(
 def _print_verdict(macro: float, agreement_rates: dict[str, float] | None = None) -> None:
     print(f"\n**Macro-average kappa: {macro:.4f}**")
 
-    # For high-prevalence relations (>90% both annotators), kappa is unreliable.
-    # Use raw agreement rate instead.
+    # For high-prevalence relations, use raw agreement rate instead of kappa.
     if agreement_rates:
         causal_rate = agreement_rates.get("CAUSAL")
         if causal_rate is not None and causal_rate >= 0.95:
-            print(f"\nNote: CAUSAL has near-universal prevalence — kappa is unreliable.")
-            print(f"CAUSAL raw agreement: {causal_rate:.1%}")
+            print(f"\nCAUSAL raw agreement: {causal_rate:.1%}")
             print(f"\nGate 3 prerequisite: PASS (CAUSAL agreement >= 95%)")
             return
 

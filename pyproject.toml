@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "technipfmc-safety"
+version = "2.0.0"
+description = "TechnipFMC Safety Incident Knowledge Graph"
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+include = [
+    "kg_schema*",
+    "pipeline*",
+    "event_similarity*",
+    "natural_language_query*",
+]

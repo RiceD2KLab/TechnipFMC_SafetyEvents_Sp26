@@ -8,6 +8,7 @@ All commands assume you are in the repository root with the venv activated.
 ```bash
 python3.11 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+pip install -e .
 ```
 
 Ollama is required only for L2 enrichment and NLQ (see README.md for setup).
