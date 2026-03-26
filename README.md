@@ -1,449 +1,218 @@
+# TechnipFMC Safety Incident Knowledge Graph
 
-# TechnipFMC Safety Incident Analysis Project
+Constructs a typed knowledge graph from ~23,000 TechnipFMC safety incident reports,
+enabling structured querying, causal chain analysis, and similar-incident retrieval.
 
-A comprehensive data analysis and knowledge graph generation system for safety incident data processing, featuring advanced data cleaning, visualization, and GraphRAG-based knowledge extraction capabilities.
+## What it does
 
-## Project Overview
-
-This project provides a complete pipeline for analyzing safety incident data, including:
-
-- **Data Integration**: Merging multiple safety data sources (accidents, near misses, hazard observations)
-- **Data Cleaning**: Advanced data cleaning and preprocessing with conflict resolution
-- **Visualization**: Comprehensive data visualization and exploratory data analysis
-- **Knowledge Graph**: GraphRAG-based knowledge graph generation for safety insights
-- **Evaluation**: Multi-level graph evaluation framework for internal validation and iterative improvement
-- **Translation**: Multi-language support for international safety data
+1. **Entity extraction** — GLiNER NER identifies equipment, body parts, injuries, locations,
+   organizations, and root cause categories from incident narratives
+2. **Graph assembly** — Builds a property graph under a fixed schema (7 L1 entity types,
+   7 relation types) with metadata-parsed incident properties
+3. **Entity resolution** — Deterministic normalization + similarity merge (sim >= 0.90)
+   deduplicates entity nodes
+4. **Causal enrichment** — LLM-based Layer 2 extraction adds CAUSAL, PRECEDED_BY,
+   FAILED_CONTROL, and MITIGATED_BY edges with evidence grounding
+5. **Natural language querying** — Translates analyst questions to structured queries
+   against the knowledge graph
+6. **Event similarity** — Retrieves similar incidents via text embeddings + schema-weighted
+   structural overlap
+7. **Interactive dashboard** — FastAPI + React frontend for graph exploration and filtering
 
 ## Directory Structure
 
 ```
-├── src/                        # Core code and modules
-├── eda/                        # Exploratory Data Analysis and Cleaning
-│   ├── data_clean/             # Data cleaning and integration modules
-│   ├── dataVisualizer.py       # Data visualization tools
-│   ├── dataModifier.py         # Data transformation utilities
-│   ├── dataFeatures.py         # Feature analysis tools
-│   └── main.py                 # Main EDA execution script
-├── graphRAG/                   # GraphRAG knowledge graph generation
-│   ├── input/                  # Input data processing
-│   ├── output/                 # Generated knowledge graph on 30,000 Incidents 
-│   ├── output_1k_mistral/      # Generated knowledge graph on 1,000 Incidents (Mistral:7b-instruct)
-│   ├── output_1k_phi/          # Generated knowledge graph on 1,000 Incidents (Phi3:Mini)
-│   ├── prompts/                # Prompts used for graphRAG (Graph Extraction, Summarization, etc)
-│   ├── extract.py              # Extracts Triplets Per Incident
-│   ├── postprocess.py          # Removes (outlier) nodes from generated KG
-│   └── settings.yaml           # GraphRAG configuration
-├── evaluation/                 # Knowledge graph evaluation framework
-│   ├── KG1/                    # Example KG folder (includes nodes.csv, edges.csv)
-│   ├── KG2/                    # Second KG for comparison
-│   ├── entity_consistency_eval.py   # Evaluates entity redundancy & type coherence
-│   ├── link_prediction_holdout.py   # Tests predictive structure quality via link prediction
-│   ├── semantic_similar_distance.py # Correlates semantic similarity with graph distance
-│   └── evaluate_all.py              # Unified runner to execute all evaluation methods
-├── KG_Plumber/                      # Triple extraction via ThePlumber (Docker-based)
-│   ├── output/                      # Generated plumber_triples.jsonl, nodes.csv, edges.csv
-│   ├── get_plumber.sh               # Script to download and set up ThePlumber locally
-│   └── process_csv.py               # Sends CSV data to Plumber API for triple extraction
-├── KG_spaCy/                        # Rule-based triple extraction using spaCy/Textacy
-│   ├── KG_test.py                   # Extracts subject–verb–object triples from text
-│   └── triple_clean.py              # Cleans and normalizes extracted triples
-├── incident-embedding-analysis/     # Incident-level embedding & comparison
-│   ├── text_embedding.py            # Text-based incident embedding
-│   ├── graph_embedding.py           # Graph-based (Node2Vec) embedding
-│   ├── transe_embedding.py          # Knowledge graph embedding (TransE)
-│   ├── requirements.txt             # Dependencies for embedding & analysis
-│   └── analysis/                    # Embedding alignment & analysis
-│       ├── align.py                 # Align embeddings by incident ID
-│       ├── correlation.py           # Correlation analysis
-│       └── heatmap.py               # Similarity heatmap visualization
-├── translator/                      # Multi-language translation tools
-│   ├── csv_translator_m2m100_gpu.py    # Translates CSV columns using M2M100 with GPU
-│   └── run_translate.sbatch            # SLURM script for translation on HPC
-├── visual_dashboard/             # Interactive Streamlit dashboard
-│   └── dashboard/                # Dashboard application
-│       ├── app.py                # Main Streamlit application
-│       ├── handler/              # Chart generation handlers
-│       │   ├── handler.py        # Main chart handler with filtering
-│       │   └── graph_makers.py   # Chart generation functions
-│       └── preprocessing/        # Data preprocessing utilities
-├── data/                       # Safety incident data (gitignored)
-└── viz.py                      # Graph visualization utilities
+├── pipeline/                   # Core KG construction pipeline (L1 + ER + L2)
+├── kg_schema/                  # Single source of truth: entity/relation types, golden set
+├── natural_language_query/     # NL question -> structured query translation
+├── event_similarity/           # Similar incident retrieval (text + structural)
+├── visual_dashboard/           # Dashboard: FastAPI backend, React frontend, Streamlit legacy
+├── graphRAG/                   # Fall 2025 pipeline (GraphRAG + Mistral 7B, superseded)
+├── eda/                        # Exploratory data analysis (fall2025/ and v2_design/)
+├── evaluation/                 # Fall 2025 graph evaluation framework
+├── cluster/                    # Rice NOTS HPC scripts (SLURM, env setup)
+├── incident-embedding-analysis/# Embedding comparison (text, Node2Vec, TransE)
+├── translator/                 # Multi-language translation (M2M100, GPU)
+├── docs/                       # Design decisions, reviews, operational runbook
+├── KG_Plumber/                 # Fall 2025: ThePlumber triple extraction
+├── KG_spaCy/                   # Fall 2025: spaCy rule-based extraction
+└── data/                       # Incident data (gitignored, see Data Setup below)
 ```
 
-## Key Features
+Each directory has its own README with usage instructions and file descriptions.
 
-### 1. Data Integration & Cleaning
-- **Multi-source Integration**: Combines accidents, near misses, hazard observations, and action plans
-- **Conflict Resolution**: Intelligent handling of data conflicts during merging
-- **Data Quality Analysis**: Comprehensive data quality assessment and reporting
-- **Column Analysis**: Advanced column compatibility analysis for safe merging
+## Setup
 
-### 2. Data Visualization
-- **Interactive Dashboards**: Comprehensive data type and cardinality analysis
-- **Missing Value Analysis**: Detailed missing data visualization
-- **Correlation Analysis**: Heatmaps and correlation pair identification
-- **Text Analysis**: N-gram analysis and word clouds for incident descriptions
-- **Variance Analysis**: Feature variance visualization for model selection
+### Prerequisites
 
-### 2.a Interactive Web Dashboard
-- **Streamlit-based Dashboard**: Real-time interactive web interface for safety event analysis
-- **Advanced Filtering**: Multi-dimensional filtering by year/month, incident type, status, risk color, GBU, location, severity, and likelihood
-- **Comprehensive Visualizations**: 
-  - Statistical summary with key metrics (total incidents, high risk percentage, average severity/likelihood, open actions)
-  - Temporal distribution charts (by year or month)
-  - Top locations and units analysis
-  - Incident type and impact type distributions (pie charts)
-  - Risk color distribution by severity (stacked bar charts)
-  - Top causes/hazards analysis
-  - Severity vs Likelihood heatmaps
-  - Word cloud visualization of incident titles
-  - Event cluster visualization with t-SNE
-- **Dynamic Data Filtering**: All visualizations update in real-time based on selected filters
-- **Data Quality Tracking**: Built-in data quality metrics for each visualization
+- Python 3.11+
+- [Ollama](https://ollama.com/) (required only for L2 causal enrichment and NLQ)
 
-### 3. Knowledge Graph Generation
-- **GraphRAG Integration**: Automated knowledge graph creation from safety data
-- **Entity Extraction**: Automatic extraction of entities and relationships
-- **Interactive Visualization**: NetworkX and PyVis-based graph visualization
-- **Community Detection**: Automatic community identification in safety networks
+### Local Development
 
-### 4. Evaluation Framework 
-#### **Method 1 – Entity Consistency Evaluation**
-- **Embedding Model**: `sentence-transformers/all-MiniLM-L6-v2`  
-- **Clustering Method**: *K-Means*  
-- **Metrics**:  
-  - **Unique Entity Rate** — measures redundancy within entity clusters  
-  - **Type Consistency Rate** — checks semantic alignment across entity types  
-
-#### **Method 2 – Link Prediction Holdout**  
-- **Procedure**:
-  - Randomly occlude *p%* of real edges as the **positive test set**  
-  - Sample an equal number of **negative samples** from non-existing edges  
-  - Score candidate edges using a set of structural or embedding-based heuristics:
-    - *Adamic-Adar*, *Jaccard*, *Resource Allocation*, *Personalized PageRank*, *Embedded Dot Product*  
-  - Evaluate the model’s ability to distinguish real relationships from spurious ones using precision–recall and ranking metrics  
-- **Metrics**: `PR-AUC`, `ROC-AUC`, `P@K`, `R@K`, `MAP`
-  
-#### **Method 3 – Semantic Similarity vs Graph Distance**
-- **Metrics**: `Spearman’s ρ (rho)` and `p-value`  
-- **Goal**: Verify whether “the more semantically similar the nodes are, the closer they are in the graph.”  
-- **Steps**:
-  - Randomly sample node pairs  
-  - Compute semantic similarity `sim(label_u, label_v)` using embedding cosine or token overlap  
-  - Compute shortest path distance `dist_G(u, v)` on the knowledge graph  
-  - Calculate the **Spearman correlation** between the two; a significant **negative correlation** (i.e., larger |ρ|) implies better *semantic alignment* between textual meaning and graph topology  
-
-### 5. Multi-language Support
-- **Translation Pipeline**: M2M100-based translation for international data
-- **Language Detection**: Automatic source language detection
-- **GPU Acceleration**: CUDA-optimized translation processing
-
-### 6. Incident Embedding & Representation Analysis
-This module constructs **incident-level embeddings** from multiple perspectives and analyzes their relationships.
-* **Text Embedding**: Semantic representations from incident descriptions
-* **Graph Embedding**: Structural representations using Node2Vec
-* **TransE Embedding**: Relational representations from incident knowledge graphs
-
-The embeddings are aligned and compared using:
-* Pairwise similarity correlation (Pearson / Spearman)
-* Clustered cosine-similarity heatmaps for qualitative inspection
-
-## Setup Instructions
-
-### 1. Environment Setup
 ```bash
-# Clone and navigate to project directory
-cd technipfmc_safety
+git clone https://github.com/RiceD2KLab/TechnipFMC_SafetyEvents_Sp26.git
+cd TechnipFMC_SafetyEvents_Sp26
 
-# Copy data from shared location
-cp -r /projects/dsci435/fmcsafetyevents_fa25/data .
-
-# Create virtual environment
-python3 -m venv .venv 
+python3.11 -m venv .venv
 source .venv/bin/activate
-
-# Install dependencies
-pip install -U pip
 pip install -r requirements.txt
 ```
 
-### 1.a GraphRag Setup
+### Ollama Setup (for L2 enrichment and NLQ)
+
 ```bash
-# Load Modules
-module load foss/2023b        
-module load Python/3.11.5     # loads Python 3.11 (good for GraphRAG)
-module load CUDA/12.4.0
-module load Miniforge3/24.11.3-0
-
-# Create Conda Environment
-conda create -n graphrag_env python=3.11
-source $(conda info --base)/etc/profile.d/conda.sh
-conda activate graphrag_env
-pip install -r requirements.txt
-```
-### 1.b Downloading Ollama
-```bash
-
-# Create and Opt Directory (Uncomment below if disk quota exceeded)
-export OLLAMA_DIR="$HOME/opt/ollama"
-# export OLLAMA_DIR="/scratch/$USER/opt/ollama"  
-mkdir -p "$OLLAMA_DIR" 
-
-# Download Ollama Tarbell
-cd $OLLAMA_DIR
-curl -LO https://ollama.com/download/ollama-linux-amd64.tgz
-
-# Unpack Tarbell
-tar -xvzf ollama-linux-amd64.tgz
-
-# Activate Ollama 
-chmod +x $OLLAMA_DIR/bin/ollama
-
-# (TENTATIVE TO CHANGE) Run and PrePull Models
-./bin/ollama serve
-
-# Models
-"$OLLAMA_DIR/bin/ollama" pull llama3:8b
-"$OLLAMA_DIR/bin/ollama" pull nomic-embed-text:latest
+# Install Ollama (https://ollama.com/download)
+ollama serve                    # start the server
+ollama pull qwen3:30b-a3b       # L2 enrichment model
+ollama pull qwen3:8b            # NLQ translation model (lighter alternative)
 ```
 
-### 1.c Plumber Setup (LOCAL ONLY SETUP)
+### Rice NOTS Cluster
+
+See [cluster/README.md](cluster/README.md) for HPC-specific setup (modules, SLURM,
+sharded enrichment). The cluster setup script handles venv, Ollama, and module loading:
+
 ```bash
-# Set get_plumber.sh executable
-chmod +x KG_Plumber\get_plumber.sh
-
-# Run Executable
-./get_plumber.sh
-
-# Set Up Docker
-cd KG_Plumber\plumber
-docker-compose up -d
+bash cluster/setup_cluster_env.sh
 ```
 
-### 2. Resource Allocation (NOTS Cluster)
+## Data Setup
+
+Incident data is not committed to the repository (too large). To populate the data directory:
+
+**On Rice NOTS cluster:**
 ```bash
-# Submit job for resource allocation
-sbatch submit.sbatch
+cp -r /rhf/allocations/dsci435/fmcsafetyevents_sp26/fmcsafetyevents_fa25/data .
 ```
 
-### 3. Python Version Requirements
-```bash
-# Load required modules (GraphRAG requires Python 3.10-3.12)
-module load GCCcore/13.2.0
-module load Python/3.11.5
-module load CUDA/12.4.0
-
-# Verify Python version
-python3 --version
+**Local development:**
+Request the consolidated incident CSV from the project sponsor or team lead. Place it at:
 ```
+data/DIM_CONSOLIDATED_ACCIDENTS.xlsx    # or equivalent CSV
+```
+
+The pipeline expects a CSV/Excel file with at minimum these columns:
+- `RECORD_NO` — unique incident identifier
+- `NARRATIVE` — free-text incident description
+- `REPORTED_DATE` — incident date
+- Metadata fields: `SEVERITY_DESC`, `INCIDENT_TYPE`, `IMPACT_TYPE`, `WORK_PROCESS`,
+  `WORKPLACE`, `CLIENT`, `CASE_CATEGORIZATION`, `GENERAL_BUSINESS_UNIT`
+
+A dev sample (first 1,000 records) is available at `graphRAG/input/dev_sample.csv` for
+testing the pipeline without the full dataset.
 
 ## Usage
 
-### Data Cleaning and EDA
-```bash
-# Run comprehensive data analysis
-python3 eda/main.py
+### Run the pipeline (L1 extraction + graph assembly)
 
-# Run with description-only processing
-python3 eda/main.py --descriptions
+```bash
+# Test run (first 1000 records, ~5 min, no GPU needed)
+python pipeline/run_gliner_pipeline.py --test
+
+# Full dataset (~90 min on CPU)
+python pipeline/run_gliner_pipeline.py --full
 ```
 
-### Knowledge Graph Generation
-```bash
-# Update requirements
-pip freeze > requirements.txt
+Outputs land in `pipeline/outputs/` (entities, relations, metadata parquets).
 
-# Run GraphRAG indexing
-run_graphrag.sbatch
+### Entity resolution
+
+```bash
+python -m pipeline.er_prep.run_er_prep
+python -m pipeline.er_execution.run_er_execution
 ```
 
-### GraphRAG Postprocessing & Incident Triplet Extraction
-After GraphRAG finishes, it will write parquet outputs under `graphRAG/output/` ( `entities.parquet`, `relationships.parquet`, `text_units.parquet`, `documents.parquet`).  
-Use the graphRAG/postprocess.py to clean the graph by dropping metadata-heavy nodes/edges and graphRAG/extractor.py to extract triples per incident:
+### L2 causal enrichment (requires Ollama)
 
 ```bash
-python graphRAG/postprocess.py -A -D
-```
-- Drops META nodes whose titles start with `META[`.
-- Removes very high-degree nodes (top ~10% by degree, clears "noisy" nodes).
-- If `-A/--allowed` is set, keeps only entities whose type is in `ALLOWED_TYPES`.
-- If `-D/--drop-labels` is set, removes relationships whose label is in `DROP_RELATIONS`.
-- Writes filtered outputs to:
-  - `graphRAG/output/entities_filtered.parquet`
-  - `graphRAG/output/relationships_filtered.parquet`
-
-```bash
-python graphRAG/extract.py
-```
-- Generates a flattened CSV of triples per incident at:
-  - `graphRAG/output/incident_triples.csv`
-- Each row includes: `incident_id`, `source`, `description` (relation), `target`, `text_unit_id`, `relationship_id`, and `document_id`.
-- Prints the average number of triplets per incident. Can enable detailed printing per incident by editing `DESCRIPTIVE` in `graphRAG/extract.py`.
-
-### Graph Visualization
-```bash
-# Generate interactive graph visualizations
-python viz.py
+python pipeline/enrichment/run_l2_enrichment.py \
+    --nodes-csv pipeline/outputs/entities.parquet \
+    --edges-csv pipeline/outputs/relations.parquet \
+    --metadata-csv pipeline/outputs/metadata_parsed.parquet \
+    --output-dir output/l2/ \
+    --backend ollama --model qwen3:30b-a3b
 ```
 
-### Data Translation
+### Benchmark (52 golden set queries)
+
 ```bash
-# Translate CSV columns to English
-python translator/csv_translator_m2m100_gpu.py --csv input.csv --columns "TITLE,DESCRIPTION" --out output.csv
+cd pipeline && python -m benchmark.run_benchmark
 ```
 
-### Interactive Web Dashboard
+### Natural language querying
+
 ```bash
-# Launch the Streamlit dashboard
+# Interactive mode
+python -m natural_language_query.eval_harness -i
+
+# Run golden set
+python -m natural_language_query.run_golden_set
+```
+
+### Event similarity
+
+```bash
+python -m event_similarity.run_similarity
+```
+
+### Dashboard
+
+```bash
+# FastAPI backend
+cd visual_dashboard/backend && uvicorn main:app --reload
+
+# React frontend (separate terminal)
+cd visual_dashboard/frontend && npm install && npm run dev
+
+# Or legacy Streamlit dashboard
 streamlit run visual_dashboard/dashboard/app.py
 ```
 
-The dashboard provides an interactive web interface for exploring safety incident data with:
-- **Sidebar Filters**: Filter data by year/month range, incident types, status, impact type, risk color, GBU, workplace country, severity, and likelihood
-- **Real-time Updates**: All charts update automatically when filters are changed
-- **Multiple Visualizations**: 
-  - Statistical summary metrics
-  - Temporal distribution (yearly or monthly)
-  - Top locations and units
-  - Incident type and impact type distributions
-  - Risk color analysis
-  - Top causes/hazards
-  - Severity vs Likelihood heatmap
-  - Word cloud of incident titles
-  - Event cluster visualization with customizable sampling ratio
+## Schema
 
-**Note**: The dashboard requires `merged_incidents_tsne.csv` in the `data/` directory. Ensure this file exists before running the dashboard.
+All entity types, relation types, and evaluation data are defined in
+[kg_schema/](kg_schema/README.md) — the single source of truth.
 
-## Module Documentation
+| Layer | Entity Types | Relation Types |
+|-------|-------------|----------------|
+| L1 (GLiNER + metadata) | 7: INCIDENT, EQUIPMENT, BODY_PART, INJURY_TYPE, LOCATION, ORGANIZATION, ROOT_CAUSE_CATEGORY | 7: INVOLVED, AFFECTED, RESULTED_IN, OCCURRED_AT, REPORTED_BY, CATEGORIZED_AS, LOCATED_IN |
+| L2 (LLM enrichment) | 9: Incident, Event, Equipment, Location, Person, Injury, Material, Condition, Action | 4: CAUSAL, PRECEDED_BY, FAILED_CONTROL, MITIGATED_BY |
 
-### Data Cleaning Modules (`eda/data_clean/`)
+## Graph Statistics
 
-- **`DataLoader`**: Main data loading and integration class
-- **`ColumnAnalyzer`**: Column compatibility analysis for safe merging
-- **`Coalescer`**: Data merging with conflict resolution
-- **`utils.py`**: Utility functions for data analysis
-- **`report.py`**: Data quality reporting and analysis
-
-### Visualization Modules (`eda/`)
-
-- **`DataVisualizer`**: Comprehensive data visualization class
-- **`DataFormatter`**: Data formatting and analysis utilities
-- **`dataModifier`**: Data transformation and cleaning
-- **`dataFeatures`**: Feature analysis and dataset summaries
-
-### Translation Module (`translator/`)
-
-- **`csv_translator_m2m100_gpu.py`**: Multi-language CSV translation with GPU acceleration
-
-### Graph Visualization (`viz.py`)
-
-- Interactive graph visualization using NetworkX and PyVis
-- Static and dynamic graph generation
-- Community detection and analysis
-
-### Interactive Web Dashboard (`visual_dashboard/`)
-
-- **`app.py`**: Main Streamlit application that provides the web interface
-  - Sidebar filters for data filtering
-  - Multiple chart visualizations
-  - Real-time data updates
-  
-- **`handler/handler.py`**: Chart generation handler
-  - Data loading and caching
-  - Filter application logic
-  - Chart type routing and generation
-  
-- **`handler/graph_makers.py`**: Chart generation functions
-  - Statistical summary generation
-  - Bar charts (all categories, top K, stacked)
-  - Pie charts
-  - Heatmaps
-  - Word clouds
-  - Temporal distribution charts
-  - Event cluster visualization (t-SNE based)
-  - Data quality tracking for each visualization
-
-**Key Features**:
-- Supports filtering by numerical ranges (min/max) and categorical values (single or multiple)
-- All charts are generated using Plotly for interactive exploration
-- Data quality metrics are tracked and can be returned with visualizations
-- Efficient data caching to improve performance
-
-### Plumber-Based Extraction (`KG_Plumber/`)
-
-- **`get_plumber.sh`**:  Script that clones the upstream [ThePlumber](https://github.com/YaserJaradeh/ThePlumber) repository into `KG_Plumber/plumber` using optional `PLUMBER_REPO_URL` and `PLUMBER_BRANCH` overrides.
-- **`process_csv.py`**: Sends incident descriptions to a running Plumber API (`http://127.0.0.1:5000` by default), retries failures, and incrementally writes outputs to `plumber_triples.jsonl`, `nodes.csv`, and `edges.csv` within the `KG_Plumber/outputs` directory.
-- **Usage**: Start the Plumber service (Docker), update `CSV_PATH` if needed, then run `python KG_Plumber/process_csv.py` to materialize triples and derived graph artifacts.
-
-### SpaCy Triple Extraction (`KG_spaCy/`)
-
-- **`KG_test.py`**: Prototyping script that loads `cleaned_description_translated.csv`, extracts subject-verb-object triples with `textacy`/spaCy, and exports raw edges to `knowledge_graph_edges.csv`.
-- **`triple_clean.py`**: Cleans the raw triples by normalizing entities/relations, filtering  long phrases, and producing`nodes.csv` and `edges.csv`.
-- **Usage**: Run `python KG_spaCy/KG_test.py` to generate initial triples, then `python KG_spaCy/triple_clean.py` to normalize them.
-
-### Evaluation Framework (`evaluation/`)
-- **`entity_consistency_eval.py`**:  Evaluates semantic redundancy and type coherence among extracted entities.  
-- **`link_prediction_holdout.py`**:  Assesses graph structural quality through link prediction.
-- **`semantic_similar_distance.py`**:  Tests whether semantically similar nodes are topologically close.  
-- **`evaluate_all.py`**:Unified runner that executes all evaluation modules sequentially on a given knowledge graph directory.  
-
-how to run:
-```bash
-python evaluation/evaluate_all.py KG1
-```
-
-## Configuration
-
-### GraphRAG Settings
-Edit `graphRAG/settings.yaml` to configure:
-- Entity extraction parameters
-- Relationship detection settings
-- Community detection thresholds
-- Output formatting options
-
-### Visualization Settings
-Modify visualization parameters in `viz.py`:
-- `MIN_EDGE_WEIGHT`: Filter weak relationships
-- `TOP_N_NODES`: Limit graph size for performance
-- `SEED`: Random seed for consistent layouts
-
-## Output Files
-
-### Data Analysis Outputs
-- `data/cleaned_data.csv`: Cleaned and integrated dataset
-- `data/cleaned_description_translated.csv`: Translated descriptions
-- `data/merged_incidents_tsne.csv`: Merged incidents data with t-SNE coordinates (required for dashboard)
-- `eda/visualization/`: Generated visualization files
-
-### Knowledge Graph Outputs
-- `graphRAG/output/` Holds KG generated from 30,000 Incidents
-- `graphRAG/output_1k_mistral/` Holds KG generated from 1,000 Incidents (mistral:7b-intruct)
-- `graphRAG/output_1k_phi/` Holds KG generated from 1,000 Incidents (phi3:mini)
-- `graphRAG/output/entities.parquet`: Extracted entities
-- `graphRAG/output/relationships.parquet`: Relationship data
-- `graphRAG/output/_viz/`: Interactive graph visualizations
+| Metric | Value |
+|--------|-------|
+| Incidents processed | 23,311 |
+| L1 entity nodes | ~57,000 |
+| L1 edges | ~196,000 |
+| L2 causal edges | ~34,500 |
+| Total graph (merged) | ~100K nodes, ~234K edges |
 
 ## Dependencies
 
-Key Python packages:
-- `pandas`: Data manipulation and analysis
-- `numpy`: Numerical computing
-- `matplotlib`, `seaborn`: Data visualization
-- `networkx`, `pyvis`: Graph analysis and visualization
-- `transformers`: M2M100 translation model
-- `graphrag`: Knowledge graph generation
-- `scikit-learn`: Machine learning utilities
-- `streamlit`: Interactive web dashboard framework
-- `plotly`: Interactive chart generation for dashboard
-- `wordcloud`: Word cloud generation for text analysis
+| File | Purpose |
+|------|---------|
+| `requirements.txt` | Full stack (123 packages, pinned versions) |
+| `requirements_cluster.txt` | Lean HPC set (24 packages: GLiNER, Splink, DuckDB) |
+| `visual_dashboard/backend/requirements.txt` | Dashboard backend (FastAPI, pandas) |
+| `incident-embedding-analysis/requirements.txt` | Embedding analysis |
 
-## Contributing
+Key packages: `gliner`, `networkx`, `pandas`, `splink`, `duckdb`, `pydantic`,
+`transformers`, `fastapi`, `streamlit`.
 
-1. Follow the existing code structure and documentation standards
-2. Add comprehensive docstrings to all new functions and classes
-3. Update this README when adding new features
-4. Test all changes with the provided data samples
+PyTorch must be installed separately for your CUDA/CPU target before `requirements_cluster.txt`.
 
-## License
+## Documentation
 
-This project is part of the TechnipFMC safety data analysis initiative.
+- [docs/INDEX.md](docs/INDEX.md) — Central documentation hub
+- [docs/operational_runbook.md](docs/operational_runbook.md) — End-to-end operations guide
+- [kg_schema/README.md](kg_schema/README.md) — Schema reference
+- [pipeline/README.md](pipeline/README.md) — Pipeline architecture and step-by-step guide
+- [cluster/README.md](cluster/README.md) — HPC cluster setup and job submission
+
+## Project Context
+
+Rice University D2K Lab capstone project (DSCI 435/535, Spring 2026) in partnership with
+TechnipFMC. Builds on Fall 2025 work (GraphRAG-based extraction) with a redesigned
+schema-controlled pipeline for production-quality knowledge graph construction.
