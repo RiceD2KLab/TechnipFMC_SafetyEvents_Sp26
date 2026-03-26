@@ -71,30 +71,13 @@ sharded enrichment). The cluster setup script handles venv, Ollama, and module l
 bash cluster/setup_cluster_env.sh
 ```
 
-## Data Setup
+## Data
 
-Incident data is not committed to the repository (too large). To populate the data directory:
+The full dataset (23,311 incident records) is tracked at `input/incidents.csv`.
+Use `--test` mode to run on the first 1,000 records for quick validation.
 
-**On Rice NOTS cluster:**
-```bash
-cp -r /rhf/allocations/dsci435/fmcsafetyevents_sp26/fmcsafetyevents_fa25/data .
-```
-
-**Local development:**
-Request the consolidated incident CSV from the project sponsor or team lead. Place it at:
-```
-data/DIM_CONSOLIDATED_ACCIDENTS.xlsx    # or equivalent CSV
-```
-
-The pipeline expects a CSV/Excel file with at minimum these columns:
-- `RECORD_NO` — unique incident identifier
-- `NARRATIVE` — free-text incident description
-- `REPORTED_DATE` — incident date
-- Metadata fields: `SEVERITY_DESC`, `INCIDENT_TYPE`, `IMPACT_TYPE`, `WORK_PROCESS`,
-  `WORKPLACE`, `CLIENT`, `CASE_CATEGORIZATION`, `GENERAL_BUSINESS_UNIT`
-
-The full dataset (23,311 records) is tracked at `input/incidents.csv`. Use
-`--test` mode to run on the first 1,000 records for quick validation.
+The CSV has two columns: `RECORD_NO_LOSS_POTENTIAL` (incident ID) and `text`
+(serialized incident fields including NARRATIVE, metadata, and entity facts).
 
 ## Usage
 
@@ -190,7 +173,7 @@ All entity types, relation types, and evaluation data are defined in
 | `requirements.txt` | Full stack (123 packages, pinned versions) |
 | `requirements_cluster.txt` | Lean HPC set (24 packages: GLiNER, Splink, DuckDB) |
 | `visual_dashboard/backend/requirements.txt` | Dashboard backend (FastAPI, pandas) |
-| `incident-embedding-analysis/requirements.txt` | Embedding analysis |
+| `fall2025/incident-embedding-analysis/requirements.txt` | Embedding analysis |
 
 Key packages: `gliner`, `networkx`, `pandas`, `splink`, `duckdb`, `pydantic`,
 `transformers`, `fastapi`, `streamlit`.
