@@ -1,15 +1,13 @@
 """Step 4: Gate 1 topology metrics and report generation."""
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 from typing import Any
 
 import networkx as nx
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from config.schema_v2 import ALLOWED_RELATIONS
+from kg_schema import ALLOWED_RELATIONS
 
 BASELINES = {
     "spaCy (Fall 2025)":        {"giant_component": 0.807, "mean_degree": 3.15},

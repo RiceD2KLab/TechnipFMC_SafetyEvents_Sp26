@@ -1,8 +1,8 @@
-"""V2 Schema definitions for the Safety Knowledge Graph."""
+"""L1 entity types, GLiNER config, incident properties, and chunking config."""
 from __future__ import annotations
 
 # ── Entity Types (7) ──────────────────────────────────────────────────────
-ENTITY_TYPES = {
+ENTITY_TYPES: dict[str, dict[str, str]] = {
     "INCIDENT":            {"source": "header",   "description": "Hub node, one per record"},
     "EQUIPMENT":           {"source": "gliner",   "description": "Physical equipment, tools, machinery, vehicles"},
     "BODY_PART":           {"source": "gliner",   "description": "Anatomical body parts affected"},
@@ -12,8 +12,10 @@ ENTITY_TYPES = {
     "ROOT_CAUSE_CATEGORY": {"source": "metadata", "description": "CASE_CATEGORIZATION taxonomy (117 values)"},
 }
 
+L1_ENTITY_TYPE_NAMES: frozenset[str] = frozenset(ENTITY_TYPES.keys())
+
 # ── GLiNER Labels ─────────────────────────────────────────────────────────
-GLINER_LABELS = [
+GLINER_LABELS: list[str] = [
     "equipment",       # → EQUIPMENT
     "body part",       # → BODY_PART
     "injury type",     # → INJURY_TYPE
@@ -21,7 +23,7 @@ GLINER_LABELS = [
     "organization",    # → ORGANIZATION (supplementary to metadata-parsed orgs)
 ]
 
-GLINER_TYPE_MAP = {
+GLINER_TYPE_MAP: dict[str, str] = {
     "equipment":     "EQUIPMENT",
     "body part":     "BODY_PART",
     "injury type":   "INJURY_TYPE",
@@ -30,7 +32,7 @@ GLINER_TYPE_MAP = {
 }
 
 # ── Incident Node Properties (NOT separate entity nodes) ─────────────────
-INCIDENT_PROPERTIES = {
+INCIDENT_PROPERTIES: dict[str, dict[str, str]] = {
     "incident_type":   {"source": "INCIDENT_TYPE",         "type": "enum: Accident, Near Miss, null"},
     "severity":        {"source": "SEVERITY_DESC",         "type": "string (38 levels)"},
     "severity_bin":    {"source": "derived",               "type": "int 1-5"},
@@ -44,67 +46,10 @@ INCIDENT_PROPERTIES = {
     "narrative":       {"source": "NARRATIVE",             "type": "text"},
 }
 
-# ── Relation Types — Layer 1 Only ─────────────────────────────────────────
-# Relation type is FULLY DETERMINED by target entity type.
-RELATION_MAP = {
-    "EQUIPMENT":           "INVOLVED",
-    "BODY_PART":           "AFFECTED",
-    "INJURY_TYPE":         "RESULTED_IN",
-    "LOCATION":            "OCCURRED_AT",
-    "ORGANIZATION":        "REPORTED_BY",
-    "ROOT_CAUSE_CATEGORY": "CATEGORIZED_AS",
-}
-
-HIERARCHY_RELATION = "LOCATED_IN"  # finer → coarser (site → city → country → region)
-
-ALLOWED_RELATIONS = frozenset({
-    "INVOLVED", "AFFECTED", "RESULTED_IN", "OCCURRED_AT",
-    "REPORTED_BY", "CATEGORIZED_AS", "LOCATED_IN",
-})
-
 # ── GLiNER Chunking ──────────────────────────────────────────────────────
 # GLiNER's model window is 384 subword tokens.  4.9% of narratives (1,143
 # of 23,311) exceed this limit; 32.7% of those contain unique entity
 # keywords only in the truncated tail (~588 missed instances).  Chunking
 # with overlap recovers these without affecting short narratives.
-CHUNK_MAX_TOKENS = 350   # subword tokens per chunk (< 384 model window limit)
-CHUNK_OVERLAP = 50       # token overlap between consecutive chunks
-
-# ── Layer 2: Causal Relation Types ───────────────────────────────────────
-# L2 edges are produced by LLM causal enrichment (post-ER, post-Gate 2).
-# They are validated separately via Gate 3, never mixed into L1 validation.
-
-L2_ENTITY_TYPES = frozenset({
-    "Incident", "Event", "Equipment", "Location",
-    "Person", "Injury", "Material", "Condition", "Action",
-})
-
-L2_RELATIONS = {
-    "CAUSAL": {
-        "description": "X caused or contributed to Y (source=cause, target=effect). "
-                       "Subsumes the former CAUSED_BY, RESULTED_IN, and CONTRIBUTED_TO.",
-        "allowed_source_types": L2_ENTITY_TYPES,
-        "allowed_target_types": L2_ENTITY_TYPES,
-    },
-    "PRECEDED_BY": {
-        "description": "X happened after Y in the causal chain",
-        "allowed_source_types": L2_ENTITY_TYPES,
-        "allowed_target_types": L2_ENTITY_TYPES,
-    },
-    "FAILED_CONTROL": {
-        "description": "Control/barrier X failed to prevent Y",
-        "allowed_source_types": L2_ENTITY_TYPES,
-        "allowed_target_types": L2_ENTITY_TYPES,
-    },
-    "MITIGATED_BY": {
-        "description": "Harm/event Y was successfully prevented or reduced by control/barrier X (source=event, target=control)",
-        "allowed_source_types": L2_ENTITY_TYPES,
-        "allowed_target_types": L2_ENTITY_TYPES,
-    },
-}
-
-L2_ALLOWED_RELATIONS = frozenset(L2_RELATIONS.keys())
-
-# ── REMOVED from v1 (DO NOT GENERATE) ────────────────────────────────────
-# "USED_IN"   — removed (100% EQUIPMENT→LOCATION rule artifacts)
-# "CAUSED_BY" — removed from L1 (90.5% broken semantics; L2-only)
+CHUNK_MAX_TOKENS: int = 350   # subword tokens per chunk (< 384 model window limit)
+CHUNK_OVERLAP: int = 50       # token overlap between consecutive chunks

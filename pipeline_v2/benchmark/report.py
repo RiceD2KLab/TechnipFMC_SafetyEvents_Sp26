@@ -37,51 +37,25 @@ def generate_report(results, G, entities_df, metadata_df, output_path, relations
     # ── Summary Table ────────────────────────────────────────────────
     lines.append("## 1. Summary Table")
     lines.append("")
-    lines.append(
-        "| ID | Query | Type | Coverage | Result | Diagnosis "
-        "| Validation |")
-    lines.append(
-        "|------|-------|------|:--------:|--------|-----------|"
-        ":----------:|")
+    lines.append("| ID | Query | Type | Status | Result |")
+    lines.append("|------|-------|------|:------:|--------|")
 
     for qid in sorted(results.keys()):
         r = results[qid]
-        validation = r.get("validation", "—")
         lines.append(
             f"| {qid} | {r['name']} | {r['type']} | "
-            f"{r['coverage']} | {r['result_summary']} | "
-            f"{r['diagnosis']} | {validation} |")
+            f"{r['coverage']} | {r['result_summary']} |")
     lines.append("")
 
     # ── Coverage summary ─────────────────────────────────────────────
-    full = sum(1 for r in results.values()
-               if r["coverage"] == "\u2705")
-    partial = sum(1 for r in results.values()
-                  if r["coverage"] == "\u26a0\ufe0f")
-    fail = sum(1 for r in results.values()
-               if r["coverage"] == "\u274c")
+    passing = sum(1 for r in results.values()
+                  if r["coverage"] == "\u2705")
+    failing = sum(1 for r in results.values()
+                  if r["coverage"] in ("\u26a0\ufe0f", "\u274c"))
     lines.append(
-        f"**Overall:** {full} \u2705 FULL / {partial} \u26a0\ufe0f "
-        f"PARTIAL / {fail} \u274c FAIL out of {len(results)} queries")
+        f"**Overall:** {passing} \u2705 passing / "
+        f"{failing} \u26a0\ufe0f failing out of {len(results)} queries")
     lines.append("")
-
-    # ── Diagnosis summary ────────────────────────────────────────────
-    diag_counts = Counter(r["diagnosis"] for r in results.values())
-    lines.append("**Diagnosis breakdown:**")
-    for diag, cnt in diag_counts.most_common():
-        lines.append(f"- {diag}: {cnt}")
-    lines.append("")
-
-    # ── Validation summary ────────────────────────────────────────────
-    val_counts = Counter(
-        r.get("validation", "—") for r in results.values())
-    has_validation = any(v != "—" for v in val_counts)
-    if has_validation:
-        lines.append("**Ground truth validation:**")
-        for label in ["VALIDATED", "CLOSE", "DRIFT", "—"]:
-            if label in val_counts:
-                lines.append(f"- {label}: {val_counts[label]}")
-        lines.append("")
 
     # ── Per-Query Detail ─────────────────────────────────────────────
     lines.append("## 2. Per-Query Details")
@@ -91,8 +65,7 @@ def generate_report(results, G, entities_df, metadata_df, output_path, relations
         r = results[qid]
         lines.append(f"### {qid}: {r['name']}")
         lines.append(
-            f"**Type:** {r['type']} | **Coverage:** {r['coverage']} | "
-            f"**Diagnosis:** {r['diagnosis']} | "
+            f"**Type:** {r['type']} | **Status:** {r['coverage']} | "
             f"**Time:** {r.get('elapsed', '?')}")
         lines.append("")
         lines.append("```")
@@ -100,105 +73,17 @@ def generate_report(results, G, entities_df, metadata_df, output_path, relations
         lines.append("```")
         lines.append("")
 
-    # ── Ablation Prediction ──────────────────────────────────────────
-    lines.append("## 3. Ablation Prediction Table")
-    lines.append("")
-
-    type_results = defaultdict(lambda: {"total": 0, "full": 0})
-    for r in results.values():
-        t = r["type"]
-        type_results[t]["total"] += 1
-        if r["coverage"] == "\u2705":
-            type_results[t]["full"] += 1
-
-    lines.append(
-        "| Query Type | Count | L1 Baseline | "
-        "After ER (predicted) | After L2 (predicted) |")
-    lines.append(
-        "|-----------|:-----:|:-----------:|"
-        ":-------------------:|:-------------------:|")
-
-    er_boost = {"Single-hop": 1, "Aggregation": 0, "Multi-hop": 1,
-                "Global": 0, "Conjunctive": 0}
-    l2_boost = {"Single-hop": 0, "Aggregation": 0, "Multi-hop": 0,
-                "Global": 0, "Conjunctive": 2}
-
-    for qtype in ["Single-hop", "Aggregation", "Multi-hop",
-                   "Global", "Conjunctive"]:
-        tr = type_results[qtype]
-        l1 = tr["full"]
-        total = tr["total"]
-        er_needed = sum(
-            1 for r in results.values()
-            if r["type"] == qtype
-            and r["diagnosis"] == "ER_NEEDED"
-            and r["coverage"] != "\u2705")
-        after_er = min(
-            l1 + er_needed + er_boost.get(qtype, 0), total)
-        l2_needed = sum(
-            1 for r in results.values()
-            if r["type"] == qtype
-            and r["diagnosis"] == "L2_REQUIRED")
-        after_l2 = min(after_er + l2_needed, total)
-        lines.append(
-            f"| {qtype} ({total}) | {total} | {l1}/{total} pass | "
-            f"{after_er}/{total} pass | {after_l2}/{total} pass |")
-    lines.append("")
-
-    # ── Key Findings ─────────────────────────────────────────────────
-    lines.append("## 4. Key Findings")
-    lines.append("")
-    lines.append("### What works well at L1")
-    lines.append("")
-    for qid, r in sorted(results.items()):
-        if r["coverage"] == "\u2705":
-            lines.append(f"- **{qid}**: {r['name']}")
-    lines.append("")
-
-    lines.append("### ER merges that would improve results most")
-    lines.append("")
-    for qid, r in sorted(results.items()):
-        if r["diagnosis"] == "ER_NEEDED":
-            lines.append(
-                f"- **{qid}** ({r['name']}): "
-                "surface form fragmentation reduces accuracy")
-    lines.append("")
-
-    lines.append("### Queries blocked until Layer 2")
-    lines.append("")
-    for qid, r in sorted(results.items()):
-        if r["diagnosis"] == "L2_REQUIRED":
-            lines.append(
-                f"- **{qid}** ({r['name']}): "
-                "requires CAUSED_BY/CONTRIBUTED_TO edges")
-    lines.append("")
-
-    lines.append("### Data sparsity issues")
-    lines.append("")
-    for qid, r in sorted(results.items()):
-        if r["diagnosis"] == "DATA_SPARSE":
-            lines.append(
-                f"- **{qid}** ({r['name']}): "
-                "metadata coverage too low for reliable results")
-    lines.append("")
-
-    lines.append("### Extraction gaps (actionable — would improve with better L1)")
-    lines.append("")
-    for qid, r in sorted(results.items()):
-        if r["diagnosis"] == "EXTRACTION_GAP":
-            lines.append(
-                f"- **{qid}** ({r['name']}): "
-                f"{r['result_summary']}")
-    lines.append("")
-
-    lines.append("### Confirmed sparse (correct result — data does not contain these intersections)")
-    lines.append("")
-    for qid, r in sorted(results.items()):
-        if r["diagnosis"] == "KNOWN_SPARSE":
-            lines.append(
-                f"- **{qid}** ({r['name']}): "
-                "conjunction too specific for dataset — 0 results confirmed")
-    lines.append("")
+    # ── Failures ─────────────────────────────────────────────────────
+    failing_queries = [
+        (qid, r) for qid, r in sorted(results.items())
+        if r["coverage"] != "\u2705"
+    ]
+    if failing_queries:
+        lines.append("## 3. Failing Queries")
+        lines.append("")
+        for qid, r in failing_queries:
+            lines.append(f"- **{qid}** ({r['name']}): {r['result_summary']}")
+        lines.append("")
 
     # ── Regression Snapshot ────────────────────────────────────────────
     snapshot_path = Path(output_path).parent / "benchmark_snapshot.json"
@@ -207,8 +92,6 @@ def generate_report(results, G, entities_df, metadata_df, output_path, relations
         current_snapshot[qid] = {
             "name": r["name"],
             "coverage": r["coverage"],
-            "diagnosis": r["diagnosis"],
-            "validation": r.get("validation", "—"),
             "result_summary": r["result_summary"],
         }
 
@@ -220,7 +103,7 @@ def generate_report(results, G, entities_df, metadata_df, output_path, relations
             previous_snapshot = None
 
     if previous_snapshot:
-        lines.append("## 5. Regression Diff (vs previous run)")
+        lines.append("## 4. Regression Diff (vs previous run)")
         lines.append("")
         changes = []
         for qid in sorted(
@@ -234,22 +117,11 @@ def generate_report(results, G, entities_df, metadata_df, output_path, relations
             elif prev and curr:
                 if prev["coverage"] != curr["coverage"]:
                     changes.append(
-                        f"- **{qid}**: coverage "
-                        f"{prev['coverage']} → {curr['coverage']}")
-                if prev["diagnosis"] != curr["diagnosis"]:
-                    changes.append(
-                        f"- **{qid}**: diagnosis "
-                        f"{prev['diagnosis']} → {curr['diagnosis']}")
-                if prev.get("validation", "—") != curr.get(
-                        "validation", "—"):
-                    changes.append(
-                        f"- **{qid}**: validation "
-                        f"{prev.get('validation', '—')} → "
-                        f"{curr.get('validation', '—')}")
+                        f"- **{qid}**: {prev['coverage']} → {curr['coverage']}")
         if changes:
             lines.extend(changes)
         else:
-            lines.append("No regressions detected — all results stable.")
+            lines.append("No regressions — all results stable.")
         lines.append("")
 
     # Save current snapshot

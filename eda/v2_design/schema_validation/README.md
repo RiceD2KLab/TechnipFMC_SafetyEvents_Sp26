@@ -1,7 +1,7 @@
 # Schema Validation Evidence
 
 Empirical analysis of 23,311 records that justified every change from the v1 schema
-to the v2 schema used in `pipeline_v2/config/schema_v2.py`.
+to the v2 schema used in `kg_schema/`.
 
 ## Context
 

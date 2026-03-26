@@ -75,12 +75,14 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
+from kg_schema import GATE_RELATIONS, ADVISORY_RELATIONS
+
 # ── Preprocessing ────────────────────────────────────────────────────────────
 
 _TYPE_WRAPPER_RE = re.compile(r'^[A-Za-z]+\("(.+?)"\)$')
 
-_GATE_RELATIONS: Set[str] = {"CAUSAL"}
-_ADVISORY_RELATIONS: Set[str] = {"FAILED_CONTROL", "MITIGATED_BY", "PRECEDED_BY"}
+_GATE_RELATIONS: Set[str] = GATE_RELATIONS
+_ADVISORY_RELATIONS: Set[str] = ADVISORY_RELATIONS
 
 
 def _strip_type_wrapper(s: str) -> str:

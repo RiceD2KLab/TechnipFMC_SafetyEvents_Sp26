@@ -1,14 +1,11 @@
 """Step 3: Graph assembly — combine GLiNER + metadata into v2 schema graph."""
 from __future__ import annotations
 
-import sys
-from pathlib import Path
 from typing import Any
 
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from config.schema_v2 import ALLOWED_RELATIONS, HIERARCHY_RELATION, RELATION_MAP
+from kg_schema import ALLOWED_RELATIONS, HIERARCHY_RELATION, RELATION_MAP
 
 
 def _is_valid_value(val: object) -> bool:

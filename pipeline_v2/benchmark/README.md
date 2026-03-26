@@ -3,7 +3,7 @@
 ## 1. Overview
 
 This is a CSV-driven benchmark system for the v2 safety knowledge graph. Adding a
-query means adding a row to `benchmark_queries.csv`. No Python changes are required
+query means adding a row to `kg_schema/golden_set.csv`. No Python changes are required
 unless the query logic cannot be expressed via CSV (see Section 5).
 
 **52 total queries (includes IOGP queries):**
@@ -240,7 +240,7 @@ Located in `pipeline_v2/outputs/`:
 
 Goal: Count incidents involving electrical cable in the Americas.
 
-Add this row to `benchmark_queries.csv`:
+Add this row to `kg_schema/golden_set.csv`:
 
 ```
 SH-07,Electrical cable incidents in Americas,Single-hop,intersect,EQUIPMENT:electrical cable|cable:INVOLVED,,,INJURY_TYPE:RESULTED_IN,count_incidents,,10,5:1,ER_NEEDED,,,
@@ -281,7 +281,7 @@ CUSTOM_REGISTRY = {
 }
 ```
 
-3. Add a row to `benchmark_queries.csv`:
+3. Add a row to `kg_schema/golden_set.csv`:
 
 ```
 GL-05,Recurring equipment hazards by location/year,Global,custom,,,,,,,10,,CLEAN,recurring_hazard,,

@@ -19,16 +19,13 @@ through unchunked.
 from __future__ import annotations
 
 import re
-import sys
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 from tqdm import tqdm
 
-# Add parent to path for config imports
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from config.schema_v2 import CHUNK_MAX_TOKENS, CHUNK_OVERLAP, GLINER_LABELS, GLINER_TYPE_MAP
+from kg_schema import CHUNK_MAX_TOKENS, CHUNK_OVERLAP, GLINER_LABELS, GLINER_TYPE_MAP
 
 
 def _unescape(text: str) -> str:

@@ -12,6 +12,8 @@ Design principles:
 """
 from __future__ import annotations
 
+from kg_schema import L2_ENTITY_TYPE_NAMES, L2_RELATION_NAMES
+
 # ── System Prompt (cacheable, ~300 tokens) ─────────────────────────────────────
 
 SYSTEM_PROMPT = """You are a safety incident analyst extracting causal relationships from oil and gas safety incident reports at TechnipFMC.
@@ -129,25 +131,16 @@ EXTRACTION_SCHEMA = {
                     "source":      {"type": "string"},
                     "source_type": {
                         "type": "string",
-                        "enum": [
-                            "Incident", "Event", "Equipment", "Location",
-                            "Person", "Injury", "Material", "Condition", "Action",
-                        ],
+                        "enum": L2_ENTITY_TYPE_NAMES,
                     },
                     "relation": {
                         "type": "string",
-                        "enum": [
-                            "CAUSAL", "PRECEDED_BY", "FAILED_CONTROL",
-                            "MITIGATED_BY",
-                        ],
+                        "enum": L2_RELATION_NAMES,
                     },
                     "target":      {"type": "string"},
                     "target_type": {
                         "type": "string",
-                        "enum": [
-                            "Incident", "Event", "Equipment", "Location",
-                            "Person", "Injury", "Material", "Condition", "Action",
-                        ],
+                        "enum": L2_ENTITY_TYPE_NAMES,
                     },
                     "evidence": {
                         "type": "string",

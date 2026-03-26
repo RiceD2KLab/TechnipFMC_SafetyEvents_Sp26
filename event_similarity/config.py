@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from kg_schema import L1_ENTITY_TYPE_NAMES
+
 # ── Project root ──────────────────────────────────────────────────────────
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -41,6 +43,10 @@ SCHEMA_WEIGHTS: dict[str, float] = {
     "ORGANIZATION":        0.10,
     "ROOT_CAUSE_CATEGORY": 0.10,
 }
+
+# Validate that all weighted types exist in the canonical schema
+_unknown = set(SCHEMA_WEIGHTS) - L1_ENTITY_TYPE_NAMES
+assert not _unknown, f"SCHEMA_WEIGHTS references unknown entity types: {_unknown}"
 
 # Uniform ablation: equal weight for all entity types (built-in ablation)
 SCHEMA_WEIGHTS_UNIFORM: dict[str, float] = {k: 1 / len(SCHEMA_WEIGHTS) for k in SCHEMA_WEIGHTS}

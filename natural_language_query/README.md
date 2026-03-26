@@ -70,9 +70,9 @@ render_nl_query_widget(G, entities_df, relations_df, metadata_df)
 
 ## Golden Set (Dashboard query coverage)
 
-A canonical set of 30 analyst-style queries is defined in `golden_set_queries.md`
-(Single-Hop, Aggregation, Multi-Hop, Global, Conjunctive). To run the translator
-on all of them and get a pass/fail + latency report:
+The golden set (52 queries) is defined in `kg_schema/golden_set.csv`. The NLQ
+runner uses the first 44 (excludes IOGP-*). To run the translator on them and
+get a pass/fail + latency report:
 
 ```bash
 # Translation only (no graph execution)
@@ -96,8 +96,7 @@ natural_language_query/
 ├── translator.py         # LLM call + validation + retry
 ├── eval_harness.py       # Evaluation against benchmark ground truth
 ├── paraphrases.py        # Test set: 6-10 phrasings per query
-├── run_golden_set.py     # Run translator on golden set (30 dashboard queries)
-├── golden_set_queries.md # Golden set query spec (reference)
+├── run_golden_set.py     # Run translator on golden set (reads from kg_schema/golden_set.csv)
 ├── streamlit_widget.py   # Drop-in Streamlit component
 └── README.md             # This file
 ```

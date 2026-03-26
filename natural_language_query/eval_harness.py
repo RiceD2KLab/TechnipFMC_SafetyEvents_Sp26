@@ -38,7 +38,7 @@ from .paraphrases import PARAPHRASES
 
 # These are the expected translations for non-spot-check, non-custom queries.
 # Each maps query_id → the key fields we check.
-# Derived directly from benchmark_queries.csv.
+# Derived directly from kg_schema/golden_set.csv.
 
 GROUND_TRUTH = {
     "SH-01": {

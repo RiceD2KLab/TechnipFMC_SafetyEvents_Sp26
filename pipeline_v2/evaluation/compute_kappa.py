@@ -21,6 +21,8 @@ from typing import Dict, List, Set
 
 import pandas as pd
 
+from kg_schema import L2_RELATION_NAMES
+
 
 def cohens_kappa(y1, y2):
     """Compute Cohen's kappa from two binary lists."""
@@ -55,8 +57,7 @@ def _load_jsonl(path: Path) -> List[dict]:
     return records
 
 
-# L2 relation types (matching schema_v2.py)
-_L2_RELATIONS = ["CAUSAL", "PRECEDED_BY", "FAILED_CONTROL", "MITIGATED_BY"]
+_L2_RELATIONS = L2_RELATION_NAMES
 
 
 def _binarize_jsonl(

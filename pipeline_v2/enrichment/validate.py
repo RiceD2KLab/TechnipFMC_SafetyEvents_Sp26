@@ -3,12 +3,9 @@ from __future__ import annotations
 
 import logging
 import re
-import sys
-from pathlib import Path
 from typing import Dict, List, Set
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from config.schema_v2 import L2_ALLOWED_RELATIONS, L2_ENTITY_TYPES
+from kg_schema import L2_ALLOWED_RELATIONS, L2_ENTITY_TYPES
 
 logger = logging.getLogger(__name__)
 

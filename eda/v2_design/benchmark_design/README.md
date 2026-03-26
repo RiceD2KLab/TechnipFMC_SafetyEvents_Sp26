@@ -1,7 +1,7 @@
 # Benchmark Query Design
 
 Data profiling of the full 23,311-record dataset to ground the design of the 30
-benchmark queries in `pipeline_v2/benchmark/benchmark_queries.csv`.
+benchmark queries in `kg_schema/golden_set.csv`.
 
 ## Context
 

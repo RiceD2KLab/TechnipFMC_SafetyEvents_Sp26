@@ -2,7 +2,7 @@
 """Benchmark Query Runner — CSV-driven
 
 Runs 30 benchmark queries against the v2 safety knowledge graph.
-Query definitions live in benchmark_queries.csv; custom query logic
+Query definitions live in kg_schema/golden_set.csv; custom query logic
 lives in custom_queries.py.
 
 Output: pipeline_v2/benchmark/benchmark_results.md
@@ -14,13 +14,14 @@ Usage:
 
 from pathlib import Path
 
+from kg_schema import GOLDEN_SET_CSV
 from .helpers import load_data
 from .query_engine import load_queries, run_all_queries
 from .custom_queries import CUSTOM_REGISTRY
 from .report import generate_report
 
 BASE = Path(__file__).resolve().parent
-CSV_PATH = BASE / "benchmark_queries.csv"
+CSV_PATH = GOLDEN_SET_CSV
 REPORT_PATH = BASE / "benchmark_results.md"
 
 
