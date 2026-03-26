@@ -75,13 +75,13 @@ To re-evaluate:
 ```bash
 # Against Codex ground truth
 python pipeline/evaluation/gate3_metrics.py \
-    output/l2_edges_merged.jsonl \
-    pipeline/annotation/l2_gt_v2_codex.jsonl
+    --predicted output/l2_edges_merged.jsonl \
+    --ground-truth pipeline/annotation/l2_gt_v2_codex.jsonl
 
 # Against Claude ground truth
 python pipeline/evaluation/gate3_metrics.py \
-    output/l2_edges_merged.jsonl \
-    pipeline/annotation/l2_gt_v2_claude.jsonl
+    --predicted output/l2_edges_merged.jsonl \
+    --ground-truth pipeline/annotation/l2_gt_v2_claude.jsonl
 ```
 
 **Output:** Console prints precision, chain-adjusted recall, chain-adjusted F1,
