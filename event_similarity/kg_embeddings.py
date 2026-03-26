@@ -125,6 +125,10 @@ def train_node2vec(
             "Install with:  pip install torch torch_geometric"
         ) from exc
 
+    # Reproducibility
+    np.random.seed(42)
+    torch.manual_seed(42)
+
     sources, targets, _, node2idx = _build_edge_lists(relations_path)
 
     src_idx = [node2idx[s] for s in sources]
@@ -222,6 +226,9 @@ def train_transe(
             "TransE requires pykeen.\n"
             "Install with:  pip install pykeen"
         ) from exc
+
+    # Reproducibility
+    np.random.seed(42)
 
     sources, targets, rel_types, _ = _build_edge_lists(relations_path)
 

@@ -190,6 +190,12 @@ def train_graphsage(
             "Install with:  pip install torch torch_geometric"
         ) from exc
 
+    # ── Reproducibility ───────────────────────────────────────────────────
+    np.random.seed(42)
+    torch.manual_seed(42)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(42)
+
     # ── Build graph data ───────────────────────────────────────────────────
     edges = pd.read_parquet(relations_path)
     sources = edges["source"].astype(str).tolist()
