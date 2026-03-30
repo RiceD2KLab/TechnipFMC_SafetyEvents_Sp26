@@ -500,6 +500,115 @@ def _execute_spot_check(spec, G, entities_df):
     }
 
 
+# ── Graph traversal strategy ─────────────────────────────────────────────
+
+def _execute_traverse(spec, G, entities_df, relations_df):
+    """Walk the graph following a path pattern and collect endpoints.
+
+    output_target format for traverse:
+        START_TYPE:start_pattern>REL1>REL2>...>COLLECT_TYPE
+
+    Examples:
+        EQUIPMENT:crane>INVOLVED>INCIDENT>RESULTED_IN>INJURY_TYPE
+        INJURY_TYPE:fracture>RESULTED_IN>INCIDENT>INVOLVED>EQUIPMENT
+        EVENT:corrosion>CAUSAL>EVENT>CAUSAL>INJURY
+
+    The traversal starts from entities matching START_TYPE:start_pattern,
+    follows edges by relation type at each hop, and collects entity values
+    at the final COLLECT_TYPE.  Direction is followed as the graph stores it
+    (source→target for most relations; reversed via predecessors when needed).
+    """
+    target = spec.output_target
+    hops = target.split(">")
+    if len(hops) < 3:
+        return {"count": 0,
+                "detail_lines": [f"Invalid traverse path: {target}"],
+                "result_summary": "error: need at least START>REL>END"}
+
+    # Parse start: TYPE:pattern
+    start_parts = hops[0].split(":")
+    start_type = start_parts[0]
+    start_pattern = ":".join(start_parts[1:]) if len(start_parts) > 1 else ".*"
+
+    # Remaining hops alternate: RELATION, NODE_TYPE, RELATION, NODE_TYPE, ...
+    # The last element is the collection type
+    path_steps = hops[1:]  # [REL1, TYPE1, REL2, TYPE2, ..., COLLECT_TYPE]
+
+    # Find start nodes
+    start_nodes = find_entities_by_value(entities_df, start_type, start_pattern)
+    if not start_nodes:
+        return {"count": 0,
+                "detail_lines": [f"No {start_type} matching '{start_pattern}'"],
+                "result_summary": f"0 start nodes for {start_type}:{start_pattern}"}
+
+    # Walk the graph
+    current_nodes = set(n for n in start_nodes if n in G)
+    walk_log = [f"Start: {len(current_nodes)} {start_type} nodes "
+                f"matching '{start_pattern}'"]
+
+    i = 0
+    while i < len(path_steps) - 1:  # -1 because last is collect type
+        relation = path_steps[i]
+        next_type = path_steps[i + 1] if i + 1 < len(path_steps) else None
+
+        next_nodes = set()
+        for node in current_nodes:
+            # Try forward edges (node → neighbor)
+            for nbr in G.successors(node):
+                edge_rel = G.edges[node, nbr].get("relation", "")
+                if edge_rel == relation:
+                    if next_type is None or G.nodes[nbr].get(
+                            "entity_type", "") == next_type:
+                        next_nodes.add(nbr)
+            # Try reverse edges (neighbor → node) for relations like
+            # RESULTED_IN where we want to go from INJURY_TYPE back to INCIDENT
+            for nbr in G.predecessors(node):
+                edge_rel = G.edges[nbr, node].get("relation", "")
+                if edge_rel == relation:
+                    if next_type is None or G.nodes[nbr].get(
+                            "entity_type", "") == next_type:
+                        next_nodes.add(nbr)
+
+        walk_log.append(
+            f"  --{relation}--> {next_type or '?'}: {len(next_nodes)} nodes")
+        current_nodes = next_nodes
+        i += 2  # skip relation + type
+
+    # If odd number of remaining steps, last is just the collect type filter
+    collect_type = path_steps[-1]
+    if collect_type != "?" and collect_type != "*":
+        current_nodes = {n for n in current_nodes
+                         if G.nodes[n].get("entity_type", "") == collect_type}
+
+    # Collect and count values
+    value_counts = Counter()
+    for node in current_nodes:
+        val = safe_get_node_value(G, node)
+        if val:
+            value_counts[val] += 1
+
+    top_n = value_counts.most_common(spec.output_top_n)
+    walk_log.extend([
+        f"  Final: {len(current_nodes)} {collect_type} nodes, "
+        f"{len(value_counts)} distinct values",
+        "",
+        f"Top {spec.output_top_n}:",
+    ] + [f"  {val}: {cnt}" for val, cnt in top_n])
+
+    count = len(value_counts)
+    coverage = _score_coverage(spec, {"count": count})
+    diag = spec.diagnosis_rule if spec.diagnosis_rule != "auto" else (
+        "CLEAN" if count > 0 else "DATA_SPARSE")
+
+    return {
+        "coverage": coverage,
+        "diagnosis": diag,
+        "result_summary": (f"{len(current_nodes)} endpoints, "
+                           f"{len(value_counts)} distinct {collect_type}"),
+        "detail": "\n".join(walk_log),
+    }
+
+
 # ── Main dispatch ────────────────────────────────────────────────────────
 
 def execute_query(spec, G, entities_df, relations_df, metadata_df,
@@ -529,6 +638,12 @@ def execute_query(spec, G, entities_df, relations_df, metadata_df,
     if spec.strategy == "spot_check":
         result = _execute_spot_check(spec, G, entities_df)
         result["validation"] = "—"
+        result["elapsed"] = f"{time.time() - t0:.1f}s"
+        return result
+
+    if spec.strategy == "traverse":
+        result = _execute_traverse(spec, G, entities_df, relations_df)
+        result["validation"] = _score_validation(spec, result)
         result["elapsed"] = f"{time.time() - t0:.1f}s"
         return result
 

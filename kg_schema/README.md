@@ -85,7 +85,7 @@ kg_schema/
 
 ## Golden Set
 
-### `golden_set.csv` — 250 benchmark queries
+### `golden_set.csv` — 258 benchmark queries
 
 Each row contains the full natural language question in the `name` column, along with the
 structured query spec (strategy, entity filters, meta filters, expected counts, etc.).

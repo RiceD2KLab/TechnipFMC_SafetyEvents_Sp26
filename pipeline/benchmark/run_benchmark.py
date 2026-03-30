@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Benchmark Query Runner — CSV-driven
 
-Runs 250 benchmark queries against the safety knowledge graph.
+Runs 258 benchmark queries against the safety knowledge graph.
 Query definitions live in kg_schema/golden_set.csv; custom query logic
 lives in custom_queries.py.
 

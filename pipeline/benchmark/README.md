@@ -6,7 +6,7 @@ This is a CSV-driven benchmark system for the v2 safety knowledge graph. Adding 
 query means adding a row to `kg_schema/golden_set.csv`. No Python changes are required
 unless the query logic cannot be expressed via CSV (see Section 5).
 
-**250 total queries across 7 categories:**
+**258 total queries across 7 categories:**
 - 213 are fully CSV-driven (strategies: entity_filter, meta_filter,
   narrative_filter, intersect, crosstab, spot_check)
 - 37 use custom Python functions registered in `custom_queries.py`
@@ -61,11 +61,33 @@ All columns are present in every row; unused columns are left empty.
 | `intersect` | Apply multiple filters and intersect the incident sets |
 | `crosstab` | Cross-tabulate two metadata fields directly (no incident set) |
 | `spot_check` | Verify a specific incident's extracted entities against ground truth |
+| `traverse` | Walk the graph along a path pattern and collect endpoints (see below) |
 | `custom` | Delegate to a named Python function in CUSTOM_REGISTRY |
 
 Note: `intersect` is not a separate code path — all strategies that specify multiple
 filters (entity_filters + meta_filters + narrative_keywords in combination) produce an
 intersection automatically. The label `intersect` in the CSV is documentation only.
+
+#### `traverse` strategy
+
+Walks the graph following a typed path pattern specified in `output_target`:
+
+```
+START_TYPE:pattern>RELATION>NODE_TYPE>RELATION>...>COLLECT_TYPE
+```
+
+Each `>` is a hop.  Odd positions are relation types, even positions are entity
+types to filter on.  The walk follows edges in both directions (forward successors
+and reverse predecessors), so `INJURY_TYPE:fracture>RESULTED_IN>INCIDENT` works
+even though RESULTED_IN edges point from INCIDENT to INJURY_TYPE.
+
+**L1 examples (through incident hub):**
+- `EQUIPMENT:crane>INVOLVED>INCIDENT>RESULTED_IN>INJURY_TYPE`
+- `BODY_PART:hand>AFFECTED>INCIDENT>CATEGORIZED_AS>ROOT_CAUSE_CATEGORY`
+
+**L2 examples (causal chain traversal):**
+- `EQUIPMENT:.*>CAUSAL>EVENT>CAUSAL>INJURY` — equipment → event → injury chains
+- `CONDITION:corros>CAUSAL>EVENT` — what events does corrosion cause?
 
 ### `entity_filters`
 - Optional

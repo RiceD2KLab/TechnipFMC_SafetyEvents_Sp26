@@ -112,7 +112,7 @@ python pipeline/enrichment/run_l2_enrichment.py \
     --backend ollama --model qwen3:30b-a3b
 ```
 
-### Benchmark (250 golden set queries)
+### Benchmark (258 golden set queries)
 
 ```bash
 cd pipeline && python -m benchmark.run_benchmark
