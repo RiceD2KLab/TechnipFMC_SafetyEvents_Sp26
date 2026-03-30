@@ -22,7 +22,7 @@ L2 Merge  ──────────>  Merge L2 edges into the main graph
    |
    v
 Gate 3  ────────────>  Precision/recall evaluation against annotated ground truth
-Benchmark  ─────────>  52 golden set queries (kg_schema/golden_set.csv)
+Benchmark  ─────────>  258 golden set queries (kg_schema/golden_set.csv)
 ```
 
 ## Quick Start

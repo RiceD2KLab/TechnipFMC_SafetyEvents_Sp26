@@ -30,7 +30,7 @@ kg_schema/
 ├── relation_types.py     # L1 relation map, hierarchy relation, allowed relations
 ├── l2_types.py           # L2 entity types, L2 relations, gate/advisory classification
 ├── golden_set.py         # CSV path + loader function
-├── golden_set.csv        # 52 benchmark queries with full NL questions
+├── golden_set.csv        # 258 benchmark queries with full NL questions
 └── README.md
 ```
 
@@ -114,7 +114,7 @@ from kg_schema import load_golden_set
 for name, meta in ENTITY_TYPES.items():
     print(name, meta["source"])
 
-# Load all 250 benchmark queries
+# Load all 258 benchmark queries
 queries = load_golden_set()   # returns list[dict]
 ```
 

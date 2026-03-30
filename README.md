@@ -187,7 +187,7 @@ For a fast end-to-end validation (no GPU, ~5 minutes):
 
 ```bash
 python pipeline/run_gliner_pipeline.py --test     # L1 extraction on 1K records
-cd pipeline && python -m benchmark.run_benchmark   # 52-query benchmark
+cd pipeline && python -m benchmark.run_benchmark   # 258-query benchmark
 python -m event_similarity.run_similarity          # similarity evaluation
 ```
 

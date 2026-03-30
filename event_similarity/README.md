@@ -240,4 +240,4 @@ Edit `config.py` to:
 | `pipeline/outputs/metadata_parsed.parquet` | Source of narrative text for embeddings |
 | `kg_embeddings.py` / `gnn_similarity.py` | Tier 2 (TransE, Node2Vec, RDF2Vec, GraphSAGE); activated if graph quality thresholds are met |
 | `fall2025/evaluation/semantic_similar_distance.py` | Fall 2025 semantic–structural correlation baseline |
-| `kg_schema/golden_set.csv` | 52 golden set queries that informed gold standard selection |
+| `kg_schema/golden_set.csv` | 258 golden set queries that informed gold standard selection |
