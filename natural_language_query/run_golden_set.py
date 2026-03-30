@@ -75,9 +75,7 @@ def run_golden_set(
     graph_data = None
     if execute:
         try:
-            sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-            from pipeline.benchmark.helpers import load_data
-            from pipeline.benchmark.query_engine import QuerySpec, execute_query
+            from query_engine import load_data, QuerySpec, execute_query
             graph_data = load_data()
         except Exception as e:
             if verbose:

@@ -39,7 +39,7 @@ python -m natural_language_query.eval_harness -o eval_results.json
 
 ```python
 from natural_language_query.translator import translate
-from pipeline.benchmark.query_engine import QuerySpec, execute_query
+from query_engine import QuerySpec, execute_query
 
 # Step 1: Translate NL → QuerySpec
 result = translate("How many forklift incidents in 2022?")

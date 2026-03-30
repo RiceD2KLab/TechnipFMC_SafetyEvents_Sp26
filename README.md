@@ -24,9 +24,10 @@ enabling structured querying, causal chain analysis, and similar-incident retrie
 ```
 ├── pipeline/                   # Core KG construction pipeline (L1 + ER + L2)
 ├── kg_schema/                  # Single source of truth: entity/relation types, golden set
+├── query_engine/               # Reusable query engine: QuerySpec, execution, graph helpers
 ├── input/                      # Incident dataset (incidents.csv, 23K records)
 ├── natural_language_query/     # NL question -> structured query translation
-├── event_similarity/           # Similar incident retrieval (text + structural)
+├── event_similarity/           # Similar incident retrieval (text + structural + KG embeddings)
 ├── visual_dashboard/           # Dashboard: FastAPI backend, React frontend, Streamlit legacy
 ├── eda/                        # Design-phase analysis (schema validation, ER, topology, ablation)
 ├── cluster/                    # Rice NOTS HPC scripts (SLURM, env setup)

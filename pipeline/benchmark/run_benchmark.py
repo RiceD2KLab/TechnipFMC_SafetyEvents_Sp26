@@ -15,9 +15,7 @@ Usage:
 from pathlib import Path
 
 from kg_schema import GOLDEN_SET_CSV
-from .helpers import load_data
-from .query_engine import load_queries, run_all_queries
-from .custom_queries import CUSTOM_REGISTRY
+from query_engine import load_data, load_queries, run_all_queries, CUSTOM_REGISTRY
 from .report import generate_report
 
 BASE = Path(__file__).resolve().parent

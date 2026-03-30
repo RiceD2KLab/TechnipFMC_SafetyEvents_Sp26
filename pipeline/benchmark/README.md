@@ -9,7 +9,7 @@ unless the query logic cannot be expressed via CSV (see Section 5).
 **258 total queries across 7 categories:**
 - 213 are fully CSV-driven (strategies: entity_filter, meta_filter,
   narrative_filter, intersect, crosstab, spot_check)
-- 37 use custom Python functions registered in `custom_queries.py`
+- 37 use custom Python functions registered in `query_engine/custom_queries.py`
 - 58+ metadata-verifiable queries have `expected_count` for ground truth validation
 - 39 spot-check queries verify per-record extraction quality across equipment,
   body parts, injury types, locations, and organizations
@@ -185,7 +185,7 @@ The `granularity` filter in aggregate mode matches the `granularity` node attrib
 
 ### `custom_fn`
 - Required when `strategy == custom`, otherwise leave empty
-- Must match a key in `CUSTOM_REGISTRY` in `custom_queries.py`
+- Must match a key in `CUSTOM_REGISTRY` in `query_engine/custom_queries.py`
 - Example: `louvain_communities`
 
 ### `ground_truth`
@@ -289,7 +289,7 @@ Column breakdown:
 Goal: Find incidents where the same equipment appears in two different years at the
 same location, suggesting a recurring hazard.
 
-1. Add a function to `custom_queries.py`:
+1. Add a function to `query_engine/custom_queries.py`:
 
 ```python
 def recurring_hazard(spec, G, entities_df, relations_df, metadata_df, *, results=None):
@@ -352,7 +352,7 @@ that ran earlier in the sequence. Query execution order follows CSV row order.
 
 ### How to Register
 
-Add the function to `CUSTOM_REGISTRY` in `custom_queries.py`:
+Add the function to `CUSTOM_REGISTRY` in `query_engine/custom_queries.py`:
 
 ```python
 CUSTOM_REGISTRY = {

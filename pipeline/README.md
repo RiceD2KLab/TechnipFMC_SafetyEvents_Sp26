@@ -87,10 +87,7 @@ pipeline/
 │   ├── merge_l2_edges.py          # Merge L2 edges into main graph
 │   └── vllm_client.py             # vLLM backend client
 ├── benchmark/
-│   ├── run_benchmark.py           # Golden set query runner
-│   ├── query_engine.py            # CSV-driven query execution engine
-│   ├── custom_queries.py          # 10 custom Python query functions
-│   ├── helpers.py                 # Data loading + query utilities
+│   ├── run_benchmark.py           # Golden set query runner (imports from query_engine/)
 │   └── report.py                  # Markdown report generator
 ├── annotation/
 │   ├── l2_gt_v2_claude.jsonl      # Ground truth (Claude annotations, 414 edges)

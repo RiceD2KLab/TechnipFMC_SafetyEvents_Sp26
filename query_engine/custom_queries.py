@@ -1539,7 +1539,7 @@ def _load_similarity():
     import pickle
     from pathlib import Path
 
-    root = Path(__file__).resolve().parent.parent.parent
+    root = Path(__file__).resolve().parent.parent
     sim_dir = root / "event_similarity" / "outputs"
 
     # Text embeddings: {record_no_str: np.ndarray(384,)}

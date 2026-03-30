@@ -43,6 +43,7 @@ neo4j = ["neo4j==5.27.0"]
 [tool.setuptools.packages.find]
 include = [
     "kg_schema*",
+    "query_engine*",
     "pipeline*",
     "event_similarity*",
     "natural_language_query*",

@@ -1,4 +1,4 @@
-"""Helper functions for benchmark queries."""
+"""Graph helper functions for the safety knowledge graph query engine."""
 
 import re
 import pandas as pd
@@ -10,15 +10,23 @@ import warnings
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
-BASE = Path(__file__).resolve().parent.parent
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+_DEFAULT_DATA_DIR = _PROJECT_ROOT / "pipeline" / "outputs"
 
 
-def load_data():
-    """Load parquet files and build NetworkX graph."""
+def load_data(data_dir=None):
+    """Load parquet files and build NetworkX graph.
+
+    Args:
+        data_dir: Path to directory containing entities.parquet,
+                  relations.parquet, metadata_parsed.parquet.
+                  Defaults to pipeline/outputs/.
+    """
+    data_dir = Path(data_dir) if data_dir else _DEFAULT_DATA_DIR
     print("Loading parquet files...")
-    entities_df = pd.read_parquet(BASE / "outputs" / "entities.parquet")
-    relations_df = pd.read_parquet(BASE / "outputs" / "relations.parquet")
-    metadata_df = pd.read_parquet(BASE / "outputs" / "metadata_parsed.parquet")
+    entities_df = pd.read_parquet(data_dir / "entities.parquet")
+    relations_df = pd.read_parquet(data_dir / "relations.parquet")
+    metadata_df = pd.read_parquet(data_dir / "metadata_parsed.parquet")
 
     print(f"  Entities: {len(entities_df):,}")
     print(f"  Relations: {len(relations_df):,}")
