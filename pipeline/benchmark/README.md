@@ -6,12 +6,15 @@ This is a CSV-driven benchmark system for the v2 safety knowledge graph. Adding 
 query means adding a row to `kg_schema/golden_set.csv`. No Python changes are required
 unless the query logic cannot be expressed via CSV (see Section 5).
 
-**52 total queries (includes IOGP queries):**
-- 41 are fully CSV-driven (strategies: entity_filter, meta_filter,
+**250 total queries across 7 categories:**
+- 213 are fully CSV-driven (strategies: entity_filter, meta_filter,
   narrative_filter, intersect, crosstab, spot_check)
-- 11 use custom Python functions registered in `custom_queries.py`
-- 12 metadata-verifiable queries have `expected_count` for ground truth validation
-- 14 spot-check queries verify per-record extraction quality (SH-02 and SC-01 through SC-09b)
+- 37 use custom Python functions registered in `custom_queries.py`
+- 58+ metadata-verifiable queries have `expected_count` for ground truth validation
+- 39 spot-check queries verify per-record extraction quality across equipment,
+  body parts, injury types, locations, and organizations
+- 8 extraction-gap queries compare narrative mentions vs entity extraction
+- 8 embedding-similarity queries test semantic retrieval via text/KG embeddings
 
 **Query types covered:** Single-hop, Aggregation, Multi-hop, Global, Conjunctive
 
@@ -92,9 +95,13 @@ intersection automatically. The label `intersect` in the CSV is documentation on
 - Optional
 - Format: comma-separated keywords, default AND logic
 - Prefix `ANY:` to switch to OR logic
-- Matching is case-insensitive substring search against the `narrative` column
-- Example (AND): `maintenance,fail` — incident narrative must contain both words
+- Matching is case-insensitive against the `narrative` column
+- **Exact mode (default):** substring match — `scaffold fall` matches only that exact phrase
+- **Bag-of-words mode (`~` prefix):** all words must appear anywhere in the narrative —
+  `~scaffold fall` matches "fell from scaffold", "scaffold fell", "fall from the scaffold"
+- Example (AND): `maintenance,fail` — narrative must contain both words
 - Example (OR): `ANY:corrosion,fire` — narrative contains corrosion or fire
+- Example (BOW): `ANY:~scaffold fall,~scaffold fell` — narrative contains scaffold+fall or scaffold+fell in any order
 
 ### `require_connected`
 - Optional
@@ -147,11 +154,12 @@ The `granularity` filter in aggregate mode matches the `granularity` node attrib
 | Value | Meaning |
 |-------|---------|
 | `auto` | CLEAN if count > 0, DATA_SPARSE if count == 0 |
-| `CLEAN` | Force clean regardless of count |
-| `DATA_SPARSE` | Metadata coverage too low for reliable results |
+| `CLEAN` | Query works correctly; results reflect true graph state |
+| `DATA_SPARSE` | Dataset genuinely has no matching data (not an extraction failure) |
 | `ER_NEEDED` | Pre-ER surface form fragmentation is expected to reduce accuracy |
-| `L2_REQUIRED` | Query needs causal edges (CAUSED_BY / CONTRIBUTED_TO) not present at L1 |
-| `EXTRACTION_GAP` | Spot-check found missing entities (auto-set by spot_check logic) |
+| `L2_REQUIRED` | Query needs L2 causal edges (CAUSAL, FAILED_CONTROL, etc.) |
+| `EXTRACTION_GAP` | Narrative contains the information but GLiNER failed to extract it |
+| `KNOWN_SPARSE` | Conjunction is too specific for the dataset size; 0 results is correct |
 
 ### `custom_fn`
 - Required when `strategy == custom`, otherwise leave empty
@@ -333,35 +341,82 @@ CUSTOM_REGISTRY = {
 
 The key must exactly match the `custom_fn` value in the CSV row.
 
-### Existing Custom Functions
+### Existing Custom Functions (37 total)
 
+**Graph structure & analysis:**
 | Registry Key | Query ID | Description |
 |---|---|---|
-| `louvain_communities` | GL-01 | Runs Louvain community detection on the graph (excluding region nodes) and reports the top 10 communities by size with type composition |
-| `equipment_across_regions` | GL-02 | Finds equipment types appearing in 5 or more distinct regions, indicating global recurring hazards |
-| `hub_centrality` | GL-04 | Computes degree centrality and PageRank for all non-incident nodes; reports top 20 by each metric |
-| `containment_injury_offshore` | MH-01 | Multi-hop: finds incidents with a containment root cause, occurring offshore, that also have an injury extraction |
-| `top_injury_per_equipment` | MH-04 | For the top 5 equipment types by incident count, reports the top 5 injury types per equipment |
-| `severity_comparison` | MH-06 | Compares severity distributions for truck incidents vs. crane incidents |
-| `causal_chain_check` | CJ-01 | Detects that no L2 causal edges exist; falls back to an approximate narrative x RCC intersection for corrosion-to-fire chains |
-| `dual_risk_detection` | CJ-04 | Finds equipment/location/year combinations where both accidents and near-misses were recorded |
+| `louvain_communities` | GL-01 | Louvain community detection; top 10 by size with type composition |
+| `equipment_across_regions` | GL-02 | Equipment types appearing in 5+ regions (global recurring hazards) |
+| `hub_centrality` | GL-04 | Degree centrality + PageRank for non-incident nodes |
+| `equipment_bodypart_cooccurrence` | GL-05 | Most common (equipment, body_part) pairs across all incidents |
+| `client_safety_comparison` | GL-06 | Severity/type profiles for top 5 clients |
+| `seasonal_patterns` | GL-07 | Monthly incident frequency patterns |
+| `rcc_by_region` | GL-08 | Top root causes by geographic region |
+
+**Multi-hop & conjunctive:**
+| Registry Key | Query ID | Description |
+|---|---|---|
+| `containment_injury_offshore` | MH-01 | Containment RCC + offshore + injury → equipment list |
+| `top_injury_per_equipment` | MH-04 | Top 5 injuries for each of top 5 equipment types |
+| `severity_comparison` | MH-06 | Severity distribution: truck vs crane |
+| `dual_risk_detection` | CJ-04 | Equipment/location/year with both accidents AND near-misses |
+
+**L2 causal analysis:**
+| Registry Key | Query ID | Description |
+|---|---|---|
+| `causal_chain_check` | CJ-01 | L2 causal edges for fire/explosion; corrosion intersection |
+| `procedural_dropped_injury` | CJ-05 | Procedural violation → dropped object → injury chain |
+| `corrosion_effects` | CJ-07 | Corrosion-source CAUSAL edges categorized by effect type |
+| `loto_failures_l2` | IOGP-05 | FAILED_CONTROL edges in LOTO/electrical incidents |
+| `mitigated_by_analysis` | CJ-21 | MITIGATED_BY edges: what controls worked |
+| `failed_control_overview` | CJ-22 | FAILED_CONTROL edges: what barriers failed |
+| `preceded_by_analysis` | CJ-23 | PRECEDED_BY edges: common temporal sequences |
+| `causal_factors_dropped` | CJ-24 | Causal factors for dropped-object incidents |
+| `causal_factors_vehicle` | CJ-25 | Causal factors for vehicle incidents |
+| `causal_factors_fracture` | CJ-26 | Causal factors leading to fracture injuries |
+
+**Extraction gap analysis:**
+| Registry Key | Query ID | Description |
+|---|---|---|
+| `extraction_gap_burn` | GL-09 | Narrative mentions "burn" but no INJURY_TYPE extracted |
+| `extraction_gap_fracture` | GL-10 | Narrative mentions "fracture" but no INJURY_TYPE extracted |
+| `extraction_gap_crane` | GL-11 | Narrative mentions "crane" but no EQUIPMENT extracted |
+| `extraction_gap_forklift` | GL-12 | Narrative mentions "forklift" but no EQUIPMENT extracted |
+| `extraction_gap_severity_injury` | GL-13 | Severity >= 4 but no INJURY_TYPE edge |
+| `extraction_gap_injury_bodypart` | GL-14 | Impact = Injury but no BODY_PART edge |
+| `extraction_gap_short_narrative` | GL-15 | Narrative < 100 chars with no entity extraction |
+| `extraction_gap_foreign_language` | GL-16 | Non-English narratives with reduced extraction rates |
+
+**Embedding similarity:**
+| Registry Key | Query ID | Description |
+|---|---|---|
+| `similarity_seed_incident` | GL-17 | Top-10 similar to #29857 via text embeddings |
+| `similarity_seed_incident_2` | GL-18 | Top-10 similar to #569346 via text embeddings |
+| `similarity_hit_rate_forklift` | GL-19 | Equipment hit rate for forklift seed retrieval |
+| `similarity_hit_rate_crane` | GL-20 | Equipment hit rate for crane seed retrieval |
+| `similarity_method_agreement` | GL-21 | Text vs Node2Vec top-10 overlap analysis |
+| `similarity_text_query` | GL-22 | Free-text semantic search: scaffold/guardrail query |
+| `similarity_text_query_2` | GL-23 | Free-text semantic search: crane/sling query |
+| `similarity_severity_equipment` | GL-24 | Equipment patterns in high-severity neighborhoods |
 
 ---
 
 ## 6. Spot-Check Queries
 
-Spot-check queries (SC-01 through SC-09b) verify extraction quality on individual
+Spot-check queries (SC-01 through SC-35) verify extraction quality on individual
 incident records where the ground truth was determined by reading the narrative.
 
-Two categories:
-- **Equipment spot-checks** (SC-01 to SC-09): verify `EQUIPMENT:INVOLVED` extraction
-  against manually identified equipment in the narrative
-- **Body part spot-checks** (SC-04b, SC-06b, SC-07b, SC-09b): verify `BODY_PART:AFFECTED`
-  extraction against manually identified body parts
+Five entity types are tested:
+- **Equipment** (SC-01 to SC-11, SC-14, SC-17–SC-21, SC-29, SC-31, SC-33–SC-34): verify `EQUIPMENT:INVOLVED`
+- **Body parts** (SC-04b, SC-06b, SC-07b, SC-09b, SC-12, SC-15, SC-19, SC-32): verify `BODY_PART:AFFECTED`
+- **Injury types** (SC-13, SC-16, SC-22–SC-25, SC-30, SC-35): verify `INJURY_TYPE:RESULTED_IN`
+- **Locations** (SC-26, SC-27): verify `LOCATION:OCCURRED_AT`
+- **Organizations** (SC-28): verify `ORGANIZATION:REPORTED_BY`
 
-These queries use the existing `spot_check` strategy. The `ground_truth` column contains
-pipe-separated expected values; the engine compares graph extractions against them and
-flags missing or extra entities.
+The `ground_truth` column contains pipe-separated expected values; the engine compares
+graph extractions against them and flags missing or extra entities. Diagnosis is
+`EXTRACTION_GAP` when narrative contains the entity text but GLiNER failed to extract it.
 
 ---
 

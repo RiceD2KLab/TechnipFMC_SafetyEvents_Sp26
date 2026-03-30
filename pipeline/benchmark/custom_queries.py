@@ -18,6 +18,7 @@ from .helpers import (
     get_incidents_for_entity,
     incidents_matching_narrative,
     parse_year,
+    parse_yearmonth,
     safe_get_node_value,
 )
 
@@ -744,6 +745,1224 @@ def loto_failures_l2(spec, G, entities_df, relations_df, metadata_df,
     }
 
 
+# ── GL-05: Equipment–body-part co-occurrence ─────────────────────────────
+
+def equipment_bodypart_cooccurrence(spec, G, entities_df, relations_df,
+                                     metadata_df, *, results=None):
+    """Find most common (equipment, body_part) pairs across incidents."""
+    equipment_nodes = set(
+        entities_df[entities_df["entity_type"] == "EQUIPMENT"]["entity_id"])
+    bodypart_nodes = set(
+        entities_df[entities_df["entity_type"] == "BODY_PART"]["entity_id"])
+
+    pair_counts = Counter()
+    incident_nodes = [n for n in G.nodes if n.startswith("INCIDENT::")]
+
+    for inc_id in incident_nodes:
+        equips = [
+            safe_get_node_value(G, nbr)
+            for nbr in G.successors(inc_id)
+            if nbr in equipment_nodes
+            and G.nodes[nbr].get("entity_type") == "EQUIPMENT"]
+        bps = [
+            safe_get_node_value(G, nbr)
+            for nbr in G.successors(inc_id)
+            if nbr in bodypart_nodes
+            and G.nodes[nbr].get("entity_type") == "BODY_PART"]
+        for eq in equips:
+            for bp in bps:
+                if eq and bp:
+                    pair_counts[(eq, bp)] += 1
+
+    top_n = pair_counts.most_common(spec.output_top_n)
+    lines = [f"Total distinct (equipment, body_part) pairs: {len(pair_counts)}",
+             f"Top {spec.output_top_n}:"]
+    for (eq, bp), cnt in top_n:
+        lines.append(f"  {eq} + {bp}: {cnt} incidents")
+
+    return {
+        "coverage": "✅" if pair_counts else "❌",
+        "diagnosis": "CLEAN",
+        "result_summary": f"{len(pair_counts)} equipment–body part pairs",
+        "detail": "\n".join(lines),
+    }
+
+
+# ── GL-06: Client safety comparison ─────────────────────────────────────
+
+def client_safety_comparison(spec, G, entities_df, relations_df,
+                              metadata_df, *, results=None):
+    """Compare safety profiles (severity, incident type) for top 5 clients."""
+    org_nodes = entities_df[entities_df["entity_type"] == "ORGANIZATION"]
+    org_counts = Counter()
+    for ent_id in org_nodes["entity_id"]:
+        deg = len(get_incidents_for_entity(G, ent_id, "REPORTED_BY"))
+        if deg > 0:
+            val = safe_get_node_value(G, ent_id)
+            if val:
+                org_counts[val] = max(org_counts[val], deg)
+
+    top5 = org_counts.most_common(5)
+    lines = ["Top 5 clients by incident count:"]
+
+    for org_val, total in top5:
+        org_entities = find_entities_by_value(
+            entities_df, "ORGANIZATION", f"^{re.escape(org_val)}$")
+        incidents = set()
+        for ent_id in org_entities:
+            incidents.update(
+                get_incidents_for_entity(G, ent_id, "REPORTED_BY"))
+
+        sev_dist = Counter()
+        type_dist = Counter()
+        for inc_id in incidents:
+            sev = get_incident_property(G, inc_id, "severity_bin")
+            itype = get_incident_property(G, inc_id, "incident_type")
+            if pd.notna(sev):
+                sev_dist[int(sev)] += 1
+            if itype:
+                type_dist[str(itype)] += 1
+
+        mean_sev = (sum(k * v for k, v in sev_dist.items())
+                    / max(sum(sev_dist.values()), 1))
+        lines.append(f"\n  {org_val} ({total} incidents):")
+        lines.append(f"    Types: {dict(type_dist)}")
+        lines.append(f"    Severity dist: {dict(sorted(sev_dist.items()))}")
+        lines.append(f"    Mean severity: {mean_sev:.2f}")
+
+    return {
+        "coverage": "✅" if top5 else "❌",
+        "diagnosis": "CLEAN",
+        "result_summary": f"Safety profiles for top {len(top5)} clients",
+        "detail": "\n".join(lines),
+    }
+
+
+# ── GL-07: Seasonal (monthly) patterns ──────────────────────────────────
+
+def seasonal_patterns(spec, G, entities_df, relations_df, metadata_df,
+                      *, results=None):
+    """Detect monthly patterns in incident frequency."""
+    monthly = Counter()
+    for _, row in metadata_df.iterrows():
+        ym = parse_yearmonth(row.get("reported_date"))
+        if ym:
+            month = int(ym.split("-")[1])
+            monthly[month] += 1
+
+    month_names = {1: "Jan", 2: "Feb", 3: "Mar", 4: "Apr", 5: "May",
+                   6: "Jun", 7: "Jul", 8: "Aug", 9: "Sep", 10: "Oct",
+                   11: "Nov", 12: "Dec"}
+
+    lines = ["Monthly incident totals (all years combined):"]
+    total = sum(monthly.values())
+    expected_avg = total / 12 if total else 1
+    peaks = []
+    troughs = []
+    for m in range(1, 13):
+        cnt = monthly.get(m, 0)
+        pct_diff = (cnt - expected_avg) / expected_avg * 100
+        marker = ""
+        if pct_diff > 15:
+            marker = " ↑ PEAK"
+            peaks.append(month_names[m])
+        elif pct_diff < -15:
+            marker = " ↓ TROUGH"
+            troughs.append(month_names[m])
+        lines.append(
+            f"  {month_names[m]}: {cnt} ({pct_diff:+.1f}%){marker}")
+
+    lines.extend([
+        "",
+        f"Peak months (>15% above avg): {', '.join(peaks) or 'none'}",
+        f"Trough months (>15% below avg): {', '.join(troughs) or 'none'}",
+    ])
+
+    return {
+        "coverage": "✅",
+        "diagnosis": "CLEAN",
+        "result_summary": (
+            f"Peaks: {', '.join(peaks) or 'none'}; "
+            f"Troughs: {', '.join(troughs) or 'none'}"),
+        "detail": "\n".join(lines),
+    }
+
+
+# ── GL-08: Root causes by geographic region ──────────────────────────────
+
+def rcc_by_region(spec, G, entities_df, relations_df, metadata_df,
+                  *, results=None):
+    """Show top root cause categories for each geographic region."""
+    region_nodes = entities_df[
+        (entities_df["entity_type"] == "LOCATION")
+        & (entities_df["granularity"] == "region")]
+
+    region_rcc = defaultdict(Counter)
+    for _, row in region_nodes.iterrows():
+        reg_id = row["entity_id"]
+        reg_val = row["value"]
+        incidents = get_incidents_for_entity(G, reg_id, "OCCURRED_AT")
+        for inc_id in incidents:
+            rccs = get_entities_for_incident(
+                G, inc_id, entity_type="ROOT_CAUSE_CATEGORY",
+                relation_type="CATEGORIZED_AS")
+            for rcc_id in rccs:
+                rcc_val = safe_get_node_value(G, rcc_id)
+                if rcc_val:
+                    region_rcc[reg_val][rcc_val] += 1
+
+    lines = [f"Regions with RCC data: {len(region_rcc)}"]
+    for region in sorted(region_rcc,
+                         key=lambda r: -sum(region_rcc[r].values())):
+        total = sum(region_rcc[region].values())
+        top3 = region_rcc[region].most_common(3)
+        lines.append(f"\n  {region} ({total} categorised incidents):")
+        for rcc_val, cnt in top3:
+            lines.append(f"    {rcc_val}: {cnt}")
+
+    return {
+        "coverage": "✅" if region_rcc else "❌",
+        "diagnosis": "CLEAN",
+        "result_summary": f"RCC breakdown for {len(region_rcc)} regions",
+        "detail": "\n".join(lines),
+    }
+
+
+# ── L2-01: Mitigated-by analysis ────────────────────────────────────────
+
+def mitigated_by_analysis(spec, G, entities_df, relations_df, metadata_df,
+                          *, results=None):
+    """Analyze MITIGATED_BY edges: what controls successfully prevented harm."""
+    mit_edges = relations_df[relations_df["relation"] == "MITIGATED_BY"]
+    if len(mit_edges) == 0:
+        return {
+            "coverage": "❌",
+            "diagnosis": "L2_REQUIRED",
+            "result_summary": "0 MITIGATED_BY edges — L2 merge needed",
+            "detail": "No MITIGATED_BY edges found.",
+        }
+
+    # Count what mitigated (targets = controls that worked)
+    control_counts = Counter()
+    harm_counts = Counter()
+    sample_edges = []
+    for _, e in mit_edges.iterrows():
+        src_val = str(safe_get_node_value(G, e["source"], "") or "")
+        tgt_val = str(safe_get_node_value(G, e["target"], "") or "")
+        if tgt_val:
+            control_counts[tgt_val] += 1
+        if src_val:
+            harm_counts[src_val] += 1
+        if len(sample_edges) < 8:
+            sample_edges.append((src_val, tgt_val, str(e.get("record_no", ""))))
+
+    lines = [
+        f"Total MITIGATED_BY edges: {len(mit_edges):,}",
+        f"Unique incidents: {mit_edges['record_no'].nunique():,}",
+        "",
+        f"Top successful controls/mitigations ({len(control_counts)} distinct):",
+    ]
+    for ctrl, cnt in control_counts.most_common(spec.output_top_n):
+        lines.append(f"  {ctrl}: {cnt}")
+
+    lines.extend(["", "Top harms mitigated:"])
+    for harm, cnt in harm_counts.most_common(10):
+        lines.append(f"  {harm}: {cnt}")
+
+    lines.extend(["", "Sample edges (harm → control that worked):"])
+    for src, tgt, rn in sample_edges:
+        lines.append(f"  [{rn}] {src} → {tgt}")
+
+    return {
+        "coverage": "✅",
+        "diagnosis": "CLEAN",
+        "result_summary": (
+            f"{len(mit_edges):,} MITIGATED_BY edges, "
+            f"{len(control_counts)} distinct controls"),
+        "detail": "\n".join(lines),
+    }
+
+
+# ── L2-02: Failed-control overview ──────────────────────────────────────
+
+def failed_control_overview(spec, G, entities_df, relations_df, metadata_df,
+                            *, results=None):
+    """Analyze all FAILED_CONTROL edges: what barriers failed most often."""
+    fc_edges = relations_df[relations_df["relation"] == "FAILED_CONTROL"]
+    if len(fc_edges) == 0:
+        return {
+            "coverage": "❌",
+            "diagnosis": "L2_REQUIRED",
+            "result_summary": "0 FAILED_CONTROL edges — L2 merge needed",
+            "detail": "No FAILED_CONTROL edges found.",
+        }
+
+    barrier_counts = Counter()
+    hazard_counts = Counter()
+    sample_edges = []
+    for _, e in fc_edges.iterrows():
+        src_val = str(safe_get_node_value(G, e["source"], "") or "")
+        tgt_val = str(safe_get_node_value(G, e["target"], "") or "")
+        if tgt_val:
+            barrier_counts[tgt_val] += 1
+        if src_val:
+            hazard_counts[src_val] += 1
+        if len(sample_edges) < 8:
+            sample_edges.append((src_val, tgt_val, str(e.get("record_no", ""))))
+
+    lines = [
+        f"Total FAILED_CONTROL edges: {len(fc_edges):,}",
+        f"Unique incidents: {fc_edges['record_no'].nunique():,}",
+        "",
+        f"Top failed barriers ({len(barrier_counts)} distinct):",
+    ]
+    for barrier, cnt in barrier_counts.most_common(spec.output_top_n):
+        lines.append(f"  {barrier}: {cnt}")
+
+    lines.extend(["", "Top hazards with barrier failures:"])
+    for hazard, cnt in hazard_counts.most_common(10):
+        lines.append(f"  {hazard}: {cnt}")
+
+    lines.extend(["", "Sample edges (hazard → failed barrier):"])
+    for src, tgt, rn in sample_edges:
+        lines.append(f"  [{rn}] {src} → {tgt}")
+
+    return {
+        "coverage": "✅",
+        "diagnosis": "CLEAN",
+        "result_summary": (
+            f"{len(fc_edges):,} FAILED_CONTROL edges, "
+            f"{len(barrier_counts)} distinct barriers"),
+        "detail": "\n".join(lines),
+    }
+
+
+# ── L2-03: Preceded-by analysis ─────────────────────────────────────────
+
+def preceded_by_analysis(spec, G, entities_df, relations_df, metadata_df,
+                         *, results=None):
+    """Analyze PRECEDED_BY edges: most common temporal event sequences."""
+    pb_edges = relations_df[relations_df["relation"] == "PRECEDED_BY"]
+    if len(pb_edges) == 0:
+        return {
+            "coverage": "❌",
+            "diagnosis": "L2_REQUIRED",
+            "result_summary": "0 PRECEDED_BY edges — L2 merge needed",
+            "detail": "No PRECEDED_BY edges found.",
+        }
+
+    sequence_counts = Counter()
+    sample_edges = []
+    for _, e in pb_edges.iterrows():
+        src_val = str(safe_get_node_value(G, e["source"], "") or "")
+        tgt_val = str(safe_get_node_value(G, e["target"], "") or "")
+        if src_val and tgt_val:
+            sequence_counts[(tgt_val, src_val)] += 1  # tgt preceded src
+        if len(sample_edges) < 8:
+            sample_edges.append((src_val, tgt_val, str(e.get("record_no", ""))))
+
+    lines = [
+        f"Total PRECEDED_BY edges: {len(pb_edges):,}",
+        f"Unique incidents: {pb_edges['record_no'].nunique():,}",
+        "",
+        f"Top temporal sequences (A → B means A preceded B):",
+    ]
+    for (prior, later), cnt in sequence_counts.most_common(spec.output_top_n):
+        lines.append(f"  {prior} → {later}: {cnt}")
+
+    lines.extend(["", "Sample edges (event → prior event):"])
+    for src, tgt, rn in sample_edges:
+        lines.append(f"  [{rn}] {src} preceded by {tgt}")
+
+    return {
+        "coverage": "✅",
+        "diagnosis": "CLEAN",
+        "result_summary": (
+            f"{len(pb_edges):,} PRECEDED_BY edges, "
+            f"{len(sequence_counts)} distinct sequences"),
+        "detail": "\n".join(lines),
+    }
+
+
+# ── L2-04: Causal factors for dropped objects ───────────────────────────
+
+def causal_factors_dropped(spec, G, entities_df, relations_df, metadata_df,
+                           *, results=None):
+    """Find causal factors for dropped-object incidents via L2 CAUSAL edges."""
+    causal_edges = relations_df[relations_df["relation"] == "CAUSAL"]
+    if len(causal_edges) == 0:
+        return {
+            "coverage": "❌",
+            "diagnosis": "L2_REQUIRED",
+            "result_summary": "0 CAUSAL edges — L2 merge needed",
+            "detail": "No L2 CAUSAL edges found.",
+        }
+
+    drop_rcc = find_entities_by_value(
+        entities_df, "ROOT_CAUSE_CATEGORY",
+        r"drop|fall.*object|loose.*material")
+    drop_incidents = set()
+    for rcc_id in drop_rcc:
+        drop_incidents.update(
+            get_incidents_for_entity(G, rcc_id, "CATEGORIZED_AS"))
+    drop_record_nos = {inc.split("::")[-1] for inc in drop_incidents}
+
+    drop_causal = causal_edges[
+        causal_edges["record_no"].astype(str).isin(drop_record_nos)]
+
+    source_counts = Counter()
+    for _, e in drop_causal.iterrows():
+        src_val = str(safe_get_node_value(G, e["source"], "") or "")
+        if src_val:
+            source_counts[src_val] += 1
+
+    lines = [
+        f"Dropped-object incidents (via RCC): {len(drop_incidents):,}",
+        f"With CAUSAL edges: {drop_causal['record_no'].nunique():,}",
+        f"Total CAUSAL edges: {len(drop_causal):,}",
+        "",
+        "Top causal factors for dropped objects:",
+    ]
+    for factor, cnt in source_counts.most_common(spec.output_top_n):
+        lines.append(f"  {factor}: {cnt}")
+
+    return {
+        "coverage": "✅" if drop_causal.size > 0 else "❌",
+        "diagnosis": "CLEAN" if drop_causal.size > 0 else "L2_REQUIRED",
+        "result_summary": (
+            f"{len(drop_causal):,} causal edges for "
+            f"{len(drop_incidents):,} dropped-object incidents"),
+        "detail": "\n".join(lines),
+    }
+
+
+# ── L2-05: Causal factors for vehicle incidents ─────────────────────────
+
+def causal_factors_vehicle(spec, G, entities_df, relations_df, metadata_df,
+                           *, results=None):
+    """Find causal factors for vehicle/transport incidents via L2 CAUSAL edges."""
+    causal_edges = relations_df[relations_df["relation"] == "CAUSAL"]
+    if len(causal_edges) == 0:
+        return {
+            "coverage": "❌",
+            "diagnosis": "L2_REQUIRED",
+            "result_summary": "0 CAUSAL edges — L2 merge needed",
+            "detail": "No L2 CAUSAL edges found.",
+        }
+
+    vehicle_rcc = find_entities_by_value(
+        entities_df, "ROOT_CAUSE_CATEGORY",
+        r"motor vehicle|traffic")
+    vehicle_incidents = set()
+    for rcc_id in vehicle_rcc:
+        vehicle_incidents.update(
+            get_incidents_for_entity(G, rcc_id, "CATEGORIZED_AS"))
+    vehicle_record_nos = {inc.split("::")[-1] for inc in vehicle_incidents}
+
+    vehicle_causal = causal_edges[
+        causal_edges["record_no"].astype(str).isin(vehicle_record_nos)]
+
+    source_counts = Counter()
+    for _, e in vehicle_causal.iterrows():
+        src_val = str(safe_get_node_value(G, e["source"], "") or "")
+        if src_val:
+            source_counts[src_val] += 1
+
+    lines = [
+        f"Vehicle/traffic incidents (via RCC): {len(vehicle_incidents):,}",
+        f"With CAUSAL edges: {vehicle_causal['record_no'].nunique():,}",
+        f"Total CAUSAL edges: {len(vehicle_causal):,}",
+        "",
+        "Top causal factors for vehicle incidents:",
+    ]
+    for factor, cnt in source_counts.most_common(spec.output_top_n):
+        lines.append(f"  {factor}: {cnt}")
+
+    return {
+        "coverage": "✅" if vehicle_causal.size > 0 else "❌",
+        "diagnosis": "CLEAN" if vehicle_causal.size > 0 else "L2_REQUIRED",
+        "result_summary": (
+            f"{len(vehicle_causal):,} causal edges for "
+            f"{len(vehicle_incidents):,} vehicle incidents"),
+        "detail": "\n".join(lines),
+    }
+
+
+# ── L2-06: Causal chains leading to fractures ───────────────────────────
+
+def causal_factors_fracture(spec, G, entities_df, relations_df, metadata_df,
+                            *, results=None):
+    """Find causal factors leading to fracture injuries via L2 CAUSAL edges."""
+    causal_edges = relations_df[relations_df["relation"] == "CAUSAL"]
+    if len(causal_edges) == 0:
+        return {
+            "coverage": "❌",
+            "diagnosis": "L2_REQUIRED",
+            "result_summary": "0 CAUSAL edges — L2 merge needed",
+            "detail": "No L2 CAUSAL edges found.",
+        }
+
+    fracture_entities = find_entities_by_value(
+        entities_df, "INJURY_TYPE", r"fracture")
+    fracture_incidents = set()
+    for ent_id in fracture_entities:
+        fracture_incidents.update(
+            get_incidents_for_entity(G, ent_id, "RESULTED_IN"))
+    fracture_record_nos = {inc.split("::")[-1] for inc in fracture_incidents}
+
+    fracture_causal = causal_edges[
+        causal_edges["record_no"].astype(str).isin(fracture_record_nos)]
+
+    source_counts = Counter()
+    for _, e in fracture_causal.iterrows():
+        src_val = str(safe_get_node_value(G, e["source"], "") or "")
+        if src_val:
+            source_counts[src_val] += 1
+
+    lines = [
+        f"Fracture incidents (via INJURY_TYPE): {len(fracture_incidents):,}",
+        f"With CAUSAL edges: {fracture_causal['record_no'].nunique():,}",
+        f"Total CAUSAL edges: {len(fracture_causal):,}",
+        "",
+        "Top causal factors leading to fractures:",
+    ]
+    for factor, cnt in source_counts.most_common(spec.output_top_n):
+        lines.append(f"  {factor}: {cnt}")
+
+    return {
+        "coverage": "✅" if fracture_causal.size > 0 else "❌",
+        "diagnosis": "CLEAN" if fracture_causal.size > 0 else "L2_REQUIRED",
+        "result_summary": (
+            f"{len(fracture_causal):,} causal edges for "
+            f"{len(fracture_incidents):,} fracture incidents"),
+        "detail": "\n".join(lines),
+    }
+
+
+# ── EG-01: Extraction gap — burns ────────────────────────────────────────
+
+def _extraction_gap_generic(spec, G, entities_df, relations_df, metadata_df,
+                            narr_pattern, entity_type, entity_pattern,
+                            relation, label):
+    """Generic extraction gap check: narrative mentions X but entity not extracted."""
+    narr_re = re.compile(narr_pattern, re.IGNORECASE)
+    narr_matches = set()
+    for _, row in metadata_df.iterrows():
+        narr = str(row.get("narrative") or "")
+        if narr_re.search(narr):
+            narr_matches.add(str(row["record_no"]))
+
+    entity_incidents = set()
+    matched_ents = find_entities_by_value(entities_df, entity_type, entity_pattern)
+    for ent_id in matched_ents:
+        for inc_id in get_incidents_for_entity(G, ent_id, relation):
+            entity_incidents.add(inc_id.split("::")[-1])
+
+    gap = narr_matches - entity_incidents
+    extracted = narr_matches & entity_incidents
+    gap_rate = len(gap) / max(len(narr_matches), 1) * 100
+
+    # Sample gap incidents
+    samples = []
+    for rec in sorted(gap)[:5]:
+        narr = metadata_df[metadata_df["record_no"].astype(str) == rec]["narrative"]
+        if len(narr) > 0:
+            samples.append(f"  #{rec}: \"{str(narr.iloc[0])[:120]}...\"")
+
+    lines = [
+        f"Narrative mentions '{label}': {len(narr_matches):,}",
+        f"  With {entity_type} extracted: {len(extracted):,}",
+        f"  WITHOUT {entity_type} extracted (gap): {len(gap):,}",
+        f"  Gap rate: {gap_rate:.1f}%",
+        "",
+        "Sample gap incidents:",
+    ] + samples
+
+    return {
+        "coverage": "✅",
+        "diagnosis": "EXTRACTION_GAP",
+        "result_summary": (
+            f"{len(gap):,} / {len(narr_matches):,} "
+            f"({gap_rate:.0f}%) missing {entity_type}"),
+        "detail": "\n".join(lines),
+    }
+
+
+def extraction_gap_burn(spec, G, entities_df, relations_df, metadata_df,
+                        *, results=None):
+    return _extraction_gap_generic(
+        spec, G, entities_df, relations_df, metadata_df,
+        narr_pattern=r"\bburn\b",
+        entity_type="INJURY_TYPE", entity_pattern=r"burn",
+        relation="RESULTED_IN", label="burn")
+
+
+def extraction_gap_fracture(spec, G, entities_df, relations_df, metadata_df,
+                            *, results=None):
+    return _extraction_gap_generic(
+        spec, G, entities_df, relations_df, metadata_df,
+        narr_pattern=r"fracture",
+        entity_type="INJURY_TYPE", entity_pattern=r"fracture",
+        relation="RESULTED_IN", label="fracture")
+
+
+def extraction_gap_crane(spec, G, entities_df, relations_df, metadata_df,
+                         *, results=None):
+    return _extraction_gap_generic(
+        spec, G, entities_df, relations_df, metadata_df,
+        narr_pattern=r"\bcrane\b",
+        entity_type="EQUIPMENT", entity_pattern=r"crane",
+        relation="INVOLVED", label="crane")
+
+
+def extraction_gap_forklift(spec, G, entities_df, relations_df, metadata_df,
+                            *, results=None):
+    return _extraction_gap_generic(
+        spec, G, entities_df, relations_df, metadata_df,
+        narr_pattern=r"\bforklift\b",
+        entity_type="EQUIPMENT", entity_pattern=r"forklift|flt",
+        relation="INVOLVED", label="forklift")
+
+
+# ── EG-05: Severity >= 4 but no INJURY_TYPE ─────────────────────────────
+
+def extraction_gap_severity_injury(spec, G, entities_df, relations_df,
+                                   metadata_df, *, results=None):
+    """Find high-severity incidents missing INJURY_TYPE edges."""
+    sev4 = set(metadata_df[metadata_df["severity_bin"] >= 4]["record_no"].astype(str))
+    has_injury = set()
+    for _, e in relations_df[relations_df["relation"] == "RESULTED_IN"].iterrows():
+        src = str(e["source"]).replace("INCIDENT::", "")
+        tgt_type = entities_df[entities_df["entity_id"] == e["target"]]
+        if len(tgt_type) > 0 and tgt_type["entity_type"].iloc[0] == "INJURY_TYPE":
+            has_injury.add(src)
+
+    gap = sev4 - has_injury
+    gap_rate = len(gap) / max(len(sev4), 1) * 100
+
+    # Get severity breakdown of gap incidents
+    gap_meta = metadata_df[metadata_df["record_no"].astype(str).isin(gap)]
+    sev_dist = gap_meta["severity_bin"].value_counts().sort_index()
+
+    lines = [
+        f"Incidents with severity >= 4: {len(sev4):,}",
+        f"  With INJURY_TYPE extracted: {len(sev4) - len(gap):,}",
+        f"  WITHOUT INJURY_TYPE (gap): {len(gap):,}",
+        f"  Gap rate: {gap_rate:.1f}%",
+        "",
+        "Severity breakdown of gap incidents:",
+    ]
+    for sev, cnt in sev_dist.items():
+        lines.append(f"  Severity {int(sev)}: {cnt}")
+
+    samples = []
+    for _, row in gap_meta.head(5).iterrows():
+        samples.append(
+            f"  #{row['record_no']} (sev={row['severity_bin']}): "
+            f"\"{str(row.get('narrative',''))[:100]}...\"")
+    lines.extend(["", "Sample gap incidents:"] + samples)
+
+    return {
+        "coverage": "✅",
+        "diagnosis": "EXTRACTION_GAP",
+        "result_summary": (
+            f"{len(gap):,} / {len(sev4):,} "
+            f"({gap_rate:.0f}%) high-severity missing INJURY_TYPE"),
+        "detail": "\n".join(lines),
+    }
+
+
+# ── EG-06: Impact=Injury but no BODY_PART ────────────────────────────────
+
+def extraction_gap_injury_bodypart(spec, G, entities_df, relations_df,
+                                   metadata_df, *, results=None):
+    """Find injury-impact incidents missing BODY_PART edges."""
+    injury_impact = set(
+        metadata_df[metadata_df["impact_type"].astype(str).str.contains(
+            "Injury", na=False)]["record_no"].astype(str))
+    has_bp = set()
+    bp_ents = set(entities_df[entities_df["entity_type"] == "BODY_PART"]["entity_id"])
+    for _, e in relations_df[relations_df["relation"] == "AFFECTED"].iterrows():
+        if e["target"] in bp_ents:
+            has_bp.add(str(e["source"]).replace("INCIDENT::", ""))
+
+    gap = injury_impact - has_bp
+    gap_rate = len(gap) / max(len(injury_impact), 1) * 100
+
+    lines = [
+        f"Incidents with impact_type=Injury: {len(injury_impact):,}",
+        f"  With BODY_PART extracted: {len(injury_impact) - len(gap):,}",
+        f"  WITHOUT BODY_PART (gap): {len(gap):,}",
+        f"  Gap rate: {gap_rate:.1f}%",
+    ]
+
+    return {
+        "coverage": "✅",
+        "diagnosis": "EXTRACTION_GAP",
+        "result_summary": (
+            f"{len(gap):,} / {len(injury_impact):,} "
+            f"({gap_rate:.0f}%) injury incidents missing BODY_PART"),
+        "detail": "\n".join(lines),
+    }
+
+
+# ── EG-07: Short narratives with no entities ─────────────────────────────
+
+def extraction_gap_short_narrative(spec, G, entities_df, relations_df,
+                                   metadata_df, *, results=None):
+    """Find incidents with very short narratives and no entity extraction."""
+    short = metadata_df[metadata_df["narrative"].astype(str).str.len() < 100]
+    short_recs = set(short["record_no"].astype(str))
+
+    # Check which have ANY entity edge
+    has_entity = set()
+    inc_rels = relations_df[relations_df["source"].str.startswith("INCIDENT::")]
+    entity_rels = inc_rels[inc_rels["relation"].isin(
+        ["INVOLVED", "AFFECTED", "RESULTED_IN"])]
+    for src in entity_rels["source"]:
+        has_entity.add(src.replace("INCIDENT::", ""))
+
+    short_no_entity = short_recs - has_entity
+    short_with_entity = short_recs & has_entity
+
+    # Categorize short narratives
+    test_records = set()
+    for _, row in short.iterrows():
+        narr = str(row.get("narrative", "")).strip().lower()
+        if narr in ("test", "ttt", "t", "....", "", "n/a", "na", "-"):
+            test_records.add(str(row["record_no"]))
+
+    lines = [
+        f"Incidents with narrative < 100 chars: {len(short_recs):,}",
+        f"  With entity extraction: {len(short_with_entity):,}",
+        f"  Without any entity extraction: {len(short_no_entity):,}",
+        f"  Likely test/placeholder records: {len(test_records):,}",
+        f"  Genuine short narratives (no entities): "
+        f"{len(short_no_entity - test_records):,}",
+    ]
+
+    # Sample genuine gaps
+    genuine = short[
+        short["record_no"].astype(str).isin(short_no_entity - test_records)]
+    samples = []
+    for _, row in genuine.head(5).iterrows():
+        samples.append(
+            f"  #{row['record_no']}: \"{str(row.get('narrative',''))[:90]}\"")
+    lines.extend(["", "Sample short-narrative gaps:"] + samples)
+
+    return {
+        "coverage": "✅",
+        "diagnosis": "EXTRACTION_GAP",
+        "result_summary": (
+            f"{len(short_no_entity):,} short-narrative incidents "
+            f"with 0 entity extraction ({len(test_records)} test records)"),
+        "detail": "\n".join(lines),
+    }
+
+
+# ── EG-08: Foreign language narratives ────────────────────────────────────
+
+def extraction_gap_foreign_language(spec, G, entities_df, relations_df,
+                                    metadata_df, *, results=None):
+    """Detect non-English narratives and compare extraction rates."""
+    lang_markers = {
+        "Portuguese": [r"\bdurante\b", r"\btrabalhador\b", r"\bincidente\b",
+                       r"\bequipamento\b"],
+        "French": [r"\bopération\b", r"\btravailleur\b", r"\bincident\b",
+                   r"\béquipement\b"],
+        "Spanish": [r"\bdurante\b", r"\btrabajador\b", r"\bincidente\b",
+                    r"\bequipo\b"],
+        "Russian": [r"[а-яА-Я]{3,}"],
+    }
+
+    inc_rels = relations_df[relations_df["source"].str.startswith("INCIDENT::")]
+    entity_rels = inc_rels[inc_rels["relation"].isin(
+        ["INVOLVED", "AFFECTED", "RESULTED_IN"])]
+    entity_per_inc = entity_rels.groupby("source").size()
+
+    all_inc_ids = set(f"INCIDENT::{r}" for r in metadata_df["record_no"].astype(str))
+    english_entity_counts = []
+    for iid in all_inc_ids:
+        english_entity_counts.append(entity_per_inc.get(iid, 0))
+    import numpy as np
+    english_mean = np.mean(english_entity_counts) if english_entity_counts else 0
+
+    lines = [f"Overall mean entity extraction per incident: {english_mean:.2f}", ""]
+    total_foreign = 0
+    total_gap = 0
+
+    for lang, markers in lang_markers.items():
+        combined = "|".join(markers)
+        foreign = metadata_df[metadata_df["narrative"].astype(str).str.contains(
+            combined, case=False, na=False, regex=True)]
+        if len(foreign) == 0:
+            continue
+
+        foreign_recs = set(foreign["record_no"].astype(str))
+        foreign_inc_ids = {f"INCIDENT::{r}" for r in foreign_recs}
+        foreign_counts = [entity_per_inc.get(iid, 0) for iid in foreign_inc_ids]
+        foreign_mean = np.mean(foreign_counts) if foreign_counts else 0
+        zero_extraction = sum(1 for c in foreign_counts if c == 0)
+
+        total_foreign += len(foreign)
+        total_gap += zero_extraction
+
+        lines.append(
+            f"{lang}: {len(foreign):,} incidents, "
+            f"mean entities={foreign_mean:.2f} "
+            f"(vs {english_mean:.2f} overall), "
+            f"{zero_extraction} with zero extraction")
+
+    lines.extend(["", f"Total non-English incidents: {total_foreign:,}",
+                   f"Total with zero extraction: {total_gap:,}"])
+
+    return {
+        "coverage": "✅",
+        "diagnosis": "EXTRACTION_GAP",
+        "result_summary": (
+            f"{total_foreign:,} non-English incidents, "
+            f"{total_gap:,} with zero entity extraction"),
+        "detail": "\n".join(lines),
+    }
+
+
+# ── Similarity helpers (lazy-loaded from event_similarity) ────────────────
+
+_SIM_CACHE = {}  # module-level cache for embeddings + model
+
+
+def _load_similarity():
+    """Lazily load text embeddings and structural similarity data."""
+    if _SIM_CACHE:
+        return _SIM_CACHE
+
+    import pickle
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parent.parent.parent
+    sim_dir = root / "event_similarity" / "outputs"
+
+    # Text embeddings: {record_no_str: np.ndarray(384,)}
+    text_path = sim_dir / "text_embeddings.pkl"
+    if text_path.exists():
+        with open(text_path, "rb") as f:
+            _SIM_CACHE["text"] = pickle.load(f)
+    else:
+        _SIM_CACHE["text"] = {}
+
+    # Node2Vec embeddings
+    n2v_path = sim_dir / "node2vec_embeddings.pkl"
+    if n2v_path.exists():
+        with open(n2v_path, "rb") as f:
+            _SIM_CACHE["node2vec"] = pickle.load(f)
+    else:
+        _SIM_CACHE["node2vec"] = {}
+
+    # TransE embeddings
+    transe_path = sim_dir / "transe_embeddings.pkl"
+    if transe_path.exists():
+        with open(transe_path, "rb") as f:
+            _SIM_CACHE["transe"] = pickle.load(f)
+    else:
+        _SIM_CACHE["transe"] = {}
+
+    return _SIM_CACHE
+
+
+def _top_k_text(seed_record, k=10):
+    """Find top-k most similar incidents by text embedding cosine similarity."""
+    import numpy as np
+
+    cache = _load_similarity()
+    text_emb = cache.get("text", {})
+    if seed_record not in text_emb:
+        return []
+
+    seed_vec = text_emb[seed_record]
+    scores = []
+    for rec, vec in text_emb.items():
+        if rec == seed_record:
+            continue
+        sim = float(np.dot(seed_vec, vec))  # unit-normalized → dot = cosine
+        scores.append((rec, sim))
+
+    scores.sort(key=lambda x: -x[1])
+    return scores[:k]
+
+
+def _top_k_text_from_query(query_text, k=10):
+    """Find top-k incidents similar to a free-text query string."""
+    import numpy as np
+    from pathlib import Path
+
+    cache = _load_similarity()
+    text_emb = cache.get("text", {})
+    if not text_emb:
+        return []
+
+    # Lazy-load the sentence-transformer model
+    if "model" not in cache:
+        try:
+            from sentence_transformers import SentenceTransformer
+            cache["model"] = SentenceTransformer(
+                "sentence-transformers/all-MiniLM-L6-v2")
+        except ImportError:
+            return []
+
+    model = cache["model"]
+    query_vec = model.encode([query_text], normalize_embeddings=True)[0]
+
+    scores = []
+    for rec, vec in text_emb.items():
+        sim = float(np.dot(query_vec, vec))
+        scores.append((rec, sim))
+
+    scores.sort(key=lambda x: -x[1])
+    return scores[:k]
+
+
+# ── GL-17: Seed-based hybrid similarity retrieval ─────────────────────────
+
+def _similarity_seed(spec, G, entities_df, relations_df, metadata_df,
+                     seed_record, *, results=None):
+    """Generic seed-based similarity retrieval."""
+    top_text = _top_k_text(seed_record, k=10)
+
+    if not top_text:
+        return {
+            "coverage": "❌",
+            "diagnosis": "DATA_SPARSE",
+            "result_summary": f"No text embeddings for incident #{seed_record}",
+            "detail": "Text embeddings not found. Run event_similarity first.",
+        }
+
+    lines = [f"Seed incident: #{seed_record}",
+             "", "Top 10 most similar incidents (text embedding cosine):"]
+
+    for rec, sim in top_text:
+        inc_id = f"INCIDENT::{rec}"
+        label = get_incident_property(G, inc_id, "incident_type") or "?"
+        sev = get_incident_property(G, inc_id, "severity_bin") or "?"
+        equips = get_entities_for_incident(
+            G, inc_id, entity_type="EQUIPMENT", relation_type="INVOLVED")
+        eq_vals = [safe_get_node_value(G, e) for e in equips[:3]]
+        lines.append(f"  #{rec} (sim={sim:.3f}) type={label} sev={sev} "
+                     f"eq={eq_vals}")
+
+    # Check structural overlap: how many share equipment type with seed?
+    seed_id = f"INCIDENT::{seed_record}"
+    seed_equips = {safe_get_node_value(G, e)
+                   for e in get_entities_for_incident(
+                       G, seed_id, entity_type="EQUIPMENT",
+                       relation_type="INVOLVED")}
+    hits = 0
+    for rec, _ in top_text:
+        inc_id = f"INCIDENT::{rec}"
+        nbr_equips = {safe_get_node_value(G, e)
+                      for e in get_entities_for_incident(
+                          G, inc_id, entity_type="EQUIPMENT",
+                          relation_type="INVOLVED")}
+        if seed_equips & nbr_equips:
+            hits += 1
+
+    hit_rate = hits / max(len(top_text), 1) * 100
+    lines.extend([
+        "",
+        f"Seed equipment: {sorted(seed_equips)}",
+        f"Equipment overlap (hit rate): {hits}/{len(top_text)} ({hit_rate:.0f}%)",
+    ])
+
+    return {
+        "coverage": "✅",
+        "diagnosis": "CLEAN",
+        "result_summary": (
+            f"Top 10 similar to #{seed_record}, "
+            f"{hit_rate:.0f}% equipment overlap"),
+        "detail": "\n".join(lines),
+    }
+
+
+def similarity_seed_incident(spec, G, entities_df, relations_df, metadata_df,
+                             *, results=None):
+    return _similarity_seed(spec, G, entities_df, relations_df, metadata_df,
+                            "29857", results=results)
+
+
+def similarity_seed_incident_2(spec, G, entities_df, relations_df, metadata_df,
+                               *, results=None):
+    return _similarity_seed(spec, G, entities_df, relations_df, metadata_df,
+                            "569346", results=results)
+
+
+# ── GL-19/20: Structural hit rate for equipment-specific queries ──────────
+
+def _similarity_hit_rate(spec, G, entities_df, relations_df, metadata_df,
+                         equipment_pattern, incident_type_filter=None,
+                         *, results=None):
+    """Pick a seed incident matching equipment pattern, find top-10 text-similar,
+    measure how many share the same equipment type."""
+    # Find a seed incident with this equipment
+    equip_ents = find_entities_by_value(entities_df, "EQUIPMENT", equipment_pattern)
+    seed_record = None
+    for eid in equip_ents:
+        incidents = get_incidents_for_entity(G, eid, "INVOLVED")
+        for inc_id in incidents:
+            if incident_type_filter:
+                itype = get_incident_property(G, inc_id, "incident_type")
+                if itype and incident_type_filter.lower() in str(itype).lower():
+                    seed_record = inc_id.split("::")[-1]
+                    break
+            else:
+                seed_record = inc_id.split("::")[-1]
+                break
+        if seed_record:
+            break
+
+    if not seed_record:
+        return {
+            "coverage": "❌",
+            "diagnosis": "DATA_SPARSE",
+            "result_summary": f"No matching seed for {equipment_pattern}",
+            "detail": "Could not find a seed incident.",
+        }
+
+    top_text = _top_k_text(seed_record, k=10)
+    if not top_text:
+        return {
+            "coverage": "❌",
+            "diagnosis": "DATA_SPARSE",
+            "result_summary": "No text embeddings available",
+            "detail": "Run event_similarity first.",
+        }
+
+    # Check how many top-10 share the same equipment pattern
+    equip_re = re.compile(equipment_pattern, re.IGNORECASE)
+    hits = 0
+    lines = [f"Seed: #{seed_record} (equipment={equipment_pattern})", ""]
+
+    for rec, sim in top_text:
+        inc_id = f"INCIDENT::{rec}"
+        nbr_equips = [
+            safe_get_node_value(G, e)
+            for e in get_entities_for_incident(
+                G, inc_id, entity_type="EQUIPMENT",
+                relation_type="INVOLVED")]
+        match = any(equip_re.search(str(v or "")) for v in nbr_equips)
+        if match:
+            hits += 1
+        marker = "✓" if match else "✗"
+        lines.append(f"  {marker} #{rec} (sim={sim:.3f}) eq={nbr_equips[:3]}")
+
+    hit_rate = hits / max(len(top_text), 1) * 100
+    lines.extend(["", f"Hit rate: {hits}/10 ({hit_rate:.0f}%)"])
+
+    return {
+        "coverage": "✅",
+        "diagnosis": "CLEAN",
+        "result_summary": f"{hit_rate:.0f}% hit rate for {equipment_pattern} retrieval",
+        "detail": "\n".join(lines),
+    }
+
+
+def similarity_hit_rate_forklift(spec, G, entities_df, relations_df,
+                                 metadata_df, *, results=None):
+    return _similarity_hit_rate(
+        spec, G, entities_df, relations_df, metadata_df,
+        r"forklift|flt", "accident", results=results)
+
+
+def similarity_hit_rate_crane(spec, G, entities_df, relations_df,
+                              metadata_df, *, results=None):
+    return _similarity_hit_rate(
+        spec, G, entities_df, relations_df, metadata_df,
+        r"crane", "near miss", results=results)
+
+
+# ── GL-21: Method agreement analysis ─────────────────────────────────────
+
+def similarity_method_agreement(spec, G, entities_df, relations_df,
+                                metadata_df, *, results=None):
+    """Compare text vs KG embedding rankings for a sample of incidents."""
+    import numpy as np
+
+    cache = _load_similarity()
+    text_emb = cache.get("text", {})
+    n2v_emb = cache.get("node2vec", {})
+
+    if not text_emb:
+        return {
+            "coverage": "❌",
+            "diagnosis": "DATA_SPARSE",
+            "result_summary": "No embeddings available",
+            "detail": "Run event_similarity first.",
+        }
+
+    # Pick 20 random seed incidents that have both text + node2vec
+    common = sorted(set(text_emb.keys()) & set(n2v_emb.keys()))[:20]
+    if len(common) < 5:
+        return {
+            "coverage": "⚠️",
+            "diagnosis": "DATA_SPARSE",
+            "result_summary": f"Only {len(common)} incidents with both embeddings",
+            "detail": "Need text + node2vec embeddings for comparison.",
+        }
+
+    overlaps = []
+    for seed in common:
+        text_top = {r for r, _ in _top_k_text(seed, k=10)}
+        # Node2Vec top-k
+        seed_vec = n2v_emb[seed]
+        n2v_scores = []
+        for rec, vec in n2v_emb.items():
+            if rec == seed:
+                continue
+            sim = float(np.dot(seed_vec, vec))
+            n2v_scores.append((rec, sim))
+        n2v_scores.sort(key=lambda x: -x[1])
+        n2v_top = {r for r, _ in n2v_scores[:10]}
+
+        overlap = len(text_top & n2v_top) / 10
+        overlaps.append(overlap)
+
+    mean_overlap = np.mean(overlaps)
+    lines = [
+        f"Compared text vs node2vec top-10 for {len(common)} seed incidents",
+        f"Mean overlap (Jaccard@10): {mean_overlap:.2%}",
+        "",
+        "Per-seed overlap:",
+    ]
+    for seed, ov in zip(common[:10], overlaps[:10]):
+        lines.append(f"  #{seed}: {ov:.0%}")
+
+    return {
+        "coverage": "✅",
+        "diagnosis": "CLEAN",
+        "result_summary": f"Text vs Node2Vec mean overlap: {mean_overlap:.1%}",
+        "detail": "\n".join(lines),
+    }
+
+
+# ── GL-22/23: Free-text semantic search ───────────────────────────────────
+
+def _similarity_text_query(spec, G, entities_df, relations_df, metadata_df,
+                           query_text, *, results=None):
+    """Semantic search: find incidents similar to a free-text query."""
+    top = _top_k_text_from_query(query_text, k=10)
+
+    if not top:
+        return {
+            "coverage": "❌",
+            "diagnosis": "DATA_SPARSE",
+            "result_summary": "No text embeddings or model unavailable",
+            "detail": "Needs sentence-transformers + pre-computed embeddings.",
+        }
+
+    lines = [f'Query: "{query_text}"', "",
+             "Top 10 semantically similar incidents:"]
+    for rec, sim in top:
+        inc_id = f"INCIDENT::{rec}"
+        label = get_incident_property(G, inc_id, "incident_type") or "?"
+        sev = get_incident_property(G, inc_id, "severity_bin") or "?"
+        equips = [safe_get_node_value(G, e)
+                  for e in get_entities_for_incident(
+                      G, inc_id, entity_type="EQUIPMENT",
+                      relation_type="INVOLVED")[:3]]
+        injuries = [safe_get_node_value(G, e)
+                    for e in get_entities_for_incident(
+                        G, inc_id, entity_type="INJURY_TYPE",
+                        relation_type="RESULTED_IN")[:2]]
+        lines.append(f"  #{rec} (sim={sim:.3f}) {label}/sev={sev} "
+                     f"eq={equips} inj={injuries}")
+
+    return {
+        "coverage": "✅",
+        "diagnosis": "CLEAN",
+        "result_summary": (
+            f"Top match: #{top[0][0]} (sim={top[0][1]:.3f})"),
+        "detail": "\n".join(lines),
+    }
+
+
+def similarity_text_query(spec, G, entities_df, relations_df, metadata_df,
+                          *, results=None):
+    return _similarity_text_query(
+        spec, G, entities_df, relations_df, metadata_df,
+        "worker fell from scaffold due to missing guardrail",
+        results=results)
+
+
+def similarity_text_query_2(spec, G, entities_df, relations_df, metadata_df,
+                            *, results=None):
+    return _similarity_text_query(
+        spec, G, entities_df, relations_df, metadata_df,
+        "crane load dropped because sling failed under tension",
+        results=results)
+
+
+# ── GL-24: Equipment patterns in high-severity neighborhoods ──────────────
+
+def similarity_severity_equipment(spec, G, entities_df, relations_df,
+                                  metadata_df, *, results=None):
+    """For high-severity incidents, find top-10 similar and tally equipment."""
+    cache = _load_similarity()
+    text_emb = cache.get("text", {})
+    if not text_emb:
+        return {
+            "coverage": "❌",
+            "diagnosis": "DATA_SPARSE",
+            "result_summary": "No text embeddings available",
+            "detail": "Run event_similarity first.",
+        }
+
+    # Find high-severity incidents (sev >= 4) with embeddings
+    sev4_records = []
+    for _, row in metadata_df.iterrows():
+        if pd.notna(row.get("severity_bin")) and row["severity_bin"] >= 4:
+            rec = str(row["record_no"])
+            if rec in text_emb:
+                sev4_records.append(rec)
+
+    if not sev4_records:
+        return {
+            "coverage": "❌",
+            "diagnosis": "DATA_SPARSE",
+            "result_summary": "No high-severity incidents with embeddings",
+            "detail": "",
+        }
+
+    # For each high-sev incident, find top-10 similar, tally equipment
+    neighbor_equip = Counter()
+    for seed in sev4_records[:50]:  # sample up to 50
+        top = _top_k_text(seed, k=10)
+        for rec, _ in top:
+            inc_id = f"INCIDENT::{rec}"
+            equips = get_entities_for_incident(
+                G, inc_id, entity_type="EQUIPMENT",
+                relation_type="INVOLVED")
+            for eid in equips:
+                val = safe_get_node_value(G, eid)
+                if val:
+                    neighbor_equip[val] += 1
+
+    lines = [
+        f"High-severity incidents sampled: {min(len(sev4_records), 50)}",
+        f"Total high-severity with embeddings: {len(sev4_records)}",
+        "",
+        "Most common equipment in similar-incident neighborhoods:",
+    ]
+    for eq, cnt in neighbor_equip.most_common(spec.output_top_n):
+        lines.append(f"  {eq}: {cnt}")
+
+    return {
+        "coverage": "✅",
+        "diagnosis": "CLEAN",
+        "result_summary": (
+            f"Top equipment in high-sev neighborhoods: "
+            f"{neighbor_equip.most_common(3)}"),
+        "detail": "\n".join(lines),
+    }
+
+
 # ── Registry ─────────────────────────────────────────────────────────────
 
 CUSTOM_REGISTRY = {
@@ -758,4 +1977,30 @@ CUSTOM_REGISTRY = {
     "procedural_dropped_injury": procedural_dropped_injury,
     "corrosion_effects": corrosion_effects,
     "loto_failures_l2": loto_failures_l2,
+    "equipment_bodypart_cooccurrence": equipment_bodypart_cooccurrence,
+    "client_safety_comparison": client_safety_comparison,
+    "seasonal_patterns": seasonal_patterns,
+    "rcc_by_region": rcc_by_region,
+    "mitigated_by_analysis": mitigated_by_analysis,
+    "failed_control_overview": failed_control_overview,
+    "preceded_by_analysis": preceded_by_analysis,
+    "causal_factors_dropped": causal_factors_dropped,
+    "causal_factors_vehicle": causal_factors_vehicle,
+    "causal_factors_fracture": causal_factors_fracture,
+    "extraction_gap_burn": extraction_gap_burn,
+    "extraction_gap_fracture": extraction_gap_fracture,
+    "extraction_gap_crane": extraction_gap_crane,
+    "extraction_gap_forklift": extraction_gap_forklift,
+    "extraction_gap_severity_injury": extraction_gap_severity_injury,
+    "extraction_gap_injury_bodypart": extraction_gap_injury_bodypart,
+    "extraction_gap_short_narrative": extraction_gap_short_narrative,
+    "extraction_gap_foreign_language": extraction_gap_foreign_language,
+    "similarity_seed_incident": similarity_seed_incident,
+    "similarity_seed_incident_2": similarity_seed_incident_2,
+    "similarity_hit_rate_forklift": similarity_hit_rate_forklift,
+    "similarity_hit_rate_crane": similarity_hit_rate_crane,
+    "similarity_method_agreement": similarity_method_agreement,
+    "similarity_text_query": similarity_text_query,
+    "similarity_text_query_2": similarity_text_query_2,
+    "similarity_severity_equipment": similarity_severity_equipment,
 }

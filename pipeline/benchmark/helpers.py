@@ -111,14 +111,32 @@ def safe_get_node_value(G, node_id, default=None):
 
 
 def incidents_matching_narrative(metadata_df, keywords, match_all=True):
-    """Find record_no strings whose narrative contains keywords."""
+    """Find record_no strings whose narrative contains keywords.
+
+    Keyword prefixes:
+      (none)  — exact substring match (default)
+      ~       — bag-of-words: all words in the phrase must appear in the
+                narrative, in any order.  E.g. ``~scaffold fall`` matches
+                "fell from scaffold", "scaffold fell", "fall from the scaffold".
+    """
     # Start with True for AND (all must match), False for OR (any may match)
+    narr_lower = metadata_df["narrative"].str.lower()
     mask = pd.Series(match_all, index=metadata_df.index)
     for kw in keywords:
-        # Escape regex special characters to prevent injection
-        escaped_kw = re.escape(kw.lower())
-        kw_mask = metadata_df["narrative"].str.lower().str.contains(
-            escaped_kw, na=False, regex=True)
+        kw = kw.strip()
+        if kw.startswith("~"):
+            # Bag-of-words: every word must appear somewhere in the narrative
+            words = kw[1:].lower().split()
+            kw_mask = pd.Series(True, index=metadata_df.index)
+            for word in words:
+                escaped_word = re.escape(word)
+                kw_mask = kw_mask & narr_lower.str.contains(
+                    escaped_word, na=False, regex=True)
+        else:
+            # Exact substring match
+            escaped_kw = re.escape(kw.lower())
+            kw_mask = narr_lower.str.contains(
+                escaped_kw, na=False, regex=True)
         mask = mask & kw_mask if match_all else mask | kw_mask
     return set(metadata_df[mask]["record_no"].astype(str).tolist())
 

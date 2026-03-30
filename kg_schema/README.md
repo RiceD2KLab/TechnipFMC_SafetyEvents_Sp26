@@ -85,14 +85,21 @@ kg_schema/
 
 ## Golden Set
 
-### `golden_set.csv` — 52 benchmark queries
+### `golden_set.csv` — 250 benchmark queries
 
 Each row contains the full natural language question in the `name` column, along with the
 structured query spec (strategy, entity filters, meta filters, expected counts, etc.).
 
+**Categories:** SH (58 single-hop), AG (26 aggregation), MH (44 multi-hop), GL (24 global),
+CJ (31 conjunctive), SC (39 spot-check), IOGP (28 IOGP Life-Saving Rules).
+
+**Strategies:** entity_filter, meta_filter, narrative_filter (with `~` bag-of-words support),
+intersect, crosstab, spot_check, custom (37 functions including extraction gap analysis
+and embedding similarity retrieval).
+
 Used by:
 - `pipeline/benchmark/run_benchmark.py` — automated benchmark execution
-- `natural_language_query/run_golden_set.py` — NLQ translation testing (44 of 52, excludes IOGP-*)
+- `natural_language_query/run_golden_set.py` — NLQ translation testing
 - `natural_language_query/eval_harness.py` — scoring criteria reference
 
 ---
@@ -107,7 +114,7 @@ from kg_schema import load_golden_set
 for name, meta in ENTITY_TYPES.items():
     print(name, meta["source"])
 
-# Load all 52 benchmark queries
+# Load all 250 benchmark queries
 queries = load_golden_set()   # returns list[dict]
 ```
 

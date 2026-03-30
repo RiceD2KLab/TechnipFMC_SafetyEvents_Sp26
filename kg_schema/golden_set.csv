@@ -1,6 +1,6 @@
 query_id,name,query_type,strategy,entity_filters,meta_filters,narrative_keywords,require_connected,output_mode,output_target,output_top_n,coverage_thresholds,diagnosis_rule,custom_fn,ground_truth,notes,expected_count
 SH-01,What incidents involved forklifts in 2022?,Single-hop,entity_filter,EQUIPMENT:fork\s*lift|flt|forklift:INVOLVED,year == 2022,,,count_incidents,,10,50:1,ER_NEEDED,,,,86
-SH-02,What equipment was involved in incident #29857?,Single-hop,spot_check,,,,,aggregate,INCIDENT::29857:EQUIPMENT:INVOLVED,10,4:1,auto,,pry bar|rov|tms|lanyard,,
+SH-02,What equipment was involved in incident #29857?,Single-hop,spot_check,,,,,aggregate,INCIDENT::29857:EQUIPMENT:INVOLVED,10,4:1,EXTRACTION_GAP,,pry bar|rov|tms|lanyard,TMS appears in narrative and 17 TMS entities exist in graph but GLiNER did not extract it for #29857,
 SH-03,What body parts were affected in crane-related incidents?,Single-hop,entity_filter,EQUIPMENT:crane|overhead crane|mobile crane|tower crane|gantry crane|pedestal crane:INVOLVED,,,,aggregate,BODY_PART:AFFECTED,10,5:1,ER_NEEDED,,,,
 SH-04,Which locations reported valve-related incidents?,Single-hop,entity_filter,EQUIPMENT:valve|ball valve|check valve|safety relief valve|isolation valve|control valve|pressure valve:INVOLVED,,,,aggregate,LOCATION[country]:OCCURRED_AT,10,3:1,ER_NEEDED,,,,
 SH-05,What types of injuries resulted from incidents at offshore installations?,Single-hop,meta_filter,,work_process contains offshore|marine,,,aggregate,INJURY_TYPE:RESULTED_IN,10,5:1,CLEAN,,,,1120
@@ -24,13 +24,13 @@ GL-02,Are there systemic patterns where the same type of equipment failure recur
 GL-03,How has the overall safety incident profile changed over the dataset time range? Are certain incident types increasing or decreasing?,Global,crosstab,,,,,crosstab,year:incident_type,,1:0,CLEAN,,,,
 GL-04,"What entities serve as the most connected hubs in the knowledge graph, and what does their centrality reveal about systemic risk?",Global,custom,,,,,,,20,,CLEAN,hub_centrality,,,
 CJ-01,Which incidents match the pattern of corrosion-induced equipment failure leading to fire?,Conjunctive,custom,,,,,,,10,,L2_REQUIRED,causal_chain_check,,,"Corrosion+fire intersection is genuinely sparse (5 records, 4 are 'line of fire' safety term not actual fire). See CJ-07 for corrosion effects analysis."
-CJ-02,Find all high-severity incidents where a crane was involved AND a back injury was sustained AND the location was offshore.,Conjunctive,intersect,EQUIPMENT:crane:INVOLVED;BODY_PART:back:AFFECTED,work_process contains offshore;severity_bin >= 4,,,count_incidents,,10,0:0,KNOWN_SPARSE,,,4-way conjunction too specific for 20K records — 0 results is the confirmed correct answer,
+CJ-02,Find all high-severity incidents where a crane was involved AND a back injury was sustained AND the location was offshore.,Conjunctive,intersect,EQUIPMENT:crane:INVOLVED;BODY_PART:back:AFFECTED,work_process contains offshore;severity_bin >= 4,,,count_incidents,,10,0:0,EXTRACTION_GAP,,,1 narrative match (crane+back+offshore+sev4) but entity extraction missed it,
 CJ-03,"Identify incidents where maintenance procedures failed, involving pipe equipment, resulting in environmental impact at locations in the Middle East.",Conjunctive,intersect,EQUIPMENT:pipe:INVOLVED;LOCATION:middle east|saudi arabia|kuwait|bahrain|uae|united arab emirates|qatar|oman|iraq|iran:OCCURRED_AT,impact_type contains environment,"maintenance,fail",,count_incidents,,10,0:0,KNOWN_SPARSE,,,4-way conjunction too specific for 20K records — 0 results is the confirmed correct answer,
 CJ-04,Which equipment types have caused both injuries AND near-misses at the same location within the same year?,Conjunctive,custom,,,,,,,10,,CLEAN,dual_risk_detection,,,
 CJ-05,Find the causal chain pattern: procedural non-compliance -> dropped object -> head/hand injury. How many incidents match?,Conjunctive,custom,,,,,count_incidents,,10,99999:1,L2_REQUIRED,procedural_dropped_injury,,,
 CJ-06,Which incidents involve the co-occurrence of slip/fall events AND vehicle/transportation equipment at construction sites?,Conjunctive,intersect,ROOT_CAUSE_CATEGORY:fall|slip|trip:CATEGORIZED_AS;EQUIPMENT:truck|vehicle|van|car :INVOLVED,work_process contains construction,,,count_incidents,,10,1:0,auto,,,,147
 CJ-07,What are the primary effects of corrosion on equipment and incidents in the dataset?,Conjunctive,custom,,,,,,,10,,L2_REQUIRED,corrosion_effects,,,Corrosion causal effects analysis via L2 edges
-SC-01,"In incident #623703, what equipment was involved?",Single-hop,spot_check,,,,,aggregate,INCIDENT::623703:EQUIPMENT:INVOLVED,10,2:1,auto,,forklift|mirror|manifold,Equipment extraction check,
+SC-01,"In incident #623703, what equipment was involved?",Single-hop,spot_check,,,,,aggregate,INCIDENT::623703:EQUIPMENT:INVOLVED,10,2:1,EXTRACTION_GAP,,forklift|mirror|manifold,mirror and manifold appear in narrative but GLiNER did not extract them as EQUIPMENT,
 SC-02,"In incident #570187, what equipment was involved?",Single-hop,spot_check,,,,,aggregate,INCIDENT::570187:EQUIPMENT:INVOLVED,10,2:1,auto,,connector link|feeder breaker|feeder box,Equipment extraction check,
 SC-03,"In incident #602346, what equipment was involved?",Single-hop,spot_check,,,,,aggregate,INCIDENT::602346:EQUIPMENT:INVOLVED,10,1:1,auto,,forklift|pgb,Equipment extraction check,
 SC-04,"In incident #14338, what equipment was involved?",Single-hop,spot_check,,,,,aggregate,INCIDENT::14338:EQUIPMENT:INVOLVED,10,1:1,auto,,press,Equipment extraction check,
@@ -51,3 +51,201 @@ IOGP-05,Which electrical incidents had lockout/tagout failures?,Conjunctive,cust
 IOGP-06,What body parts are affected in working-at-height incidents with fall protection gaps?,Multi-hop,intersect,EQUIPMENT:scaffold|harness|lanyard|guardrail|ladder:INVOLVED,,"ANY:fall,height,dropped",,aggregate,BODY_PART:AFFECTED,10,5:1,ER_NEEDED,,,IOGP category 3 - falls and dropped objects,
 IOGP-07,What injuries result from mechanical lifting incidents with rigging failures?,Multi-hop,intersect,EQUIPMENT:crane|hoist|sling|rigging|shackle|winch:INVOLVED,,,,aggregate,INJURY_TYPE:RESULTED_IN,10,5:1,ER_NEEDED,,,IOGP category 2 - mechanical lifting/hoisting,
 IOGP-08,How many machinery and tool incidents resulted in hand or finger injuries?,Multi-hop,intersect,EQUIPMENT:grinder|saw|drill|\bpress\b|lathe|wrench|hammer:INVOLVED;BODY_PART:hand|finger|thumb:AFFECTED,,,,count_incidents,,10,3:1,ER_NEEDED,,,IOGP category 7 - machinery and tools - \bpress\b excludes pressure/compressor,
+SH-07,What incidents involved ladders?,Single-hop,entity_filter,EQUIPMENT:ladder:INVOLVED,,,,count_incidents,,10,50:1,ER_NEEDED,,,,157
+SH-08,What incidents involved grinders?,Single-hop,entity_filter,EQUIPMENT:grinder:INVOLVED,,,,count_incidents,,10,50:1,ER_NEEDED,,,,175
+SH-09,What incidents involved hoses?,Single-hop,entity_filter,EQUIPMENT:hose:INVOLVED,,,,count_incidents,,10,50:1,ER_NEEDED,,,,429
+SH-10,What incidents involved pumps?,Single-hop,entity_filter,EQUIPMENT:pump:INVOLVED,,,,count_incidents,,10,50:1,ER_NEEDED,,,,314
+SH-11,What incidents involved ROVs?,Single-hop,entity_filter,EQUIPMENT:\brov\b:INVOLVED,,,,count_incidents,,10,50:1,ER_NEEDED,,,,598
+SH-12,What incidents involved excavators?,Single-hop,entity_filter,EQUIPMENT:excavator:INVOLVED,,,,count_incidents,,10,50:1,ER_NEEDED,,,,201
+SH-13,What incidents involved PPE (helmets/gloves/safety glasses)?,Single-hop,entity_filter,EQUIPMENT:ppe|helmet|gloves|safety glasses|goggles|hard hat:INVOLVED,,,,count_incidents,,10,50:1,ER_NEEDED,,,,684
+SH-14,What incidents involved slings?,Single-hop,entity_filter,EQUIPMENT:sling:INVOLVED,,,,count_incidents,,10,50:1,ER_NEEDED,,,,265
+SH-15,What incidents involved compressors?,Single-hop,entity_filter,EQUIPMENT:compressor:INVOLVED,,,,count_incidents,,10,50:1,ER_NEEDED,,,,209
+SH-16,What incidents involved winches?,Single-hop,entity_filter,EQUIPMENT:winch:INVOLVED,,,,count_incidents,,10,50:1,ER_NEEDED,,,,278
+SH-17,What body parts were affected in hose-related incidents?,Single-hop,entity_filter,EQUIPMENT:hose:INVOLVED,,,,aggregate,BODY_PART:AFFECTED,10,5:1,ER_NEEDED,,,,
+SH-18,What injury types resulted from pump-related incidents?,Single-hop,entity_filter,EQUIPMENT:pump:INVOLVED,,,,aggregate,INJURY_TYPE:RESULTED_IN,10,5:1,ER_NEEDED,,,,
+SH-19,Which organizations reported excavator-related incidents?,Single-hop,entity_filter,EQUIPMENT:excavator:INVOLVED,,,,aggregate,ORGANIZATION:REPORTED_BY,10,3:1,ER_NEEDED,,,,
+SH-20,What incidents involved welding equipment?,Single-hop,entity_filter,EQUIPMENT:weld:INVOLVED,,,,count_incidents,,10,50:1,ER_NEEDED,,,,261
+AG-07,What are the most common body parts affected across all incidents?,Aggregation,entity_filter,,,,,aggregate,BODY_PART:AFFECTED,20,1:0,CLEAN,,,,
+AG-08,What are the most common injury types across all incidents?,Aggregation,entity_filter,,,,,aggregate,INJURY_TYPE:RESULTED_IN,20,1:0,CLEAN,,,,
+AG-09,Which organizations report the most incidents?,Aggregation,entity_filter,,,,,aggregate,ORGANIZATION:REPORTED_BY,20,1:0,CLEAN,,,,
+AG-10,What is the annual trend of manual handling incidents?,Aggregation,entity_filter,ROOT_CAUSE_CATEGORY:manual handling:CATEGORIZED_AS,,,,count_by_year,,10,5:1,CLEAN,,,,760
+AG-11,What root cause categories are most common in high-severity incidents?,Aggregation,meta_filter,,severity_bin >= 4,,,aggregate,ROOT_CAUSE_CATEGORY:CATEGORIZED_AS,10,3:1,CLEAN,,,,
+AG-12,How do incidents break down by impact type over the years?,Aggregation,crosstab,,,,,crosstab,year:impact_type,,1:0,CLEAN,,,,
+AG-13,What is the trend of fire/explosion incidents over time?,Aggregation,meta_filter,,impact_type contains Fire/Explosion,,,count_by_year,,10,3:1,CLEAN,,,,121
+AG-14,Which cities have the highest incident counts?,Aggregation,entity_filter,,,,,aggregate,LOCATION[city]:OCCURRED_AT,20,1:0,CLEAN,,,,
+AG-15,How do incidents distribute across work process categories?,Aggregation,entity_filter,,,,,aggregate,ROOT_CAUSE_CATEGORY:CATEGORIZED_AS,20,1:0,CLEAN,,,Shows full RCC distribution,
+AG-16,What is the year-over-year trend of eye injuries?,Aggregation,entity_filter,BODY_PART:eye:AFFECTED,,,,count_by_year,,10,5:1,CLEAN,,,,492
+MH-09,What eye injuries result from grinder incidents?,Multi-hop,intersect,EQUIPMENT:grinder:INVOLVED;BODY_PART:eye:AFFECTED,,,,count_incidents,,10,3:1,ER_NEEDED,,,,16
+MH-10,What injuries occur in ladder incidents at construction sites?,Multi-hop,intersect,EQUIPMENT:ladder:INVOLVED,work_process contains construction,,,aggregate,INJURY_TYPE:RESULTED_IN,10,1:0,ER_NEEDED,,,,
+MH-11,What equipment is involved in finger or thumb injuries?,Multi-hop,entity_filter,BODY_PART:finger|thumb:AFFECTED,,,,aggregate,EQUIPMENT:INVOLVED,10,10:1,ER_NEEDED,,,,
+MH-12,Which countries have the most crane-related incidents?,Multi-hop,entity_filter,EQUIPMENT:crane|overhead crane|mobile crane|tower crane|gantry crane|pedestal crane:INVOLVED,,,,aggregate,LOCATION[country]:OCCURRED_AT,10,5:1,ER_NEEDED,,,,
+MH-13,What incidents involve forklifts with foot or leg injuries?,Multi-hop,intersect,EQUIPMENT:forklift|flt:INVOLVED;BODY_PART:foot|toe|leg:AFFECTED,,,,count_incidents,,10,5:1,ER_NEEDED,,,,26
+MH-14,What equipment is involved in fracture injuries?,Multi-hop,entity_filter,INJURY_TYPE:fracture:RESULTED_IN,,,,aggregate,EQUIPMENT:INVOLVED,10,5:1,ER_NEEDED,,,,
+MH-15,Which body parts are affected in hammer-related incidents?,Multi-hop,entity_filter,EQUIPMENT:hammer:INVOLVED,,,,aggregate,BODY_PART:AFFECTED,10,3:1,ER_NEEDED,,,,
+MH-16,What burn injuries are associated with welding operations?,Multi-hop,intersect,EQUIPMENT:weld:INVOLVED;INJURY_TYPE:burn:RESULTED_IN,,,,count_incidents,,10,1:0,ER_NEEDED,,,,
+MH-17,What incidents involve ROVs in Norway?,Multi-hop,intersect,EQUIPMENT:\brov\b:INVOLVED;LOCATION:norway:OCCURRED_AT,,,,count_incidents,,10,5:1,ER_NEEDED,,,,27
+MH-18,What crane incidents occurred in Brazil?,Multi-hop,intersect,EQUIPMENT:crane:INVOLVED;LOCATION:brazil:OCCURRED_AT,,,,count_incidents,,10,10:1,ER_NEEDED,,,,71
+MH-19,What forklift incidents occurred in the UK?,Multi-hop,intersect,EQUIPMENT:forklift|flt:INVOLVED;LOCATION:uk:OCCURRED_AT,,,,count_incidents,,10,10:1,ER_NEEDED,,,,94
+MH-20,What scaffold incidents occurred in India?,Multi-hop,intersect,EQUIPMENT:scaffold:INVOLVED;LOCATION:india:OCCURRED_AT,,,,count_incidents,,10,5:1,ER_NEEDED,,,,44
+MH-21,What injury types result from high-severity crane incidents?,Multi-hop,intersect,EQUIPMENT:crane|overhead crane|mobile crane|tower crane:INVOLVED,severity_bin >= 4,,,aggregate,INJURY_TYPE:RESULTED_IN,10,1:0,ER_NEEDED,,,,
+MH-22,What equipment is involved in incidents at Aberdeen?,Multi-hop,entity_filter,LOCATION:aberdeen:OCCURRED_AT,,,,aggregate,EQUIPMENT:INVOLVED,10,10:1,CLEAN,,,,
+MH-23,What sling incidents involved hand or finger injuries?,Multi-hop,intersect,EQUIPMENT:sling:INVOLVED;BODY_PART:hand|finger:AFFECTED,,,,count_incidents,,10,1:0,ER_NEEDED,,,,14
+MH-24,What are the injury types from construction incidents resulting in fractures?,Multi-hop,intersect,INJURY_TYPE:fracture:RESULTED_IN,work_process contains construction,,,count_incidents,,10,10:1,CLEAN,,,,135
+GL-05,What are the most common equipment-body part co-occurrences across all incidents?,Global,custom,,,,,,,20,,CLEAN,equipment_bodypart_cooccurrence,,,
+GL-06,How do safety profiles compare across the top 5 clients by incident volume?,Global,custom,,,,,,,10,,CLEAN,client_safety_comparison,,,
+GL-07,Are there seasonal (monthly) patterns in incident frequency?,Global,custom,,,,,,,12,,CLEAN,seasonal_patterns,,,
+GL-08,What are the top root causes by geographic region?,Global,custom,,,,,,,10,,CLEAN,rcc_by_region,,,
+CJ-08,Find crane incidents in the UK resulting in fractures.,Conjunctive,intersect,EQUIPMENT:crane:INVOLVED;LOCATION:uk:OCCURRED_AT;INJURY_TYPE:fracture:RESULTED_IN,,,,count_incidents,,10,0:0,EXTRACTION_GAP,,,3 narratives mention crane+UK+fracture but INJURY_TYPE::fracture not extracted for those incidents,
+CJ-09,Find forklift incidents at construction sites with severity >= 3.,Conjunctive,intersect,EQUIPMENT:forklift|flt:INVOLVED,work_process contains construction;severity_bin >= 3,,,count_incidents,,10,1:0,ER_NEEDED,,,,
+CJ-10,Find vehicle road accident incidents resulting in injuries in the USA.,Conjunctive,intersect,ROOT_CAUSE_CATEGORY:motor vehicle road:CATEGORIZED_AS;LOCATION:usa:OCCURRED_AT,impact_type contains Injury,,,count_incidents,,10,3:1,CLEAN,,,,
+CJ-11,Find incidents involving PPE with eye injuries during manufacturing.,Conjunctive,intersect,EQUIPMENT:ppe|helmet|gloves|safety glasses|goggles:INVOLVED;BODY_PART:eye:AFFECTED,work_process contains manufacturing,,,count_incidents,,10,0:0,KNOWN_SPARSE,,,3-way conjunction with manufacturing — sparse intersection expected,
+CJ-12,Find incidents involving chemical exposure resulting in environmental impact.,Conjunctive,intersect,,impact_type contains environment,"ANY:chemical,hazardous substance,toxic",,count_incidents,,10,5:1,CLEAN,,,,
+CJ-13,Find near-miss incidents involving scaffolding at height.,Conjunctive,intersect,EQUIPMENT:scaffold:INVOLVED,incident_type contains near miss,"ANY:fall,height",,count_incidents,,10,3:1,ER_NEEDED,,,,
+CJ-14,Find crane incidents in Houston during 2018.,Conjunctive,intersect,EQUIPMENT:crane:INVOLVED;LOCATION:houston:OCCURRED_AT,year == 2018,,,count_incidents,,10,1:0,ER_NEEDED,,,,
+CJ-15,Find stored-energy incidents with head injuries.,Conjunctive,intersect,ROOT_CAUSE_CATEGORY:stored energy.*dropped:CATEGORIZED_AS;BODY_PART:head|skull|forehead:AFFECTED,,,,count_incidents,,10,5:1,CLEAN,,,,
+CJ-16,Find marine incidents involving ROVs with equipment failures.,Conjunctive,intersect,EQUIPMENT:\brov\b:INVOLVED,work_process contains marine,fail,,count_incidents,,10,1:0,ER_NEEDED,,,,
+SC-10,"In incident #644762, what equipment was involved?",Single-hop,spot_check,,,,,aggregate,INCIDENT::644762:EQUIPMENT:INVOLVED,10,3:1,auto,,reel|deck winch|crane,Equipment extraction check,
+SC-11,"In incident #505133, what equipment was involved?",Single-hop,spot_check,,,,,aggregate,INCIDENT::505133:EQUIPMENT:INVOLVED,10,3:1,auto,,ladder|stretcher|helicopter,Equipment extraction check,
+SC-12,"In incident #645871, what body parts were affected?",Single-hop,spot_check,,,,,aggregate,INCIDENT::645871:BODY_PART:AFFECTED,10,1:1,auto,,eye|arm,Body part extraction check,
+SC-13,"In incident #609327, what injury types resulted?",Single-hop,spot_check,,,,,aggregate,INCIDENT::609327:INJURY_TYPE:RESULTED_IN,10,1:1,auto,,trauma|fracture,Injury type extraction check,
+SC-14,"In incident #569346, what equipment was involved?",Single-hop,spot_check,,,,,aggregate,INCIDENT::569346:EQUIPMENT:INVOLVED,10,2:1,auto,,ladder|Sideboom,Equipment extraction check,
+SC-15,"In incident #569346, what body parts were affected?",Single-hop,spot_check,,,,,aggregate,INCIDENT::569346:BODY_PART:AFFECTED,10,2:1,auto,,jaw|chin|lip,Body part extraction check,
+SC-16,"In incident #569346, what injury types resulted?",Single-hop,spot_check,,,,,aggregate,INCIDENT::569346:INJURY_TYPE:RESULTED_IN,10,1:1,auto,,laceration|three broken teeth,Injury type extraction check,
+SC-17,"In incident #685931, what equipment was involved?",Single-hop,spot_check,,,,,aggregate,INCIDENT::685931:EQUIPMENT:INVOLVED,10,3:1,auto,,bulker bags|steel rack|locking bar|safety helmet,Equipment extraction check,
+SC-18,"In incident #632796, what equipment was involved?",Single-hop,spot_check,,,,,aggregate,INCIDENT::632796:EQUIPMENT:INVOLVED,10,2:1,auto,,hydraulic jack|hydraulic hose,Equipment extraction check,
+SC-19,"In incident #632796, what body parts were affected?",Single-hop,spot_check,,,,,aggregate,INCIDENT::632796:BODY_PART:AFFECTED,10,1:1,auto,,back|lower back,Body part extraction check,
+SC-20,"In incident #611828, what equipment was involved?",Single-hop,spot_check,,,,,aggregate,INCIDENT::611828:EQUIPMENT:INVOLVED,10,3:1,auto,,Sideboom|safety helmet|sling,Equipment extraction check,
+SC-21,"In incident #563945, what equipment was involved?",Single-hop,spot_check,,,,,aggregate,INCIDENT::563945:EQUIPMENT:INVOLVED,10,2:1,auto,,lifeboats|davit|ice pack,Equipment extraction check,
+SH-29,How many incidents involve confined spaces?,Single-hop,narrative_filter,,,confined space,,count_incidents,,10,10:1,CLEAN,,,,75
+SH-30,How many incidents involve hot work?,Single-hop,narrative_filter,,,hot work,,count_incidents,,10,10:1,CLEAN,,,,152
+SH-31,How many incidents mention chemical exposure?,Single-hop,narrative_filter,,,chemical,,count_incidents,,10,10:1,CLEAN,,,,177
+SH-32,How many incidents involve electrical hazards?,Single-hop,narrative_filter,,,electric,,count_incidents,,10,50:1,CLEAN,,,,891
+SH-33,How many incidents mention gas leaks?,Single-hop,narrative_filter,,,"ANY:gas leak,gas release,gas escape",,count_incidents,,10,10:1,CLEAN,,,,
+SH-34,How many incidents describe man overboard situations?,Single-hop,narrative_filter,,,"ANY:overboard,man overboard,mob",,count_incidents,,10,10:1,CLEAN,,,,114
+SH-35,How many incidents mention fatigue as a factor?,Single-hop,narrative_filter,,,fatigue,,count_incidents,,10,5:1,CLEAN,,,,35
+SH-36,How many incidents involve H2S or hydrogen sulfide?,Single-hop,narrative_filter,,,"ANY:h2s,hydrogen sulfide,hydrogen sulphide",,count_incidents,,10,5:1,CLEAN,,,,32
+CJ-21,What safety controls successfully mitigated harm across all incidents?,Conjunctive,custom,,,,,,,20,,L2_REQUIRED,mitigated_by_analysis,,Analyzes MITIGATED_BY L2 edges,
+CJ-22,What barriers and controls failed most frequently across all incidents?,Conjunctive,custom,,,,,,,20,,L2_REQUIRED,failed_control_overview,,Analyzes FAILED_CONTROL L2 edges,
+CJ-23,What temporal sequences (event A preceded event B) are most common?,Conjunctive,custom,,,,,,,20,,L2_REQUIRED,preceded_by_analysis,,Analyzes PRECEDED_BY L2 edges,
+CJ-24,What are the top causal factors leading to dropped-object incidents?,Conjunctive,custom,,,,,,,10,,L2_REQUIRED,causal_factors_dropped,,L2 CAUSAL edges for dropped-object RCC,
+CJ-25,What are the top causal factors in vehicle-related incidents?,Conjunctive,custom,,,,,,,10,,L2_REQUIRED,causal_factors_vehicle,,L2 CAUSAL edges for vehicle RCC,
+CJ-26,What causal chains lead to fracture injuries?,Conjunctive,custom,,,,,,,10,,L2_REQUIRED,causal_factors_fracture,,L2 CAUSAL edges for fracture outcomes,
+AG-21,How do incidents break down by work process and risk color?,Aggregation,crosstab,,,,,crosstab,work_process:risk_color,,3:1,CLEAN,,,,
+AG-22,How do the top countries compare on accident vs near-miss ratios?,Aggregation,crosstab,,,,,crosstab,loc_country:incident_type,,3:1,CLEAN,,,,
+AG-23,How do root cause categories distribute across business units?,Aggregation,crosstab,,,,,crosstab,business_unit:case_categorization,,1:0,DATA_SPARSE,,,70.7% null business_unit — partial coverage expected,
+AG-24,How does severity distribution vary by year?,Aggregation,crosstab,,,,,crosstab,year:severity_bin,,1:0,CLEAN,,,,
+SH-21,What incidents involved pallets?,Single-hop,entity_filter,EQUIPMENT:pallet:INVOLVED,,,,count_incidents,,10,50:1,ER_NEEDED,,,,340
+SH-22,What incidents involved fire extinguishers?,Single-hop,entity_filter,EQUIPMENT:fire extinguisher|extinguisher:INVOLVED,,,,count_incidents,,10,50:1,ER_NEEDED,,,,148
+SH-23,What incidents involved reels?,Single-hop,entity_filter,EQUIPMENT:reel:INVOLVED,,,,count_incidents,,10,50:1,ER_NEEDED,,,,241
+SH-24,What incidents involved umbilicals?,Single-hop,entity_filter,EQUIPMENT:umbilical:INVOLVED,,,,count_incidents,,10,20:1,ER_NEEDED,,,,115
+SH-25,What incidents affected the left hand?,Single-hop,entity_filter,BODY_PART:left hand:AFFECTED,,,,count_incidents,,10,50:1,CLEAN,,,,1015
+SH-26,What incidents affected the thumb?,Single-hop,entity_filter,BODY_PART:thumb:AFFECTED,,,,count_incidents,,10,50:1,CLEAN,,,,253
+SH-27,What incidents resulted in contusions or bruises?,Single-hop,entity_filter,INJURY_TYPE:contusion|bruise|bruising:RESULTED_IN,,,,count_incidents,,10,50:1,CLEAN,,,,360
+SH-28,What incidents resulted in sprains or strains?,Single-hop,entity_filter,INJURY_TYPE:sprain|strain:RESULTED_IN,,,,count_incidents,,10,50:1,CLEAN,,,,156
+AG-17,What are the most common injury types at construction sites?,Aggregation,meta_filter,,work_process contains construction,,,aggregate,INJURY_TYPE:RESULTED_IN,10,3:1,CLEAN,,,,
+AG-18,Which clients report the most high-severity incidents?,Aggregation,meta_filter,,severity_bin >= 4,,,aggregate,ORGANIZATION:REPORTED_BY,10,3:1,CLEAN,,,,
+AG-19,What is the year-over-year trend of fracture injuries?,Aggregation,entity_filter,INJURY_TYPE:fracture:RESULTED_IN,,,,count_by_year,,10,3:1,CLEAN,,,,228
+AG-20,What equipment is most common in incidents at Aberdeen?,Aggregation,entity_filter,LOCATION:aberdeen:OCCURRED_AT,,,,aggregate,EQUIPMENT:INVOLVED,10,10:1,CLEAN,,,,
+MH-25,What finger or thumb injuries involve fractures?,Multi-hop,intersect,BODY_PART:finger|thumb:AFFECTED;INJURY_TYPE:fracture:RESULTED_IN,,,,count_incidents,,10,10:1,ER_NEEDED,,,,61
+MH-26,What back injuries are associated with manual handling root causes?,Multi-hop,intersect,BODY_PART:back|lower back:AFFECTED;ROOT_CAUSE_CATEGORY:manual handling:CATEGORIZED_AS,,,,count_incidents,,10,10:1,CLEAN,,,,97
+MH-27,What crane incidents occurred during 2019?,Multi-hop,intersect,EQUIPMENT:crane:INVOLVED,year == 2019,,,count_incidents,,10,50:1,ER_NEEDED,,,,166
+MH-28,What forklift incidents occurred during 2023?,Multi-hop,intersect,EQUIPMENT:forklift|flt:INVOLVED,year == 2023,,,count_incidents,,10,20:1,ER_NEEDED,,,,99
+MH-29,What scaffold incidents occurred during 2020?,Multi-hop,intersect,EQUIPMENT:scaffold:INVOLVED,year == 2020,,,count_incidents,,10,5:1,ER_NEEDED,,,,40
+MH-30,What ROV incidents occurred during 2017?,Multi-hop,intersect,EQUIPMENT:\brov\b:INVOLVED,year == 2017,,,count_incidents,,10,10:1,ER_NEEDED,,,,82
+MH-31,What injuries result from fall/slip RCC incidents with fractures?,Multi-hop,intersect,ROOT_CAUSE_CATEGORY:fall.*slip|slip.*trip:CATEGORIZED_AS;INJURY_TYPE:fracture:RESULTED_IN,,,,count_incidents,,10,10:1,CLEAN,,,,68
+MH-32,What equipment is involved in incidents at Houston?,Multi-hop,entity_filter,LOCATION:houston:OCCURRED_AT,,,,aggregate,EQUIPMENT:INVOLVED,10,10:1,CLEAN,,,,
+MH-33,What body parts are affected in incidents reported by YAMAL LNG?,Multi-hop,entity_filter,ORGANIZATION:yamal:REPORTED_BY,,,,aggregate,BODY_PART:AFFECTED,10,5:1,ER_NEEDED,,,,
+MH-34,What injuries result from incidents at Rio de Janeiro?,Multi-hop,entity_filter,LOCATION:rio de janeiro:OCCURRED_AT,,,,aggregate,INJURY_TYPE:RESULTED_IN,10,5:1,CLEAN,,,,
+MH-35,What incidents involve grinders with hand or finger injuries?,Multi-hop,intersect,EQUIPMENT:grinder:INVOLVED;BODY_PART:hand|finger:AFFECTED,,,,count_incidents,,10,5:1,ER_NEEDED,,,,45
+CJ-17,Find vehicle road accidents at construction sites with injuries.,Conjunctive,intersect,ROOT_CAUSE_CATEGORY:motor vehicle:CATEGORIZED_AS,work_process contains construction;impact_type contains Injury,,,count_incidents,,10,1:0,CLEAN,,,,
+CJ-18,Find manual handling incidents with sprain/strain injuries.,Conjunctive,intersect,ROOT_CAUSE_CATEGORY:manual handling:CATEGORIZED_AS;INJURY_TYPE:sprain|strain:RESULTED_IN,,,,count_incidents,,10,3:1,CLEAN,,,,19
+CJ-19,Find stored-energy dropped-object incidents with lacerations.,Conjunctive,intersect,ROOT_CAUSE_CATEGORY:stored energy.*dropped:CATEGORIZED_AS;INJURY_TYPE:laceration|cut:RESULTED_IN,,,,count_incidents,,10,1:0,CLEAN,,,,12
+CJ-20,Find near-miss incidents involving forklifts in 2023.,Conjunctive,intersect,EQUIPMENT:forklift|flt:INVOLVED,incident_type contains near miss;year == 2023,,,count_incidents,,10,5:1,ER_NEEDED,,,,
+SC-22,"In incident #564230, what injury types resulted?",Single-hop,spot_check,,,,,aggregate,INCIDENT::564230:INJURY_TYPE:RESULTED_IN,10,2:1,auto,,headache|dizziness|contusion|nausea,Injury type extraction check,
+SC-23,"In incident #696119, what injury types resulted?",Single-hop,spot_check,,,,,aggregate,INCIDENT::696119:INJURY_TYPE:RESULTED_IN,10,2:1,auto,,dislocate left shoulder|Cerebral Hematoma|Crack left pelvis,Injury type extraction check,
+SC-24,"In incident #560111, what injury types resulted?",Single-hop,spot_check,,,,,aggregate,INCIDENT::560111:INJURY_TYPE:RESULTED_IN,10,2:1,auto,,Multiple facial graze-wound|Eyes injury|Open right-eye cornea injury|Left-eye cornea injury|Periorbital hematoma,Injury type extraction check,
+SC-25,"In incident #702644, what injury types resulted?",Single-hop,spot_check,,,,,aggregate,INCIDENT::702644:INJURY_TYPE:RESULTED_IN,10,2:1,auto,,breaks/fractures|soft tissue damage|bruising|skin abrasion,Injury type extraction check,
+SC-26,"In incident #16468, what locations were recorded?",Single-hop,spot_check,,,,,aggregate,INCIDENT::16468:LOCATION:OCCURRED_AT,10,3:1,auto,,Deep Orient|Aberdeen|UK|Europe,Location extraction check,
+SC-27,"In incident #546948, what locations were recorded?",Single-hop,spot_check,,,,,aggregate,INCIDENT::546948:LOCATION:OCCURRED_AT,10,3:1,auto,,Doha|Qatar|Middle East,Location extraction check,
+SC-28,"In incident #555852, what organizations were recorded?",Single-hop,spot_check,,,,,aggregate,INCIDENT::555852:ORGANIZATION:REPORTED_BY,10,3:1,auto,,STATOIL ASA|TECHNIPFMC|KVA|ERTL|Project management,Organization extraction check,
+SC-29,"In incident #594002, what equipment was involved?",Single-hop,spot_check,,,,,aggregate,INCIDENT::594002:EQUIPMENT:INVOLVED,10,2:1,auto,,Stamping Punch Tool|V-Jaw tong|Punch tool,Equipment extraction check,
+SC-30,"In incident #706581, what injury types resulted?",Single-hop,spot_check,,,,,aggregate,INCIDENT::706581:INJURY_TYPE:RESULTED_IN,10,2:1,auto,,rib fracture|pulmonary contusion|femoral fracture|cut wound,Injury type extraction check,
+SC-31,"In incident #563298, what equipment was involved?",Single-hop,spot_check,,,,,aggregate,INCIDENT::563298:EQUIPMENT:INVOLVED,10,2:1,auto,,light 4x4 truck|skid|truck platform,Equipment extraction check,
+SH-37,How many incidents mention fire (not line of fire)?,Single-hop,narrative_filter,,,"ANY:fire,flame,ignition,combustion",,count_incidents,,10,50:1,CLEAN,,,,
+SH-38,How many incidents mention pressure hazards?,Single-hop,narrative_filter,,,pressure,,count_incidents,,10,50:1,CLEAN,,,,1260
+SH-39,How many incidents reference permit-to-work procedures?,Single-hop,narrative_filter,,,"ANY:permit to work,ptw,work permit",,count_incidents,,10,50:1,CLEAN,,,,345
+SH-40,How many incidents mention struck-by hazards?,Single-hop,narrative_filter,,,struck by,,count_incidents,,10,10:1,CLEAN,,,,86
+SH-41,How many incidents describe caught-between or pinch-point hazards?,Single-hop,narrative_filter,,,"ANY:caught between,caught in,pinch point,pinched",,count_incidents,,10,50:1,CLEAN,,,,543
+SH-42,How many incidents mention line-of-fire hazards?,Single-hop,narrative_filter,,,line of fire,,count_incidents,,10,50:1,CLEAN,,,,461
+SH-43,How many incidents mention scaffolding falls?,Single-hop,narrative_filter,,,"ANY:~scaffold fall,~scaffolding fall,~scaffold fell,~scaffolding fell",,count_incidents,,10,20:1,CLEAN,,,,
+SH-44,How many incidents reference JSA or toolbox talks?,Single-hop,narrative_filter,,,"ANY:jsa,toolbox talk,safety briefing,pre-job",,count_incidents,,10,50:1,CLEAN,,,,
+GL-09,How many incidents mention burns in narrative but have no burn injury type extracted?,Global,custom,,,,,,,10,,EXTRACTION_GAP,extraction_gap_burn,,Compares narrative mentions vs INJURY_TYPE extraction for burns,
+GL-10,How many incidents mention fractures in narrative but have no fracture injury type extracted?,Global,custom,,,,,,,10,,EXTRACTION_GAP,extraction_gap_fracture,,Compares narrative mentions vs INJURY_TYPE extraction for fractures,
+GL-11,How many incidents mention cranes in narrative but have no crane equipment extracted?,Global,custom,,,,,,,10,,EXTRACTION_GAP,extraction_gap_crane,,Compares narrative mentions vs EQUIPMENT extraction for cranes,
+GL-12,How many incidents mention forklifts in narrative but have no forklift equipment extracted?,Global,custom,,,,,,,10,,EXTRACTION_GAP,extraction_gap_forklift,,Compares narrative mentions vs EQUIPMENT extraction for forklifts,
+GL-13,How many high-severity incidents (>=4) have no injury type extracted?,Global,custom,,,,,,,10,,EXTRACTION_GAP,extraction_gap_severity_injury,,Severity>=4 with missing INJURY_TYPE edges,
+GL-14,How many injury-impact incidents have no body part extracted?,Global,custom,,,,,,,10,,EXTRACTION_GAP,extraction_gap_injury_bodypart,,impact_type=Injury with missing BODY_PART edges,
+GL-15,How many incidents have very short narratives (<100 chars) with no entities extracted?,Global,custom,,,,,,,10,,EXTRACTION_GAP,extraction_gap_short_narrative,,Short narratives likely mean test records or missing data,
+GL-16,How many incidents contain non-English narratives with reduced entity extraction?,Global,custom,,,,,,,10,,EXTRACTION_GAP,extraction_gap_foreign_language,,Detects Portuguese/French/other language narratives and compares extraction rates,
+GL-17,Find the 10 incidents most similar to incident #29857 (dropped pry bar) using hybrid embedding similarity.,Global,custom,,,,,,,10,,CLEAN,similarity_seed_incident,,Uses text + structural + KG embeddings for hybrid similarity retrieval,
+GL-18,Find the 10 incidents most similar to incident #569346 (ladder fall with broken teeth) using hybrid embedding similarity.,Global,custom,,,,,,,10,,CLEAN,similarity_seed_incident_2,,Uses text + structural + KG embeddings for hybrid similarity retrieval,
+GL-19,Do the top-10 text-similar incidents for a forklift accident share the same equipment type? (structural hit rate),Global,custom,,,,,,,10,,CLEAN,similarity_hit_rate_forklift,,Measures whether text similarity retrieves structurally related incidents,
+GL-20,Do the top-10 text-similar incidents for a crane near-miss share the same equipment type? (structural hit rate),Global,custom,,,,,,,10,,CLEAN,similarity_hit_rate_crane,,Measures whether text similarity retrieves structurally related incidents,
+GL-21,How well do text embeddings and structural similarity agree on the top-10 most similar incidents? (method correlation),Global,custom,,,,,,,10,,CLEAN,similarity_method_agreement,,Compares text vs structural vs KG embedding rankings,
+GL-22,Find incidents semantically similar to 'worker fell from scaffold due to missing guardrail' using text embeddings.,Global,custom,,,,,,,10,,CLEAN,similarity_text_query,,Free-text semantic search over incident narratives via sentence-transformer,
+GL-23,Find incidents semantically similar to 'crane load dropped because sling failed under tension' using text embeddings.,Global,custom,,,,,,,10,,CLEAN,similarity_text_query_2,,Free-text semantic search over incident narratives via sentence-transformer,
+GL-24,Which equipment types appear most often in the top-10 similar incidents for high-severity events? (embedding-based pattern),Global,custom,,,,,,,10,,CLEAN,similarity_severity_equipment,,Uses embeddings to find patterns in high-severity incident neighborhoods,
+IOGP-09,What are the top injury types from moving vehicle and mobile equipment incidents?,Aggregation,entity_filter,EQUIPMENT:forklift|truck|vehicle|van|car|mewp|loader|bulldozer|excavator|tractor:INVOLVED,,,,aggregate,INJURY_TYPE:RESULTED_IN,10,5:1,ER_NEEDED,,,,
+IOGP-10,How many vehicle incidents resulted in high-severity outcomes?,Multi-hop,intersect,ROOT_CAUSE_CATEGORY:motor vehicle:CATEGORIZED_AS,severity_bin >= 3,,,count_incidents,,10,10:1,CLEAN,,,,
+IOGP-11,What body parts are most affected in vehicle/mobile equipment incidents?,Aggregation,entity_filter,ROOT_CAUSE_CATEGORY:motor vehicle:CATEGORIZED_AS,,,,aggregate,BODY_PART:AFFECTED,10,5:1,CLEAN,,,,
+IOGP-12,Which countries have the most mechanical lifting/hoisting incidents?,Aggregation,entity_filter,EQUIPMENT:crane|hoist|sling|rigging|shackle|winch:INVOLVED,,,,aggregate,LOCATION[country]:OCCURRED_AT,10,5:1,ER_NEEDED,,,,
+IOGP-13,What are the top root causes of mechanical lifting incidents?,Aggregation,entity_filter,EQUIPMENT:crane|hoist|sling|rigging|shackle|winch:INVOLVED,,,,aggregate,ROOT_CAUSE_CATEGORY:CATEGORIZED_AS,10,3:1,ER_NEEDED,,,,
+IOGP-14,How many working-at-height incidents involved harnesses or lanyards?,Single-hop,entity_filter,EQUIPMENT:harness|lanyard|safety line|fall arrest:INVOLVED,,,,count_incidents,,10,10:1,ER_NEEDED,,,,
+IOGP-15,What injury types result from fall-to-lower-level incidents?,Aggregation,entity_filter,ROOT_CAUSE_CATEGORY:fall to lower level:CATEGORIZED_AS,,,,aggregate,INJURY_TYPE:RESULTED_IN,10,5:1,CLEAN,,,,
+IOGP-16,How do dropped object incidents break down by body part affected?,Aggregation,entity_filter,ROOT_CAUSE_CATEGORY:stored energy.*dropped:CATEGORIZED_AS,,,,aggregate,BODY_PART:AFFECTED,10,5:1,CLEAN,,,,
+IOGP-17,How many tensioned line or snap-back incidents occurred?,Single-hop,narrative_filter,,,"ANY:snap back,snapback,tensioned line,mooring line,stored energy",,count_incidents,,10,50:1,CLEAN,,,,
+IOGP-18,What equipment is involved in stored energy (pressure/tension) incidents?,Aggregation,entity_filter,ROOT_CAUSE_CATEGORY:stored energy.*pressure|stored energy.*tension:CATEGORIZED_AS,,,,aggregate,EQUIPMENT:INVOLVED,10,5:1,CLEAN,,,,
+IOGP-19,How many pressurized system incidents mention zero energy verification?,Multi-hop,intersect,ROOT_CAUSE_CATEGORY:hazardous liquid:CATEGORIZED_AS,,"ANY:zero energy,isolation,lockout",,count_incidents,,10,1:0,CLEAN,,,,
+IOGP-20,What injuries result from compressed gas or pressure vessel incidents?,Multi-hop,intersect,EQUIPMENT:cylinder|gas bottle|pressure vessel|compressor:INVOLVED,,,,aggregate,INJURY_TYPE:RESULTED_IN,10,3:1,ER_NEEDED,,,,
+IOGP-21,How many machinery/tool incidents involved entrapment or caught-between hazards?,Single-hop,narrative_filter,,,"ANY:caught between,caught in,trapped,entrap,pinch",,count_incidents,,10,50:1,CLEAN,,,,
+IOGP-22,What body parts are most affected in grinder and power tool incidents?,Multi-hop,entity_filter,EQUIPMENT:grinder|saw|drill|power tool:INVOLVED,,,,aggregate,BODY_PART:AFFECTED,10,5:1,ER_NEEDED,,,,
+IOGP-23,How many electrical incidents mention arc flash or electrocution?,Single-hop,narrative_filter,,,"ANY:arc flash,electrocution,electric shock,energized",,count_incidents,,10,5:1,CLEAN,,,,
+IOGP-24,What equipment is involved in electrical incidents with LOTO failures?,Multi-hop,intersect,ROOT_CAUSE_CATEGORY:electr:CATEGORIZED_AS,,"ANY:lockout,tagout,loto,energized",,aggregate,EQUIPMENT:INVOLVED,10,1:0,CLEAN,,,,
+IOGP-25,How many incidents involve projectiles or flying debris?,Single-hop,narrative_filter,,,"ANY:projectile,flying debris,flying object,shrapnel",,count_incidents,,10,5:1,CLEAN,,,,
+IOGP-26,What are the top root causes of explosion or fire incidents?,Aggregation,entity_filter,ROOT_CAUSE_CATEGORY:flammable:CATEGORIZED_AS,,,,aggregate,EQUIPMENT:INVOLVED,10,3:1,CLEAN,,,,
+IOGP-27,How many incidents mention extreme weather or natural events?,Single-hop,narrative_filter,,,"ANY:weather,storm,lightning,flood,earthquake,hurricane,cyclone",,count_incidents,,10,50:1,CLEAN,,,,
+IOGP-28,What are the year-over-year trends for vehicle incidents?,Aggregation,entity_filter,ROOT_CAUSE_CATEGORY:motor vehicle:CATEGORIZED_AS,,,,count_by_year,,10,5:1,CLEAN,,,,842
+SH-45,What incidents involved helicopters?,Single-hop,entity_filter,EQUIPMENT:helicopter:INVOLVED,,,,count_incidents,,10,1:0,CLEAN,,Data-sparse: only 8 incidents with helicopter equipment,8,
+SH-46,What incidents were reported by PETROBRAS?,Single-hop,entity_filter,ORGANIZATION:petrobras:REPORTED_BY,,,,count_incidents,,10,50:1,ER_NEEDED,,,,676
+SH-47,What incidents were reported by EQUINOR?,Single-hop,entity_filter,ORGANIZATION:equinor:REPORTED_BY,,,,count_incidents,,10,50:1,ER_NEEDED,,,,401
+SH-48,What incidents occurred at Sabetta?,Single-hop,entity_filter,LOCATION:sabetta:OCCURRED_AT,,,,count_incidents,,10,50:1,CLEAN,,,,880
+SH-49,What incidents occurred at Le Trait?,Single-hop,entity_filter,LOCATION:le trait:OCCURRED_AT,,,,count_incidents,,10,50:1,CLEAN,,,,1163
+SH-50,What incidents resulted in abrasions or scratches?,Single-hop,entity_filter,INJURY_TYPE:abrasion|scratch|scrape:RESULTED_IN,,,,count_incidents,,10,50:1,CLEAN,,,,223
+MH-36,What equipment is involved in incidents reported by PETROBRAS?,Multi-hop,entity_filter,ORGANIZATION:petrobras:REPORTED_BY,,,,aggregate,EQUIPMENT:INVOLVED,10,5:1,ER_NEEDED,,,,
+MH-37,What are the top injury types in incidents at Le Trait?,Multi-hop,entity_filter,LOCATION:le trait:OCCURRED_AT,,,,aggregate,INJURY_TYPE:RESULTED_IN,10,3:1,CLEAN,,,,
+MH-38,What equipment is involved in near-miss incidents at offshore locations?,Multi-hop,intersect,,work_process contains offshore;incident_type contains near miss,,,aggregate,EQUIPMENT:INVOLVED,10,5:1,CLEAN,,,,
+MH-39,What are the root causes of incidents in Russia?,Multi-hop,entity_filter,LOCATION:russia:OCCURRED_AT,,,,aggregate,ROOT_CAUSE_CATEGORY:CATEGORIZED_AS,10,5:1,CLEAN,,,,
+MH-40,What body parts are affected in excavator-related incidents?,Multi-hop,entity_filter,EQUIPMENT:excavator:INVOLVED,,,,aggregate,BODY_PART:AFFECTED,10,3:1,ER_NEEDED,,,,
+MH-41,What injury types result from incidents involving pallets?,Multi-hop,entity_filter,EQUIPMENT:pallet:INVOLVED,,,,aggregate,INJURY_TYPE:RESULTED_IN,10,5:1,ER_NEEDED,,,,
+AG-25,What is the year-over-year trend of contusion/bruise injuries?,Aggregation,entity_filter,INJURY_TYPE:contusion|bruise|bruising:RESULTED_IN,,,,count_by_year,,10,3:1,CLEAN,,,,360
+AG-26,How do incident counts compare across the top 10 operating centers?,Aggregation,crosstab,,,,,crosstab,operating_center:incident_type,,3:1,CLEAN,,,,
+CJ-27,Find crane incidents in Norway resulting in injuries.,Conjunctive,intersect,EQUIPMENT:crane:INVOLVED;LOCATION:norway:OCCURRED_AT,impact_type contains Injury,,,count_incidents,,10,3:1,ER_NEEDED,,,,
+CJ-28,Find incidents with both equipment failure and manual handling root causes.,Conjunctive,intersect,ROOT_CAUSE_CATEGORY:equipment condition:CATEGORIZED_AS;ROOT_CAUSE_CATEGORY:manual handling:CATEGORIZED_AS,,,,count_incidents,,10,0:0,DATA_SPARSE,,,Each incident has at most 1 RCC edge — dual-RCC intersection is structurally impossible in this dataset,
+CJ-29,Find high-severity incidents at construction sites involving scaffolding.,Conjunctive,intersect,EQUIPMENT:scaffold:INVOLVED,work_process contains construction;severity_bin >= 3,,,count_incidents,,10,1:0,ER_NEEDED,,,,
+CJ-30,Find incidents involving hoses with environmental impact at offshore locations.,Conjunctive,intersect,EQUIPMENT:hose:INVOLVED,work_process contains offshore;impact_type contains environment,,,count_incidents,,10,1:0,ER_NEEDED,,,,
+SC-32,"In incident #507347, what body parts were affected?",Single-hop,spot_check,,,,,aggregate,INCIDENT::507347:BODY_PART:AFFECTED,10,2:1,auto,,Knee|left leg,Body part extraction check,
+SC-33,"In incident #507347, what equipment was involved?",Single-hop,spot_check,,,,,aggregate,INCIDENT::507347:EQUIPMENT:INVOLVED,10,2:1,auto,,Yokohama fenders|ROV XLX94|crutches,Equipment extraction check,
+SC-34,"In incident #19018, what equipment was involved?",Single-hop,spot_check,,,,,aggregate,INCIDENT::19018:EQUIPMENT:INVOLVED,10,3:1,auto,,crane|ROV|u-VCM|MCV-U|MVC,Equipment extraction check for vessel ops,
+SC-35,"In incident #664483, what injury types resulted?",Single-hop,spot_check,,,,,aggregate,INCIDENT::664483:INJURY_TYPE:RESULTED_IN,10,1:1,auto,,confirmed fracture|dislocation,Injury type extraction check,
+SH-51,What incidents occurred in 2024?,Single-hop,meta_filter,,year == 2024,,,count_incidents,,10,50:1,CLEAN,,,,1461
+SH-52,What incidents have severity level 5 (most severe)?,Single-hop,meta_filter,,severity_bin >= 5,,,count_incidents,,10,1:0,CLEAN,,,,23
+SH-53,What incidents are classified as occupational illness?,Single-hop,meta_filter,,impact_type contains Occupational Illness,,,count_incidents,,10,10:1,CLEAN,,,,160
+SH-54,What incidents have red risk classification?,Single-hop,meta_filter,,risk_color == Red,,,count_incidents,,10,5:1,CLEAN,,,,52
+SH-55,What incidents involved robots or drones?,Single-hop,entity_filter,EQUIPMENT:robot|drone|uav:INVOLVED,,,,count_incidents,,10,0:0,EXTRACTION_GAP,,,16 narratives mention robot/drone but only 8 have EQUIPMENT extracted,8
+SH-56,What incidents occurred before 2016?,Single-hop,meta_filter,,year <= 2015,,,count_incidents,,10,0:0,DATA_SPARSE,,,Out-of-range year — should return 0,0
+SH-57,What incidents occurred in Antarctica?,Single-hop,entity_filter,LOCATION:antarctica:OCCURRED_AT,,,,count_incidents,,10,0:0,DATA_SPARSE,,,No operations in Antarctica — expected 0,0
+SH-58,What incidents involved tanks?,Single-hop,entity_filter,EQUIPMENT:\btank\b:INVOLVED,,,,count_incidents,,10,10:1,ER_NEEDED,,,Ambiguous term: fuel tank vs storage tank vs oxygen tank,67
+MH-42,What injuries result from incidents involving pipes at offshore locations?,Multi-hop,intersect,EQUIPMENT:pipe:INVOLVED,work_process contains offshore,,,aggregate,INJURY_TYPE:RESULTED_IN,10,3:1,ER_NEEDED,,,,
+MH-43,What equipment is involved in red-risk incidents?,Multi-hop,meta_filter,,risk_color == Red,,,aggregate,EQUIPMENT:INVOLVED,10,1:0,CLEAN,,,,
+MH-44,What are the root causes of incidents at Sabetta (Yamal LNG site)?,Multi-hop,entity_filter,LOCATION:sabetta:OCCURRED_AT,,,,aggregate,ROOT_CAUSE_CATEGORY:CATEGORIZED_AS,10,5:1,CLEAN,,,,
+CJ-31,Find severity 5 incidents involving cranes with injury impact.,Conjunctive,intersect,EQUIPMENT:crane:INVOLVED,severity_bin >= 5;impact_type contains Injury,,,count_incidents,,10,0:0,EXTRACTION_GAP,,,3 crane+sev5+injury incidents exist but crane EQUIPMENT not extracted for all,
