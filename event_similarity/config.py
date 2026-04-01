@@ -74,6 +74,7 @@ TOP_K: int = 10
 NODE2VEC_CACHE:  Path = OUTPUT_DIR / "node2vec_embeddings.pkl"
 TRANSE_CACHE:    Path = OUTPUT_DIR / "transe_embeddings.pkl"
 GRAPHSAGE_CACHE: Path = OUTPUT_DIR / "graphsage_embeddings.pkl"
+RDF2VEC_CACHE:   Path = OUTPUT_DIR / "rdf2vec_embeddings.pkl"
 
 # GraphSAGE activation thresholds (Section 4.3.2 of the project report)
 GRAPHSAGE_GCR_THRESHOLD: float = 0.85   # giant component ratio

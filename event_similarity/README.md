@@ -37,6 +37,7 @@ unit normalisation.
 
 #### 2. Schema-Constrained Relational Overlap (Equation 4)
 
+
 ```
 S_struct(i, j) = Σ_k  w_k * |E^k_i ∩ E^k_j| / |E^k_i ∪ E^k_j|
 ```
@@ -57,7 +58,48 @@ surface forms are treated as identical before Jaccard computation.
 
 ### Tier 2 — Contingent
 
-TransE, Node2Vec, and GraphSAGE embeddings are implemented in
+#### 3. RDF2Vec (Classic, Skip-Gram)
+
+```
+Walk: INCIDENT::i → rel_type → ENTITY_TYPE::v → INV_rel_type → INCIDENT::j → …
+```
+
+Classic RDF2Vec (Ristoski & Paulheim, 2016) generates random walks over the
+incident–entity graph, interleaving node IDs and relation labels as tokens.
+Word2Vec (skip-gram) is then trained on those token sequences, producing an
+embedding for each incident node that captures both structural neighbourhood
+and relation-type context.
+
+Key differences from Node2Vec and TransE:
+
+| Property | Node2Vec | TransE | RDF2Vec |
+|----------|----------|--------|---------|
+| Uses relation labels | No | Yes | Yes |
+| Training objective | Biased walks + NCE | Margin ranking | Skip-gram |
+| Dependency | torch, torch_geometric | pykeen | gensim |
+
+Walks are seeded only from `INCIDENT::` nodes (RDF2vec Light strategy), so
+embeddings are produced for incidents only — no vocabulary overhead for
+entity nodes.
+
+**Hyperparameters** (configurable in `train_rdf2vec()`):
+
+| Parameter | Default | Note |
+|-----------|---------|------|
+| `embedding_dim` | 128 | Match other Tier 2 methods |
+| `walks_per_node` | 200 | Paper uses 500 for DBpedia |
+| `walk_depth` | 4 | Hops per walk; token length = 2×depth+1 |
+| `window_size` | 5 | Word2Vec context window |
+| `epochs` | 5 | Word2Vec training epochs |
+| `sg` | 1 | 1 = skip-gram (recommended), 0 = CBOW |
+
+**Source:** `kg_embeddings.py` — `train_rdf2vec()`
+
+**Dependency:** `pip install gensim`
+
+#### 4. Node2Vec / TransE / GraphSAGE
+
+TransE, Node2Vec, RDF2Vec, and GraphSAGE embeddings are implemented in
 `kg_embeddings.py` and `gnn_similarity.py` within this module. They are
 activated only if the post-ER graph passes the connectivity threshold
 (giant component ratio ≥ 0.85, mean degree ≥ 3.0). If this threshold is
@@ -74,12 +116,18 @@ event_similarity/
 ├── text_similarity.py       Eq. 3 — sentence-transformer cosine similarity
 ├── structural_similarity.py Eq. 4 — weighted Jaccard over entity sets
 ├── similarity_eval.py       Tier 1 evaluation (top-10, correlation, hit rates)
+├── kg_embeddings.py         Tier 2 — Node2Vec, TransE, RDF2Vec embeddings
+├── gnn_similarity.py        Tier 2 — GraphSAGE embeddings
 ├── run_similarity.py        Orchestrator / CLI entry point
 ├── outputs/                 Auto-created; all results written here
 │   ├── gold_standard_ids.json
 │   ├── text_embeddings.pkl
 │   ├── tier1_eval_domain_informed.json
-│   └── tier1_eval_uniform.json
+│   ├── tier1_eval_uniform.json
+│   ├── node2vec_embeddings.pkl    (--tier2)
+│   ├── transe_embeddings.pkl      (--tier2)
+│   ├── rdf2vec_embeddings.pkl     (--tier2)
+│   └── graphsage_embeddings.pkl   (--tier2)
 └── README.md                This file
 ```
 
@@ -179,6 +227,8 @@ Edit `config.py` to:
 - **Fix the gold standard IDs** — set `GOLD_STANDARD_IDS` to a list of
   `record_no` strings (prevents re-sampling on each run)
 - **Change the retrieval depth** — set `TOP_K`
+- **Tune RDF2Vec** — hyperparameters are arguments to `train_rdf2vec()` in
+  `kg_embeddings.py`; cache path is `RDF2VEC_CACHE` in `config.py`
 
 ---
 
@@ -188,6 +238,6 @@ Edit `config.py` to:
 |--------|-------------|
 | `pipeline/er_execution/` | Produces the post-ER entity/relation parquets consumed here |
 | `pipeline/outputs/metadata_parsed.parquet` | Source of narrative text for embeddings |
-| `kg_embeddings.py` / `gnn_similarity.py` | Tier 2 (TransE, Node2Vec, GraphSAGE); activated if graph quality thresholds are met |
+| `kg_embeddings.py` / `gnn_similarity.py` | Tier 2 (TransE, Node2Vec, RDF2Vec, GraphSAGE); activated if graph quality thresholds are met |
 | `fall2025/evaluation/semantic_similar_distance.py` | Fall 2025 semantic–structural correlation baseline |
 | `kg_schema/golden_set.csv` | 52 golden set queries that informed gold standard selection |

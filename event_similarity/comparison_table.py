@@ -202,7 +202,7 @@ def build_comparison_table(
         gold_ids: 50 test incident IDs.
         emb_maps: {method_name: {record_no: embedding}}.
                   Include any subset of: "text", "node2vec", "transe",
-                  "graphsage".  Structural overlap is always computed.
+                  "rdf2vec", "graphsage".  Structural overlap is always computed.
         entity_sets: Post-ER entity sets {record_no: {type: {values}}}.
         corpus_ids: All incident IDs available for retrieval.
         k: Top-K.
@@ -256,10 +256,11 @@ def build_comparison_table(
         struct_mat, text_mat, valid_gold, entity_sets, text_topk, k=k,
     ))
 
-    # ── KG embedding methods (Node2Vec, TransE) ───────────────────────────
+    # ── KG embedding methods (Node2Vec, TransE, RDF2Vec, GraphSAGE) ─────────
     kg_label_map = {
         "node2vec":  "KG Embedding — Node2Vec",
         "transe":    "KG Embedding — TransE",
+        "rdf2vec":   "KG Embedding — RDF2Vec",
         "graphsage": "GNN Embedding — GraphSAGE",
     }
     for method_key, label in kg_label_map.items():
@@ -314,7 +315,7 @@ def build_comparison_table(
         "text":       text_mat,
         "structural": struct_mat,
     }
-    for method_key in ("node2vec", "transe", "graphsage"):
+    for method_key in ("node2vec", "transe", "rdf2vec", "graphsage"):
         emb = emb_maps.get(method_key, {})
         if emb:
             sub_ids = [g for g in valid_gold if g in emb]
@@ -450,6 +451,7 @@ def main() -> None:
         "text":       OUTPUT_DIR / "text_embeddings.pkl",
         "node2vec":   OUTPUT_DIR / "node2vec_embeddings.pkl",
         "transe":     OUTPUT_DIR / "transe_embeddings.pkl",
+        "rdf2vec":    OUTPUT_DIR / "rdf2vec_embeddings.pkl",
         "graphsage":  OUTPUT_DIR / "graphsage_embeddings.pkl",
     }
 
