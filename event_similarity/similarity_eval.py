@@ -1,6 +1,6 @@
 """Tier 1 event similarity evaluation (Section 5.5 of the project report).
 
-For each of the 30 Gold Standard query incidents this module computes:
+For each of the 50 Gold Standard query incidents this module computes:
 
   1. Top-10 most similar incidents under text embedding similarity.
   2. Top-10 most similar incidents under schema-constrained structural overlap.
@@ -40,7 +40,7 @@ from .text_similarity import (
 
 def select_gold_standard_ids(
     metadata_df: pd.DataFrame,
-    n: int = 30,
+    n: int = 50,
     seed: int = 42,
 ) -> list[str]:
     """Stratified sample of n incident IDs for the gold standard set.
@@ -187,7 +187,7 @@ def run_tier1_evaluation(
     """Full Tier 1 evaluation for the gold standard query set.
 
     Args:
-        gold_ids: 30 gold standard incident IDs (record_no as str).
+        gold_ids: 50 gold standard incident IDs (record_no as str).
         emb_map: {record_no: unit-normalised embedding}.
         entity_sets: {record_no: {entity_type: {values}}}.
         corpus_ids: All incident IDs available for retrieval.

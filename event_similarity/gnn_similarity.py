@@ -100,6 +100,7 @@ def _build_graphsage_model(
 
     class GraphSAGEEncoder(nn.Module):
         def __init__(self):
+            """Build SAGEConv layer stack from the enclosing factory parameters."""
             super().__init__()
             self.convs = nn.ModuleList()
             dims = [in_channels] + [hidden_channels] * (num_layers - 1) + [out_channels]
@@ -107,6 +108,7 @@ def _build_graphsage_model(
                 self.convs.append(SAGEConv(dims[i], dims[i + 1]))
 
         def forward(self, x, edge_index):
+            """Run the multi-layer GraphSAGE forward pass with ReLU and dropout."""
             for i, conv in enumerate(self.convs):
                 x = conv(x, edge_index)
                 if i < len(self.convs) - 1:
@@ -126,10 +128,10 @@ def train_graphsage(
     embedding_dim: int = 128,
     hidden_dim: int = 256,
     num_layers: int = 2,
-    epochs: int = 50,
+    epochs: int = 200,
     lr: float = 1e-3,
     batch_size: int = 512,
-    neg_ratio: int = 1,
+    neg_ratio: int = 3,
     check_quality: bool = True,
     cache_path: Path | None = OUTPUT_DIR / "graphsage_embeddings.pkl",
 ) -> dict[str, np.ndarray]:
@@ -146,10 +148,10 @@ def train_graphsage(
         embedding_dim:  Output embedding dimension.
         hidden_dim:     Hidden layer width.
         num_layers:     Number of SAGEConv layers.
-        epochs:         Training epochs.
+        epochs:         Training epochs (default 200).
         lr:             Adam learning rate.
         batch_size:     Mini-batch size for edge sampling.
-        neg_ratio:      Negative edges per positive edge.
+        neg_ratio:      Negative edges per positive edge (default 3).
         check_quality:  If True, enforce giant_component_ratio and degree
                         thresholds before training (Section 4.3.2).
         cache_path:     Pickle cache; set None to retrain each time.
@@ -188,6 +190,12 @@ def train_graphsage(
             "Install with:  pip install torch torch_geometric"
         ) from exc
 
+    # ── Reproducibility ───────────────────────────────────────────────────
+    np.random.seed(42)
+    torch.manual_seed(42)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(42)
+
     # ── Build graph data ───────────────────────────────────────────────────
     edges = pd.read_parquet(relations_path)
     sources = edges["source"].astype(str).tolist()
@@ -204,14 +212,21 @@ def train_graphsage(
         [torch.cat([src_idx, dst_idx]), torch.cat([dst_idx, src_idx])], dim=0
     )
 
-    # Node features: one-hot entity type (7 types + INCIDENT)
-    # Use a simple degree-based feature since we have no node attributes
-    degree = torch.zeros(n_nodes, dtype=torch.float)
-    for idx in src_idx.tolist() + dst_idx.tolist():
-        degree[idx] += 1.0
-    # Normalise
-    degree = (degree - degree.mean()) / (degree.std() + 1e-8)
-    x = degree.unsqueeze(1)   # (n_nodes, 1)
+    # Node features: one-hot node type derived from the ID prefix
+    # Node IDs follow the pattern TYPE::value (e.g. INCIDENT::42,
+    # EQUIPMENT::pump).  We extract the prefix as the node type and build
+    # a one-hot matrix so GraphSAGE has meaningful input signal to
+    # differentiate node roles from the very first layer.
+    type_vocab: list[str] = sorted({n.split("::", 1)[0] for n in all_nodes})
+    type2idx: dict[str, int] = {t: i for i, t in enumerate(type_vocab)}
+    n_types = len(type_vocab)
+
+    x = torch.zeros(n_nodes, n_types, dtype=torch.float)
+    for node_id, node_idx in node2idx.items():
+        node_type = node_id.split("::", 1)[0]
+        x[node_idx, type2idx[node_type]] = 1.0
+
+    print(f"  GraphSAGE node type vocab ({n_types}): {type_vocab}")
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     x          = x.to(device)
@@ -219,7 +234,7 @@ def train_graphsage(
 
     # ── Model ──────────────────────────────────────────────────────────────
     model = _build_graphsage_model(
-        in_channels=1,
+        in_channels=n_types,
         hidden_channels=hidden_dim,
         out_channels=embedding_dim,
         num_layers=num_layers,

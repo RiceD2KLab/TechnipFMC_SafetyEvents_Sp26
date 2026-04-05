@@ -7,8 +7,8 @@ import pandas as pd
 import networkx as nx
 from pathlib import Path
 
-# Path to KG parquet files (pipeline_v2/outputs/)
-_KG_DATA_DIR = Path(__file__).parent.parent.parent.parent / "pipeline_v2" / "outputs"
+# Path to KG parquet files (pipeline/outputs/)
+_KG_DATA_DIR = Path(__file__).parent.parent.parent.parent / "pipeline" / "outputs"
 
 # Module-level cache
 _kg_cache = {

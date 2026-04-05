@@ -1,9 +1,9 @@
 """Orchestrator for the Section 4.3 Event Similarity pipeline.
 
 Executes the full Tier 1 evaluation workflow:
-  1. Load incident narratives from pipeline_v2/outputs/metadata_parsed.parquet.
-  2. Load post-ER entity sets from pipeline_v2/er_execution/outputs/.
-  3. Select (or load) the 30 Gold Standard incident IDs.
+  1. Load incident narratives from pipeline/outputs/metadata_parsed.parquet.
+  2. Load post-ER entity sets from pipeline/er_execution/outputs/.
+  3. Select (or load) the 50 Gold Standard incident IDs.
   4. Compute sentence-transformer text embeddings (cached to outputs/).
   5. Run Tier 1 evaluation for both weight configurations:
        - domain_informed (EQUIPMENT=0.25, INJURY_TYPE=0.25, …)
@@ -68,12 +68,12 @@ def _check_inputs() -> None:
     if not METADATA_PATH.exists():
         missing.append(
             f"  {METADATA_PATH}\n"
-            "  → run:  python -m pipeline_v2.run_gliner_pipeline"
+            "  → run:  python -m pipeline.run_gliner_pipeline"
         )
     if not RELATIONS_PATH.exists():
         missing.append(
             f"  {RELATIONS_PATH}\n"
-            "  → run:  python -m pipeline_v2.er_execution.run_er_execution"
+            "  → run:  python -m pipeline.er_execution.run_er_execution"
         )
     if missing:
         raise FileNotFoundError(
@@ -178,11 +178,15 @@ def main(
         print("\n[6/7] Training Tier 2 KG / GNN embeddings …")
 
         from .gnn_similarity import train_graphsage
-        from .kg_embeddings import train_node2vec, train_transe
+        from .kg_embeddings import train_node2vec, train_rdf2vec, train_transe
 
-        n2v_cache   = None if recompute else OUTPUT_DIR / "node2vec_embeddings.pkl"
-        transe_cache = None if recompute else OUTPUT_DIR / "transe_embeddings.pkl"
-        sage_cache  = None if recompute else OUTPUT_DIR / "graphsage_embeddings.pkl"
+        n2v_cache    = OUTPUT_DIR / "node2vec_embeddings.pkl"
+        transe_cache = OUTPUT_DIR / "transe_embeddings.pkl"
+        sage_cache   = OUTPUT_DIR / "graphsage_embeddings.pkl"
+
+        if recompute:
+            for _p in (n2v_cache, transe_cache, sage_cache):
+                _p.unlink(missing_ok=True)
 
         print("  → Node2Vec …")
         try:
@@ -205,6 +209,20 @@ def main(
                 print("     TransE returned empty — skipped")
         except ImportError as e:
             print(f"     TransE skipped: {e}")
+
+        print("  → RDF2Vec …")
+        try:
+            rdf2vec_cache = OUTPUT_DIR / "rdf2vec_embeddings.pkl"
+            if recompute:
+                rdf2vec_cache.unlink(missing_ok=True)
+            rdf2vec_emb = train_rdf2vec(cache_path=rdf2vec_cache)
+            if rdf2vec_emb:
+                tier2_emb_maps["rdf2vec"] = rdf2vec_emb
+                print(f"     RDF2Vec embeddings: {len(rdf2vec_emb):,} incidents")
+            else:
+                print("     RDF2Vec returned empty — skipped")
+        except ImportError as e:
+            print(f"     RDF2Vec skipped: {e}")
 
         print("  → GraphSAGE …")
         try:

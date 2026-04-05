@@ -111,7 +111,7 @@ def render_nl_query_widget(
             try:
                 # Import query engine from v2 benchmark package.
                 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-                from pipeline_v2.benchmark.query_engine import (
+                from pipeline.benchmark.query_engine import (
                     QuerySpec,
                     execute_query,
                 )

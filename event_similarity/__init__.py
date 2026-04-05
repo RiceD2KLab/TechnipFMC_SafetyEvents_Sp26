@@ -13,15 +13,16 @@ Implements the two committed (Tier 1) similarity methods from the report:
     via domain-informed weighted Jaccard overlap.
 
 Evaluation (Section 5.5 Tier 1):
-  - Top-10 retrieval for each method over the 30 Gold Standard query incidents.
+  - Top-10 retrieval for each method over the 50 Gold Standard query incidents.
   - Pearson / Spearman correlation between the two similarity matrices.
   - Structural hit rate: fraction of top-10 sharing ≥1 entity of each
     high-value type (Equipment, Injury Type, Location) with the query.
   - Complementarity analysis: characterise method disagreements.
 
 Tier 2 extensions (TransE, Node2Vec, GraphSAGE) are implemented in
-incident-embedding-analysis/ and are activated only if the post-ER graph
-passes the connectivity threshold (giant component ratio ≥ 0.85).
+kg_embeddings.py and gnn_similarity.py within this module, activated only
+if the post-ER graph passes the connectivity threshold (giant component
+ratio ≥ 0.85, mean degree ≥ 3.0).
 
 Entry point:
     python -m event_similarity.run_similarity [--recompute] [--gold-ids-file FILE]

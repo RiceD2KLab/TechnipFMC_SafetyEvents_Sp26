@@ -125,6 +125,10 @@ def train_node2vec(
             "Install with:  pip install torch torch_geometric"
         ) from exc
 
+    # Reproducibility
+    np.random.seed(42)
+    torch.manual_seed(42)
+
     sources, targets, _, node2idx = _build_edge_lists(relations_path)
 
     src_idx = [node2idx[s] for s in sources]
@@ -223,6 +227,9 @@ def train_transe(
             "Install with:  pip install pykeen"
         ) from exc
 
+    # Reproducibility
+    np.random.seed(42)
+
     sources, targets, rel_types, _ = _build_edge_lists(relations_path)
 
     # Build (head, relation, tail) triple array — keep only INCIDENT sources
@@ -307,3 +314,195 @@ def kg_similarity_matrix(
     """(N × N) cosine similarity matrix for KG embeddings."""
     from .text_similarity import text_similarity_matrix
     return text_similarity_matrix(emb_map, incident_ids)
+
+
+# ── RDF2Vec ───────────────────────────────────────────────────────────────
+
+
+def _build_adjacency(
+    relations_path: Path = RELATIONS_PATH,
+) -> tuple[dict[str, list[tuple[str, str]]], dict[str, int]]:
+    """Build adjacency list {node: [(relation, target), ...]} from parquet.
+
+    Returns:
+        adj      : {source_node: [(relation_label, target_node), ...]}
+        node2idx : ordering for all unique nodes (used only for sizing)
+    """
+    edges = pd.read_parquet(relations_path)
+    adj: dict[str, list[tuple[str, str]]] = {}
+    for src, rel, tgt in zip(
+        edges["source"].astype(str),
+        edges["relation"].astype(str),
+        edges["target"].astype(str),
+    ):
+        adj.setdefault(src, []).append((rel, tgt))
+        # undirected: add reverse edge with inverted relation label
+        adj.setdefault(tgt, []).append((f"INV_{rel}", src))
+
+    all_nodes = list(adj.keys())
+    node2idx = {n: i for i, n in enumerate(all_nodes)}
+    return adj, node2idx
+
+
+def _generate_walks(
+    adj: dict[str, list[tuple[str, str]]],
+    root_nodes: list[str],
+    walks_per_node: int,
+    walk_depth: int,
+    seed: int = 42,
+) -> list[list[str]]:
+    """Generate classic RDF2vec walks (alternating nodes and predicates).
+
+    Each walk has the form:
+        [node0, pred1, node1, pred2, node2, ..., nodeD]
+    where D = walk_depth.  The walk is represented as a list of strings
+    so that gensim can treat each token as a "word".
+
+    Args:
+        adj           : adjacency list from _build_adjacency
+        root_nodes    : nodes to start walks from
+        walks_per_node: number of walks initiated from each root node
+        walk_depth    : number of hops per walk (tokens = 2*depth + 1)
+        seed          : random seed
+
+    Returns:
+        List of walks, each walk is a list of string tokens.
+    """
+    rng = np.random.default_rng(seed)
+    walks: list[list[str]] = []
+
+    for root in root_nodes:
+        for _ in range(walks_per_node):
+            walk: list[str] = [root]
+            current = root
+            for _ in range(walk_depth):
+                neighbours = adj.get(current)
+                if not neighbours:
+                    break
+                idx = int(rng.integers(len(neighbours)))
+                rel, nxt = neighbours[idx]
+                walk.append(rel)
+                walk.append(nxt)
+                current = nxt
+            walks.append(walk)
+
+    return walks
+
+
+def train_rdf2vec(
+    relations_path: Path = RELATIONS_PATH,
+    embedding_dim: int = 128,
+    walks_per_node: int = 200,
+    walk_depth: int = 4,
+    window_size: int = 5,
+    epochs: int = 5,
+    sg: int = 1,
+    workers: int = 4,
+    seed: int = 42,
+    cache_path: Path | None = None,
+) -> dict[str, np.ndarray]:
+    """Train RDF2Vec on the post-ER incident-entity graph.
+
+    Implements classic RDF2vec (Ristoski & Paulheim, 2016):
+      1. Generate random walks over the heterogeneous graph, interleaving
+         node IDs and relation labels as tokens.
+      2. Train Word2Vec skip-gram on those token sequences.
+      3. Extract and L2-normalise INCIDENT node embeddings.
+
+    Walk format (classic):
+        INCIDENT::42 → HAS_EQUIPMENT → EQUIPMENT::pump → INV_HAS_EQUIPMENT → INCIDENT::17 …
+
+    This is RDF2vec Light in spirit: walks are seeded only from INCIDENT
+    nodes to avoid computing embeddings for the entire graph vocabulary.
+
+    Args:
+        relations_path : Path to relations_post_er.parquet.
+        embedding_dim  : Embedding dimension.
+        walks_per_node : Number of random walks per incident node.
+        walk_depth     : Hops per walk (token length = 2 * walk_depth + 1).
+        window_size    : Word2Vec context window.
+        epochs         : Word2Vec training epochs.
+        sg             : 1 = skip-gram (recommended), 0 = CBOW.
+        workers        : Parallel Word2Vec training threads.
+        seed           : Reproducibility seed.
+        cache_path     : Pickle cache; set None to always retrain.
+
+    Returns:
+        Dict[record_no, np.ndarray] of shape (embedding_dim,) unit-normalised.
+
+    Dependencies:
+        gensim  (pip install gensim)
+    """
+    # Resolve default cache path at call time so OUTPUT_DIR is fully
+    # initialised before this function is ever called.
+    from .config import OUTPUT_DIR as _OUTPUT_DIR
+    if cache_path is None:
+        _cache_path: Path | None = _OUTPUT_DIR / "rdf2vec_embeddings.pkl"
+    else:
+        _cache_path = Path(cache_path)
+
+    if _cache_path is not None and _cache_path.exists():
+        with open(_cache_path, "rb") as f:
+            return pickle.load(f)
+
+    try:
+        from gensim.models import Word2Vec
+    except ImportError as exc:
+        raise ImportError(
+            "RDF2Vec requires gensim.\n"
+            "Install with:  pip install gensim"
+        ) from exc
+
+    np.random.seed(seed)
+
+    adj, node2idx = _build_adjacency(relations_path)
+
+    # Seed walks only from INCIDENT nodes (RDF2vec Light approach)
+    incident_nodes = [n for n in node2idx if n.startswith("INCIDENT::")]
+    if not incident_nodes:
+        raise ValueError("No INCIDENT:: nodes found in relations parquet.")
+
+    print(f"  RDF2Vec: generating walks for {len(incident_nodes):,} incident nodes …")
+    walks = _generate_walks(
+        adj,
+        root_nodes=incident_nodes,
+        walks_per_node=walks_per_node,
+        walk_depth=walk_depth,
+        seed=seed,
+    )
+    print(f"  RDF2Vec: {len(walks):,} walks generated  "
+          f"(avg length {sum(len(w) for w in walks) / max(len(walks), 1):.1f} tokens)")
+
+    model = Word2Vec(
+        sentences=walks,
+        vector_size=embedding_dim,
+        window=window_size,
+        min_count=1,
+        sg=sg,
+        epochs=epochs,
+        workers=workers,
+        seed=seed,
+    )
+
+    from sklearn.preprocessing import normalize
+
+    emb_map: dict[str, np.ndarray] = {}
+    for node_id in incident_nodes:
+        if node_id in model.wv:
+            record_no = node_id.split("::", 1)[1]
+            vec = model.wv[node_id].astype(np.float32)
+            emb_map[record_no] = vec
+
+    if emb_map:
+        vecs = np.stack(list(emb_map.values()))
+        vecs = normalize(vecs)
+        for i, key in enumerate(emb_map):
+            emb_map[key] = vecs[i]
+
+    if _cache_path is not None:
+        _cache_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(_cache_path, "wb") as f:
+            pickle.dump(emb_map, f)
+        print(f"  RDF2Vec embeddings cached → {_cache_path}")
+
+    return emb_map

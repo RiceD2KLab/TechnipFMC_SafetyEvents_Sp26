@@ -3,7 +3,7 @@
 
 Tests translation quality (NL -> QuerySpec) for all 44 golden set questions
 without requiring graph execution. Optionally runs execute_query when
-pipeline_v2 data is available.
+pipeline data is available.
 
 Usage:
     # Translation only (default), Ollama
@@ -18,7 +18,7 @@ Usage:
     # Fastest: use a cloud API (seconds per query)
     python -m natural_language_query.run_golden_set --backend anthropic -o results.json
 
-    # Run queries against the graph (requires pipeline_v2/outputs data)
+    # Run queries against the graph (requires pipeline/outputs data)
     python -m natural_language_query.run_golden_set --execute -o results.json
 """
 
@@ -29,63 +29,25 @@ import json
 import sys
 from pathlib import Path
 
+from kg_schema import load_golden_set
 from .translator import translate
 
 
-# Golden set: id, natural language query, family (for grouping)
-# Aligned with natural_language_query/golden_set_queries.md
-GOLDEN_SET = [
-    # Single-Hop (6)
-    ("SH-01", "What incidents involved forklifts in 2022?", "Single-Hop"),
-    ("SH-02", "What equipment was involved in incident #29857?", "Single-Hop"),
-    ("SH-03", "What body parts were affected in crane-related incidents?", "Single-Hop"),
-    ("SH-04", "Which locations reported valve-related incidents?", "Single-Hop"),
-    ("SH-05", "What types of injuries resulted from incidents at offshore installations?", "Single-Hop"),
-    ("SH-06", "What incidents were reported by client SHELL OFFSHORE INC.?", "Single-Hop"),
-    # Spot-check (13)
-    ("SC-01", "In incident #623703, what equipment was involved?", "Spot-check"),
-    ("SC-02", "In incident #570187, what equipment was involved?", "Spot-check"),
-    ("SC-03", "In incident #602346, what equipment was involved?", "Spot-check"),
-    ("SC-04", "In incident #14338, what equipment was involved?", "Spot-check"),
-    ("SC-05", "In incident #500389, what equipment was involved?", "Spot-check"),
-    ("SC-06", "In incident #8712, what equipment was involved?", "Spot-check"),
-    ("SC-07", "In incident #511771, what equipment was involved?", "Spot-check"),
-    ("SC-08", "In incident #324, what equipment was involved?", "Spot-check"),
-    ("SC-09", "In incident #18312, what equipment was involved?", "Spot-check"),
-    ("SC-04b", "In incident #14338, which body parts were affected?", "Spot-check"),
-    ("SC-06b", "In incident #8712, which body parts were affected?", "Spot-check"),
-    ("SC-07b", "In incident #511771, which body parts were affected?", "Spot-check"),
-    ("SC-09b", "In incident #18312, which body parts were affected?", "Spot-check"),
-    # Aggregation (6)
-    ("AG-01", "What are the most common root causes of dropped object incidents?", "Aggregation"),
-    ("AG-02", "Which countries have the highest rate of high-severity incidents?", "Aggregation"),
-    ("AG-03", "What equipment types are involved in the most incidents overall?", "Aggregation"),
-    ("AG-04", "How do incidents break down by type (accident vs. near miss) across business units?", "Aggregation"),
-    ("AG-05", "What is the monthly trend of fall/slip incidents over the past 3 years?", "Aggregation"),
-    ("AG-06", "What proportion of incidents in each impact type category result in high-severity outcomes?", "Aggregation"),
-    # Multi-Hop (8)
-    ("MH-01", "Find all equipment types involved in containment loss events leading to injuries at offshore locations.", "Multi-Hop"),
-    ("MH-02", "What injury types are associated with equipment failures during maintenance operations?", "Multi-Hop"),
-    ("MH-03", "Which clients have experienced vessel-related incidents resulting in back injuries?", "Multi-Hop"),
-    ("MH-04", "What are the most common injury types for each of the top 5 equipment categories?", "Multi-Hop"),
-    ("MH-05", "Find incidents where hand injuries occurred during work involving pipes at locations in Asia Pacific.", "Multi-Hop"),
-    ("MH-06", "What is the severity distribution of incidents involving trucks compared to those involving cranes?", "Multi-Hop"),
-    ("MH-07", "Which locations have the highest concentration of near-miss incidents involving scaffolding?", "Multi-Hop"),
-    ("MH-08", "Trace the relationship path between a specific piece of equipment (e.g., hydraulic valve) and all recorded injury outcomes across all incidents.", "Multi-Hop"),
-    # Global (4)
-    ("GL-01", "What are the most significant safety risk clusters across TechnipFMC's global operations?", "Global"),
-    ("GL-02", "Are there systemic patterns where the same type of equipment failure recurs across different geographic regions?", "Global"),
-    ("GL-03", "How has the overall safety incident profile changed over the dataset's time range? Are certain incident types increasing or decreasing?", "Global"),
-    ("GL-04", "What entities serve as the most connected hubs in the knowledge graph, and what does their centrality reveal about systemic risk?", "Global"),
-    # Conjunctive (7)
-    ("CJ-01", "Which incidents match the pattern of corrosion-induced equipment failure leading to fire?", "Conjunctive"),
-    ("CJ-02", "Find all high-severity incidents where a crane was involved AND a back injury was sustained AND the location was offshore.", "Conjunctive"),
-    ("CJ-03", "Identify incidents where maintenance procedures failed, involving pipe equipment, resulting in environmental impact at locations in the Middle East.", "Conjunctive"),
-    ("CJ-04", "Which equipment types have caused both injuries AND near-misses at the same location within the same year?", "Conjunctive"),
-    ("CJ-05", "Find the causal chain pattern: procedural non-compliance -> dropped object -> head/hand injury. How many incidents match?", "Conjunctive"),
-    ("CJ-06", "Which incidents involve the co-occurrence of slip/fall events AND vehicle/transportation equipment at construction sites?", "Conjunctive"),
-    ("CJ-07", "What are the primary effects of corrosion on equipment and incidents in the dataset?", "Conjunctive"),
-]
+# NLQ currently supports the original 44 queries (excludes IOGP-*).
+# TODO: remove this filter once NLQ covers all 52 golden set queries.
+_NLQ_EXCLUDE_PREFIXES = ("IOGP-",)
+
+
+def _load_golden_set():
+    """Load golden set from canonical CSV as list of (query_id, name, query_type) tuples."""
+    return [
+        (row["query_id"], row["name"], row["query_type"])
+        for row in load_golden_set()
+        if not row["query_id"].startswith(_NLQ_EXCLUDE_PREFIXES)
+    ]
+
+
+GOLDEN_SET = _load_golden_set()
 
 
 def _serialize_spec(spec_dict):
@@ -114,8 +76,8 @@ def run_golden_set(
     if execute:
         try:
             sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-            from pipeline_v2.benchmark.helpers import load_data
-            from pipeline_v2.benchmark.query_engine import QuerySpec, execute_query
+            from pipeline.benchmark.helpers import load_data
+            from pipeline.benchmark.query_engine import QuerySpec, execute_query
             graph_data = load_data()
         except Exception as e:
             if verbose:
@@ -201,7 +163,7 @@ def main():
     parser.add_argument("--model", default=None, help="Model name (default per backend)")
     parser.add_argument("--base-url", default="http://localhost:11434", help="Ollama server URL")
     parser.add_argument("-o", "--output", default=None, help="Write results JSON to this path")
-    parser.add_argument("--execute", action="store_true", help="Execute each query against pipeline_v2 graph (if data available)")
+    parser.add_argument("--execute", action="store_true", help="Execute each query against pipeline graph (if data available)")
     parser.add_argument("-q", "--quiet", action="store_true", help="Less console output")
     args = parser.parse_args()
 

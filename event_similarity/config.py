@@ -8,18 +8,20 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from kg_schema import L1_ENTITY_TYPE_NAMES
+
 # ── Project root ──────────────────────────────────────────────────────────
 ROOT = Path(__file__).resolve().parent.parent
 
-# ── Input data (pipeline_v2 outputs) ──────────────────────────────────────
+# ── Input data (pipeline outputs) ──────────────────────────────────────
 # narratives + incident properties (record_no, narrative, severity_bin, …)
-METADATA_PATH = ROOT / "pipeline_v2" / "outputs" / "metadata_parsed.parquet"
+METADATA_PATH = ROOT / "pipeline" / "outputs" / "metadata_parsed.parquet"
 
 # post-ER entity nodes  (entity_id, entity_type, value, …)
-ENTITIES_PATH = ROOT / "pipeline_v2" / "er_execution" / "outputs" / "entities_post_er.parquet"
+ENTITIES_PATH = ROOT / "pipeline" / "er_execution" / "outputs" / "entities_post_er.parquet"
 
 # post-ER edges  (source INCIDENT::X  →  target ENTITY_TYPE::Y, relation, …)
-RELATIONS_PATH = ROOT / "pipeline_v2" / "er_execution" / "outputs" / "relations_post_er.parquet"
+RELATIONS_PATH = ROOT / "pipeline" / "er_execution" / "outputs" / "relations_post_er.parquet"
 
 # ── Output directory ──────────────────────────────────────────────────────
 OUTPUT_DIR = ROOT / "event_similarity" / "outputs"
@@ -41,6 +43,10 @@ SCHEMA_WEIGHTS: dict[str, float] = {
     "ORGANIZATION":        0.10,
     "ROOT_CAUSE_CATEGORY": 0.10,
 }
+
+# Validate that all weighted types exist in the canonical schema
+_unknown = set(SCHEMA_WEIGHTS) - L1_ENTITY_TYPE_NAMES
+assert not _unknown, f"SCHEMA_WEIGHTS references unknown entity types: {_unknown}"
 
 # Uniform ablation: equal weight for all entity types (built-in ablation)
 SCHEMA_WEIGHTS_UNIFORM: dict[str, float] = {k: 1 / len(SCHEMA_WEIGHTS) for k in SCHEMA_WEIGHTS}
@@ -68,6 +74,7 @@ TOP_K: int = 10
 NODE2VEC_CACHE:  Path = OUTPUT_DIR / "node2vec_embeddings.pkl"
 TRANSE_CACHE:    Path = OUTPUT_DIR / "transe_embeddings.pkl"
 GRAPHSAGE_CACHE: Path = OUTPUT_DIR / "graphsage_embeddings.pkl"
+RDF2VEC_CACHE:   Path = OUTPUT_DIR / "rdf2vec_embeddings.pkl"
 
 # GraphSAGE activation thresholds (Section 4.3.2 of the project report)
 GRAPHSAGE_GCR_THRESHOLD: float = 0.85   # giant component ratio

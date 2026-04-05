@@ -9,8 +9,8 @@ import pandas as pd
 import networkx as nx
 from pathlib import Path
 
-# Path to KG parquet files (pipeline_v2/outputs/)
-_KG_DATA_DIR = Path(__file__).resolve().parent.parent.parent / "pipeline_v2" / "outputs"
+# Path to KG parquet files (pipeline/outputs/)
+_KG_DATA_DIR = Path(__file__).resolve().parent.parent.parent / "pipeline" / "outputs"
 
 # Module-level cache
 _kg_cache = {
@@ -21,6 +21,8 @@ _kg_cache = {
 }
 
 # Color scheme for entity types (colorblind-friendly)
+# Only L1 types are shown — L2 causal entities (Event, Condition, Action, etc.)
+# are not directly connected to INCIDENT nodes and thus unreachable in subgraph queries.
 ENTITY_COLORS = {
     "INCIDENT": "#E74C3C",
     "EQUIPMENT": "#3498DB",

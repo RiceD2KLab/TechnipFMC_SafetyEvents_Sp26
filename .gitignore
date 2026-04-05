@@ -49,21 +49,24 @@ nul
 
 
 # Plumber 
-KG_Plumber/**
-!KG_Plumber/process_csv.py
-!KG_Plumber/viz_from_csv.py
-!KG_Plumber/output/
-!KG_Plumber/output/**
-!KG_Plumber/get_plumber.sh
+fall2025/KG_Plumber/**
+!fall2025/KG_Plumber/process_csv.py
+!fall2025/KG_Plumber/viz_from_csv.py
+!fall2025/KG_Plumber/output/
+!fall2025/KG_Plumber/output/**
+!fall2025/KG_Plumber/get_plumber.sh
 
 
 # Benchmark snapshots (generated)
 benchmark_snapshot.json
 
 # GraphRAG
-graphRAG/cache/*
-graphRAG/shard
+fall2025/graphRAG/cache/*
+fall2025/graphRAG/shard
 
 
-# Draft Files 
+# Docs (untracked, local only)
+docs/
+
+# Draft Files
 draft

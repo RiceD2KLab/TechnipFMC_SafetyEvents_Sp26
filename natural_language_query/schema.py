@@ -12,8 +12,10 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
+from kg_schema import ENTITY_TYPES, ALLOWED_RELATIONS
 
-# ── Enums matching existing CSV conventions ──────────────────────────────
+
+# ── Enums built from kg_schema (single source of truth) ─────────────────
 
 class Strategy(str, Enum):
     entity_filter = "entity_filter"
@@ -25,24 +27,8 @@ class Strategy(str, Enum):
     out_of_scope = "out_of_scope"
 
 
-class EntityType(str, Enum):
-    EQUIPMENT = "EQUIPMENT"
-    LOCATION = "LOCATION"
-    BODY_PART = "BODY_PART"
-    INJURY_TYPE = "INJURY_TYPE"
-    ROOT_CAUSE_CATEGORY = "ROOT_CAUSE_CATEGORY"
-    ORGANIZATION = "ORGANIZATION"
-    INCIDENT = "INCIDENT"
-
-
-class Relation(str, Enum):
-    INVOLVED = "INVOLVED"
-    OCCURRED_AT = "OCCURRED_AT"
-    RESULTED_IN = "RESULTED_IN"
-    REPORTED_BY = "REPORTED_BY"
-    CATEGORIZED_AS = "CATEGORIZED_AS"
-    AFFECTED = "AFFECTED"
-    LOCATED_IN = "LOCATED_IN"
+EntityType = Enum("EntityType", {k: k for k in ENTITY_TYPES}, type=str)
+Relation = Enum("Relation", {r: r for r in ALLOWED_RELATIONS}, type=str)
 
 
 class MetaOp(str, Enum):
