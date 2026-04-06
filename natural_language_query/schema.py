@@ -66,9 +66,11 @@ class EntityFilter(BaseModel):
 class MetaFilter(BaseModel):
     """A single metadata filter: field + operator + value."""
     field: str = Field(
-        description="Metadata column name. Common fields: "
-        "year, severity_bin, incident_type (accident|near_miss|first_aid), "
-        "work_process, business_unit, impact_type, country."
+        description="Exact metadata_parsed.parquet column name. "
+        "Temporal: use 'year' (engine derives from reported_date). "
+        "Common: severity_bin, incident_type, work_process, business_unit, impact_type, "
+        "risk_color, reported_date, loc_country, loc_region, loc_city, loc_site. "
+        "Never use bare 'country', 'region', or 'city' — use loc_country, loc_region, loc_city."
     )
     op: MetaOp
     value: str = Field(
@@ -90,9 +92,15 @@ class AggregateTarget(BaseModel):
 
 
 class CrosstabTarget(BaseModel):
-    """Two metadata fields to cross-tabulate."""
-    row_field: str
-    col_field: str
+    """Two metadata dimensions to cross-tabulate (metadata_df columns or 'year')."""
+    row_field: str = Field(
+        description="Metadata column name or 'year'. Must exist on incident metadata "
+        "(e.g. incident_type, severity_bin, impact_type, loc_country, loc_region). "
+        "Not graph-only names like equipment_name or root_cause_category."
+    )
+    col_field: str = Field(
+        description="Second metadata column or 'year', same rules as row_field."
+    )
 
 
 class NLQueryOutput(BaseModel):
@@ -109,7 +117,7 @@ class NLQueryOutput(BaseModel):
     )
     meta_filters: List[MetaFilter] = Field(
         default_factory=list,
-        description="Metadata-based filters (year, severity, type, etc.)."
+        description="Metadata-based filters; use exact column names (loc_country, loc_region, …)."
     )
     narrative_keywords: List[str] = Field(
         default_factory=list,

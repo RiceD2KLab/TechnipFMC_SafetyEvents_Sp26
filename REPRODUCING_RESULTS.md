@@ -116,21 +116,24 @@ cd pipeline && python -m benchmark.run_benchmark
 **Output:** `pipeline/benchmark/benchmark_results.md` — per-query pass/fail table,
 diagnosis of the 3 extraction-gap warnings, and summary statistics.
 
-### Table 9: NLQ Golden Set Results (44/44)
+### Table 9: NLQ Golden Set Results (`kg_schema/golden_set.csv`, ~258 rows)
 
 ```bash
-# Default: uses local Ollama
+# Default: local Ollama, every CSV row
 python -m natural_language_query.run_golden_set
 
-# Or with Anthropic API
+# Smaller subset (excludes IOGP-*)
+python -m natural_language_query.run_golden_set --skip-iogp
+
+# Anthropic API
 ANTHROPIC_API_KEY=sk-... python -m natural_language_query.run_golden_set --backend anthropic
 
-# Save results
+# Save results (`meta` + `queries` in JSON)
 python -m natural_language_query.run_golden_set -o golden_set_results.json
 ```
 
-**Output:** Console prints per-query pass/fail and category summary. JSON file
-contains full translation details.
+**Output:** Console prints per-query pass/fail and per-`query_type` summary. JSON
+contains run metadata under `meta` and per-query records under `queries`.
 
 ### Figure 5: NLQ Accuracy Over Iterations
 
