@@ -1,25 +1,40 @@
 #!/usr/bin/env python3
-"""Run the NL translator over the golden set of dashboard queries.
+"""Run the NL translator over every row in ``kg_schema/golden_set.csv``.
 
-Tests translation quality (NL -> QuerySpec) for all 44 golden set questions
-without requiring graph execution. Optionally runs execute_query when
-pipeline data is available.
+Loads the canonical CSV via ``kg_schema.load_golden_set()`` (currently ~258 queries).
+
+Execution policy:
+  * ``--backend bedrock`` — loads Parquet from ``pipeline/outputs/`` (or ``--data-dir``)
+    and runs ``execute_query`` on each successful translation unless ``--no-execute``.
+  * Other backends — translation only unless you pass ``--execute``.
 
 Usage:
-    # Translation only (default), Ollama
+    # All CSV rows, Ollama (default)
     python -m natural_language_query.run_golden_set
+
+    # Exclude IOGP-* rows only (~230 queries), legacy subset
+    python -m natural_language_query.run_golden_set --skip-iogp
+
+    # First 20 rows only (smoke test)
+    python -m natural_language_query.run_golden_set --limit 20
 
     # Save JSON report
     python -m natural_language_query.run_golden_set -o golden_set_results.json
 
-    # Faster on CPU: use a smaller model (~30–60s per query vs 2–3 min for qwen3:8b)
-    python -m natural_language_query.run_golden_set --model qwen2.5:3b -o results.json
+    # Amazon Bedrock + run each translated query on the KG (default for --backend bedrock)
+    python -m natural_language_query.run_golden_set --backend bedrock --temperature 0 -o results.json
 
-    # Fastest: use a cloud API (seconds per query)
-    python -m natural_language_query.run_golden_set --backend anthropic -o results.json
+    # Bedrock, translation only (no graph load / execute_query)
+    python -m natural_language_query.run_golden_set --backend bedrock --no-execute -o results.json
 
-    # Run queries against the graph (requires pipeline/outputs data)
+    # Other backends: opt in to execution with --execute
     python -m natural_language_query.run_golden_set --execute -o results.json
+
+    # Override parquet location (defaults to pipeline/outputs/)
+    python -m natural_language_query.run_golden_set --backend bedrock --data-dir path/to/outputs
+
+    # Same -o path each run overwrites the file; add timestamp to the filename instead
+    python -m natural_language_query.run_golden_set --backend bedrock -o bedrock_nlq.json --timestamp-output
 """
 
 from __future__ import annotations
@@ -27,27 +42,36 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+from datetime import datetime
 from pathlib import Path
 
-from kg_schema import load_golden_set
+from kg_schema import GOLDEN_SET_CSV, load_golden_set
 from .translator import translate
 
 
-# NLQ currently supports the original 44 queries (excludes IOGP-*).
-# TODO: remove this filter once NLQ covers all 52 golden set queries.
-_NLQ_EXCLUDE_PREFIXES = ("IOGP-",)
+def iter_golden_queries(
+    *,
+    skip_iogp: bool = False,
+    offset: int = 0,
+    limit: int | None = None,
+) -> list[tuple[str, str, str]]:
+    """Rows from ``kg_schema/golden_set.csv`` as (query_id, natural_language, query_type).
 
-
-def _load_golden_set():
-    """Load golden set from canonical CSV as list of (query_id, name, query_type) tuples."""
-    return [
-        (row["query_id"], row["name"], row["query_type"])
-        for row in load_golden_set()
-        if not row["query_id"].startswith(_NLQ_EXCLUDE_PREFIXES)
-    ]
-
-
-GOLDEN_SET = _load_golden_set()
+    ``skip_iogp``: when True, drop ``query_id`` values starting with ``IOGP-`` (~28 rows).
+    ``offset`` / ``limit``: slice the list after filtering (for chunked or smoke runs).
+    """
+    rows = load_golden_set()
+    out: list[tuple[str, str, str]] = []
+    for row in rows:
+        qid = row["query_id"]
+        if skip_iogp and qid.startswith("IOGP-"):
+            continue
+        out.append((qid, row["name"], row["query_type"]))
+    if offset:
+        out = out[offset:]
+    if limit is not None:
+        out = out[:limit]
+    return out
 
 
 def _serialize_spec(spec_dict):
@@ -69,20 +93,40 @@ def run_golden_set(
     base_url: str = "http://localhost:11434",
     execute: bool = False,
     verbose: bool = True,
+    skip_iogp: bool = False,
+    offset: int = 0,
+    limit: int | None = None,
+    temperature: float = 0.1,
+    data_dir: Path | str | None = None,
 ):
-    """Run translator on every golden set query. Optionally execute against graph."""
+    """Run translator on golden set rows. Optionally execute against graph."""
+    queries = iter_golden_queries(
+        skip_iogp=skip_iogp, offset=offset, limit=limit,
+    )
     results = []
     graph_data = None
     if execute:
+        from query_engine import (
+            CUSTOM_REGISTRY,
+            QuerySpec,
+            execute_query,
+            load_data,
+        )
         try:
-            from query_engine import load_data, QuerySpec, execute_query
-            graph_data = load_data()
+            graph_data = load_data(data_dir)
         except Exception as e:
             if verbose:
-                print(f"Warning: could not load graph data for execution: {e}", file=sys.stderr)
-            execute = False
+                print(
+                    f"ERROR: graph execution requested but data could not be loaded: {e}",
+                    file=sys.stderr,
+                )
+            raise RuntimeError(
+                "Execution requires entities.parquet, relations.parquet, and "
+                "metadata_parsed.parquet (default: pipeline/outputs/). "
+                "Build the pipeline first or pass --data-dir."
+            ) from e
 
-    for query_id, query_text, family in GOLDEN_SET:
+    for query_id, query_text, family in queries:
         if verbose:
             print(f"  {query_id} ({family}) ... ", end="", flush=True)
         r = translate(
@@ -91,6 +135,7 @@ def run_golden_set(
             model=model,
             base_url=base_url,
             query_id=query_id,
+            temperature=temperature,
         )
         success = r["query_spec"] is not None
         entry = {
@@ -109,11 +154,21 @@ def run_golden_set(
             try:
                 G, entities_df, relations_df, metadata_df = graph_data
                 spec = QuerySpec(**r["query_spec"])
-                exec_out = execute_query(spec, G, entities_df, relations_df, metadata_df)
+                exec_out = execute_query(
+                    spec,
+                    G,
+                    entities_df,
+                    relations_df,
+                    metadata_df,
+                    custom_registry=CUSTOM_REGISTRY,
+                )
                 entry["execution"] = {
                     "coverage": exec_out.get("coverage"),
+                    "diagnosis": exec_out.get("diagnosis"),
+                    "validation": exec_out.get("validation"),
                     "result_summary": exec_out.get("result_summary"),
                     "detail": exec_out.get("detail"),
+                    "elapsed": exec_out.get("elapsed"),
                 }
             except Exception as e:
                 entry["execution"] = {"error": str(e)}
@@ -146,42 +201,157 @@ def print_summary(results: list) -> None:
         by_family[f]["total"] += 1
         if r["success"]:
             by_family[f]["pass"] += 1
-    print("\nBy family:")
-    for fam in ("Single-Hop", "Spot-check", "Aggregation", "Multi-Hop", "Global", "Conjunctive"):
-        if fam in by_family:
-            info = by_family[fam]
-            print(f"  {fam}: {info['pass']}/{info['total']}")
+    print("\nBy family (query_type from CSV):")
+    for fam in sorted(by_family.keys()):
+        info = by_family[fam]
+        print(f"  {fam}: {info['pass']}/{info['total']}")
+
+    ran = [r for r in results if "execution" in r]
+    if ran:
+        errs = sum(1 for r in ran if "error" in r.get("execution", {}))
+        ok = len(ran) - errs
+        print("\nGraph execution (translated queries only)")
+        print(f"  Ran:   {len(ran)}")
+        print(f"  Ok:    {ok}")
+        print(f"  Errors: {errs}")
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Run NL translator on the golden set of dashboard queries",
+        description="Run NL translator on every row in kg_schema/golden_set.csv",
     )
-    parser.add_argument("--backend", default="ollama", choices=["ollama", "anthropic", "gemini"])
+    parser.add_argument(
+        "--backend",
+        default="ollama",
+        choices=["ollama", "anthropic", "gemini", "bedrock"],
+    )
     parser.add_argument("--model", default=None, help="Model name (default per backend)")
     parser.add_argument("--base-url", default="http://localhost:11434", help="Ollama server URL")
-    parser.add_argument("-o", "--output", default=None, help="Write results JSON to this path")
-    parser.add_argument("--execute", action="store_true", help="Execute each query against pipeline graph (if data available)")
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=0.1,
+        help="LLM temperature (use 0 with Bedrock for reproducibility)",
+    )
+    parser.add_argument(
+        "--skip-iogp",
+        action="store_true",
+        help="Exclude query_id prefixes IOGP- (~28 rows); default is all CSV rows",
+    )
+    parser.add_argument(
+        "--offset",
+        type=int,
+        default=0,
+        help="Skip this many rows after filtering (chunked runs)",
+    )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Process at most this many rows after offset (smoke / partial run)",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        default=None,
+        help="Write results JSON to this path (overwrites if the file exists)",
+    )
+    parser.add_argument(
+        "--timestamp-output",
+        action="store_true",
+        help="With -o, write to a new file each run: <name>_<YYYYMMDD_HHMMSS>.<ext> "
+        "so prior results are kept",
+    )
+    parser.add_argument(
+        "--execute",
+        action="store_true",
+        help="Execute each translated query against the KG (parquet → NetworkX)",
+    )
+    parser.add_argument(
+        "--no-execute",
+        action="store_true",
+        help="Skip graph execution (Bedrock default is to execute; use this for translation-only)",
+    )
+    parser.add_argument(
+        "--data-dir",
+        default=None,
+        help="Directory with entities.parquet, relations.parquet, metadata_parsed.parquet "
+        "(default: pipeline/outputs/)",
+    )
     parser.add_argument("-q", "--quiet", action="store_true", help="Less console output")
     args = parser.parse_args()
 
-    print(f"Backend: {args.backend}  Model: {args.model or '(default)'}")
-    if args.execute:
-        print("Execute: yes (will run against graph when translation succeeds)")
-    print(f"Running {len(GOLDEN_SET)} golden set queries...\n")
-    results = run_golden_set(
-        backend=args.backend,
-        model=args.model,
-        base_url=args.base_url,
-        execute=args.execute,
-        verbose=not args.quiet,
+    if args.backend == "bedrock":
+        execute = not args.no_execute
+    else:
+        execute = args.execute
+    if args.no_execute and args.execute:
+        print(
+            "Note: --no-execute takes precedence over --execute.",
+            file=sys.stderr,
+        )
+        execute = False
+
+    preview = iter_golden_queries(
+        skip_iogp=args.skip_iogp, offset=args.offset, limit=args.limit,
     )
+    print(f"Backend: {args.backend}  Model: {args.model or '(default)'}  Temp: {args.temperature}")
+    print(f"CSV:     {GOLDEN_SET_CSV}")
+    if args.skip_iogp:
+        print("Filter:  excluding IOGP-*")
+    if args.offset or args.limit is not None:
+        print(f"Slice:   offset={args.offset} limit={args.limit!r}")
+    if execute:
+        dd = args.data_dir or "pipeline/outputs/ (default)"
+        print(f"Execute: yes — Parquet → NetworkX from {dd}")
+    else:
+        print("Execute: no (translation / QuerySpec only)")
+    print(f"Running {len(preview)} golden set queries...\n")
+    try:
+        results = run_golden_set(
+            backend=args.backend,
+            model=args.model,
+            base_url=args.base_url,
+            execute=execute,
+            verbose=not args.quiet,
+            skip_iogp=args.skip_iogp,
+            offset=args.offset,
+            limit=args.limit,
+            temperature=args.temperature,
+            data_dir=args.data_dir,
+        )
+    except RuntimeError as e:
+        print(str(e), file=sys.stderr)
+        return 1
     print_summary(results)
     if args.output:
         out_path = Path(args.output)
+        if args.timestamp_output:
+            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+            out_path = out_path.with_name(
+                f"{out_path.stem}_{ts}{out_path.suffix or '.json'}"
+            )
+        payload = {
+            "meta": {
+                "golden_set_csv": str(GOLDEN_SET_CSV),
+                "row_count": len(results),
+                "skip_iogp": args.skip_iogp,
+                "offset": args.offset,
+                "limit": args.limit,
+                "backend": args.backend,
+                "model": args.model,
+                "temperature": args.temperature,
+                "execute": execute,
+                "data_dir": args.data_dir,
+                "output_path": str(out_path.resolve()),
+                "timestamp_output": args.timestamp_output,
+            },
+            "queries": results,
+        }
+        out_path.parent.mkdir(parents=True, exist_ok=True)
         with open(out_path, "w", encoding="utf-8") as f:
-            json.dump({"queries": results}, f, indent=2)
-        print(f"\nResults written to {out_path}")
+            json.dump(payload, f, indent=2)
+        print(f"\nResults written to {out_path.resolve()}")
     return 0 if all(r["success"] for r in results) else 1
 
 

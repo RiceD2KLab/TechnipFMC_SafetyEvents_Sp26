@@ -3,7 +3,7 @@
 This document tracks the iterative changes made to the `natural_language_query` NL → structured query translator using the golden set.
 
 Scope:
-- Golden set runner: `python -m natural_language_query.run_golden_set`
+- **Full golden CSV runner:** `python -m natural_language_query.run_golden_set` — walks **every row** in `kg_schema/golden_set.csv` (~258 NL questions) unless `--skip-iogp` is passed (~230 rows). See **Iteration 8** below.
 - Paraphrase / NL→QuerySpec harness (field-level checks vs `GROUND_TRUTH`): `python -m natural_language_query.eval_harness` (Ollama default) or `python -m natural_language_query.eval_harness_bedrock` (Amazon Bedrock only; loads `natural_language_query/.env` when `python-dotenv` is installed)
 - Target: improve pass rate to eliminate failures (especially JSON/schema failures)
 - Final state verified (44-query golden set runner): `Pass 44/44`
@@ -194,7 +194,61 @@ python -m natural_language_query.eval_harness_bedrock --model <modelId> --temper
 python -m natural_language_query.eval_harness --backend ollama --temperature 0.1
 ```
 
-Record the printed **Full pass rate** and per-query breakdown; update this section with “Result (Iteration 7): …” when you have numbers.
+**Result (Iteration 7) — Bedrock paraphrase harness** (verified: `python -m natural_language_query.eval_harness_bedrock`, default model / `us-east-1`, `Temp: 0.0`):
+
+| Metric | Value |
+|--------|------:|
+| Full pass rate | **100%** (**92**/92) |
+| Parse success | **100%** |
+| Avg latency | ~**2860** ms (representative run) |
+
+All paraphrase families (SH-01 … CJ-06) at **100%** on field-level checks vs `eval_harness.GROUND_TRUTH`.
+
+**Iteration 7b — prompt-only mitigation (previously failing four paraphrases)**  
+Changes in `natural_language_query/prompt.py` only: reporter “incident count” (no bogus `meta_filter`); equipment + severity question forms → `aggregate` + EQUIPMENT OR-pattern; keyword-soup → `strategy: intersect` + `count_incidents`. Rules 14–16 and matching JSON examples. After 7b, the harness reached **92/92**.
+
+*(Historical note: before 7b, four paraphrases failed on `has_meta_filter`, `output_mode`, or `strategy` because the harness enforces one canonical spec per `query_id` while short phrasings admitted multiple reasonable structured outputs.)*
+
+**Iteration 8 — `run_golden_set` uses full `kg_schema/golden_set.csv`**
+
+The CSV grew to **~258** canonical NL questions (including **IOGP-** rows). Updates in `natural_language_query/run_golden_set.py`:
+
+- **Default:** run **every** row from `kg_schema.load_golden_set()` / `kg_schema/golden_set.csv` (no silent `IOGP-` exclusion).
+- **`--skip-iogp`:** restore the legacy subset (~**230** rows) if you want to match older runs.
+- **`--offset` / `--limit`:** slice the list after filtering (chunked or smoke tests, e.g. `--limit 20`).
+- **`--backend bedrock`:** same translator path as the paraphrase harness; use **`--temperature 0`** for reproducibility.
+- **`--temperature`:** forwarded to `translate()` (default `0.1`; Bedrock often uses `0`).
+- **JSON output:** besides `queries`, the report includes a **`meta`** object (`golden_set_csv`, `row_count`, `skip_iogp`, slice, backend, model, `temperature`, `execute`). Entries with `success: false` still carry `clarification` / parse errors for debugging.
+
+Example:
+
+```bash
+python -m natural_language_query.run_golden_set --backend bedrock --temperature 0 -o golden_set_nlq.json
+python -m natural_language_query.run_golden_set --skip-iogp -o golden_set_no_iogp.json
+python -m natural_language_query.run_golden_set --limit 10 --quiet
+```
+
+**Result (Iteration 8) — full CSV, Bedrock translation smoke** (verified run):
+
+| Metric | Value |
+|--------|------:|
+| Command | `python -m natural_language_query.run_golden_set --backend bedrock --temperature 0 -o golden_set_nlq.json` |
+| Rows | **258**/258 (**100%** `success: true`) |
+| Total wall time | **802** s (~13.4 min) |
+| Avg per query | **3.1** s (~3100 ms) |
+| Output | `golden_set_nlq.json` (`meta` + `queries`) |
+
+By `query_type` (from CSV):
+
+| query_type | Pass |
+|------------|-----:|
+| Single-hop | 104/104 |
+| Multi-hop | 58/58 |
+| Aggregation | 37/37 |
+| Conjunctive | 35/35 |
+| Global | 24/24 |
+
+**Next step (your plan):** translation-only now validates NL → `QuerySpec` for the **entire** golden CSV at 100% on this run. Wire **`--execute`** (or a downstream step) to `query_engine.execute_query` once graph data is connected to confirm end-to-end answers.
 
 ## Master Results Tables
 
@@ -210,6 +264,20 @@ Record the printed **Full pass rate** and per-query breakdown; update this secti
 | 6 | 44/44 | 0 |
 
 Note: Iteration 0 used a different “expanded golden set” style breakdown as you reported; totals didn’t match the 44-query runner.
+
+### Paraphrase NL harness (92 cases, `eval_harness` / Bedrock)
+
+| Milestone | Full pass | Parse | Notes |
+|-----------|----------:|------:|--------|
+| Iteration 7 (Bedrock, after prompt + temp 0 + no dual topP) | 88/92 (95.7%) | 100% | Before prompt rules 14–16 / examples |
+| Iteration 7 + 7b (Bedrock) | **92/92 (100%)** | 100% | Verified in production Bedrock run |
+
+### Full golden CSV (NL translation smoke), `run_golden_set`
+
+| Setting | Row count (approx.) | Verified (Bedrock, `temp 0`) |
+|---------|--------------------:|-------------------------------|
+| Default (all `query_id`) | **258** | **258/258 (100%)**, ~802 s total, `golden_set_nlq.json` |
+| `--skip-iogp` | **230** | — (optional smaller run) |
 
 ### By Golden Set Category (pass/total)
 
@@ -246,11 +314,16 @@ Note: Iteration 0 used a different “expanded golden set” style breakdown as 
 - Added “hubs/centrality” instruction to use `custom_fn: "hub_centrality"`.
 - Added `SYSTEM_PROMPT_OLLAMA_COMPACT` for small local models to reduce drift/timeouts.
 - Iteration 7: paraphrase-harness alignment—output_mode disambiguation, offshore/reporter/superlative routing, MH-06 vs `severity_comparison`, new JSON examples (offshore, Shell, CJ-06, MH-05, AG-03), `country`/`region` metadata, maintenance+failure rule.
+- Iteration 7b: targeted rules + examples for the four remaining Bedrock paraphrase failures (reporter “incident count”, equipment severity question forms, keyword-soup `intersect`).
 
 ### `natural_language_query/eval_harness.py` / `eval_harness_bedrock.py`
 - Iteration 7: pluggable `temperature` through `run_evaluation` and CLI; Bedrock entrypoint defaults to `temperature=0` and prints it.
 
+### `natural_language_query/run_golden_set.py`
+- Iteration 8: loads all rows from `kg_schema/golden_set.csv` by default; `--skip-iogp`, `--offset`, `--limit`, `--backend bedrock`, `--temperature`; JSON report includes `meta` + `queries`.
+
 ## What to Do Next (Optional)
-- Run `python -m natural_language_query.eval_harness_bedrock` and paste the summary into **Iteration 7** above (`Result (Iteration 7): …`).
-- Optionally run `eval_harness` with `--backend anthropic` / `--backend gemini` at `--temperature 0` to see whether the same prompt changes lift those backends on paraphrases.
+- Full CSV Bedrock translation is **verified 258/258** (see Result Iteration 8). Next: enable **`--execute`** when the KG is wired, or re-run after prompt/model changes to guard regressions.
+- Re-run `python -m natural_language_query.eval_harness_bedrock` after prompt changes to guard the **92** paraphrase checks.
+- Optionally run `eval_harness` with `--backend anthropic` / `--backend gemini` at `--temperature 0` for cross-backend comparison.
 

@@ -70,15 +70,21 @@ render_nl_query_widget(G, entities_df, relations_df, metadata_df)
 
 ## Golden Set (Dashboard query coverage)
 
-The golden set (258 queries) is defined in `kg_schema/golden_set.csv`. The NLQ
-runner uses a subset (excludes IOGP-*). To run the translator on them and
-get a pass/fail + latency report:
+The golden set (~258 queries) is defined in `kg_schema/golden_set.csv`. The NLQ
+runner walks **every CSV row** by default. Use `--skip-iogp` to exclude `IOGP-*`
+rows (~230 queries) for a smaller run.
 
 ```bash
-# Translation only (no graph execution)
+# Translation only — all rows
 python -m natural_language_query.run_golden_set
 
-# Save detailed results to JSON
+# Smoke test (first 20 rows)
+python -m natural_language_query.run_golden_set --limit 20
+
+# Bedrock, reproducible temperature
+python -m natural_language_query.run_golden_set --backend bedrock --temperature 0 -o golden_set_results.json
+
+# Save detailed results (JSON has `meta` + `queries`)
 python -m natural_language_query.run_golden_set -o golden_set_results.json
 
 # Execute each translated query against the pipeline graph (if data is present)

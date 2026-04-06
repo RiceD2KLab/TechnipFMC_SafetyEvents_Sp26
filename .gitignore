@@ -60,6 +60,10 @@ fall2025/KG_Plumber/**
 # Benchmark snapshots (generated)
 benchmark_snapshot.json
 
+# NLQ Bedrock / golden-set JSON reports (regeneratable; use -o or --timestamp-output)
+bedrock_nlq.json
+bedrock_nlq_*.json
+
 # GraphRAG
 fall2025/graphRAG/cache/*
 fall2025/graphRAG/shard
