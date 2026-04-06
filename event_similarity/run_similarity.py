@@ -28,9 +28,10 @@ Outputs (all written to event_similarity/outputs/):
     tier1_eval_uniform.json         Ablation run with uniform weights
     node2vec_embeddings.pkl         Node2Vec KG embeddings (--tier2 only)
     transe_embeddings.pkl           TransE KG embeddings   (--tier2 only)
+    rdf2vec_embeddings.pkl          RDF2Vec KG embeddings  (--tier2 only)
     graphsage_embeddings.pkl        GraphSAGE GNN embeddings (--tier2 only)
-    method_comparison.csv           All-method comparison table
-    method_comparison.md            Markdown version of comparison table
+    method_comparison.csv           All-method comparison table (always regenerated)
+    method_comparison.md            Markdown version of comparison table (always regenerated)
 """
 from __future__ import annotations
 
@@ -237,6 +238,22 @@ def main(
     else:
         print("\n[6/7] Tier 2 skipped (pass --tier2 to train KG/GNN embeddings)")
 
+    # ── Load any cached Tier 2 embeddings not trained this run ───────────
+    # Ensures the comparison table is always complete even without --tier2,
+    # as long as the .pkl files exist from a prior --tier2 run.
+    import pickle
+    _tier2_caches = {
+        "node2vec":  OUTPUT_DIR / "node2vec_embeddings.pkl",
+        "transe":    OUTPUT_DIR / "transe_embeddings.pkl",
+        "rdf2vec":   OUTPUT_DIR / "rdf2vec_embeddings.pkl",
+        "graphsage": OUTPUT_DIR / "graphsage_embeddings.pkl",
+    }
+    for _method, _cache in _tier2_caches.items():
+        if _method not in tier2_emb_maps and _cache.exists():
+            with open(_cache, "rb") as _f:
+                tier2_emb_maps[_method] = pickle.load(_f)
+            print(f"  Loaded cached {_method} embeddings ({len(tier2_emb_maps[_method]):,} incidents)")
+
     # ── 7. Method comparison table ────────────────────────────────────────
     print("\n[7/7] Building method comparison table …")
     emb_maps = {"text": emb_map, **tier2_emb_maps}
@@ -274,8 +291,8 @@ if __name__ == "__main__":
         "--tier2",
         action="store_true",
         help=(
-            "Train Tier 2 KG and GNN embeddings (Node2Vec, TransE, GraphSAGE). "
-            "Requires: pip install torch torch_geometric pykeen"
+            "Train Tier 2 KG and GNN embeddings (Node2Vec, TransE, RDF2Vec, GraphSAGE). "
+            "Requires: pip install torch torch_geometric pykeen gensim"
         ),
     )
     args = parser.parse_args()
