@@ -11,6 +11,6 @@ GOLDEN_SET_CSV: Path = _PKG_DIR / "golden_set.csv"
 
 
 def load_golden_set() -> List[Dict[str, str]]:
-    """Load all 52 golden set queries from the canonical CSV."""
+    """Load all 258 golden set queries from the canonical CSV."""
     with GOLDEN_SET_CSV.open(newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))

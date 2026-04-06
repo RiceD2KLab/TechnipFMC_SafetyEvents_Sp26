@@ -1,6 +1,6 @@
 """NL → QuerySpec translator.
 
-Calls an LLM (Ollama local, Anthropic, or Gemini API) to convert a natural
+Calls an LLM (Ollama local, Anthropic, Gemini, or Amazon Bedrock) to convert a natural
 language query into a structured NLQueryOutput, then bridges to QuerySpec.
 
 Usage:
@@ -17,6 +17,13 @@ Usage:
     result = translate("How many forklift incidents in 2022?",
                        backend="gemini", model="gemini-2.5-flash")
 
+    # Amazon Bedrock (set AWS_BEARER_TOKEN_BEDROCK or IAM credentials + region)
+    result = translate(
+        "How many forklift incidents in 2022?",
+        backend="bedrock",
+        model="us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    )
+
     # Access the QuerySpec dict
     spec_dict = result["query_spec"]  # pass to QuerySpec(**spec_dict)
     confidence = result["confidence"]
@@ -29,6 +36,7 @@ import json
 import os
 import re
 import time
+from pathlib import Path
 from typing import Optional
 
 from .prompt import SYSTEM_PROMPT, SYSTEM_PROMPT_OLLAMA_COMPACT, USER_PROMPT_TEMPLATE
@@ -88,6 +96,7 @@ def _call_anthropic(query: str, model: str, temperature: float, system_prompt: s
         api_key=os.environ.get("ANTHROPIC_API_KEY"),
     )
 
+    # content blocks match the Messages API; stubs omit some kwargs (response_format).
     message = client.messages.create(
         model=model,
         max_tokens=1024,
@@ -96,19 +105,21 @@ def _call_anthropic(query: str, model: str, temperature: float, system_prompt: s
         messages=[
             {
                 "role": "user",
-                "content": USER_PROMPT_TEMPLATE.format(query=query),
+                "content": [
+                    {"type": "text", "text": USER_PROMPT_TEMPLATE.format(query=query)},
+                ],
             }
         ],
-        # Ask Anthropic to return a single JSON object with no extra text
         response_format={"type": "json_object"},
-    )
+    )  # type: ignore[call-overload]
     return message.content[0].text
 
 
 def _call_gemini(query: str, model: str, temperature: float, system_prompt: str) -> str:
-    """Call Google Gemini API."""
-    from google import genai
+    """Call Google Gemini API (``google-genai`` package; module ``google.genai``)."""
+    import importlib
 
+    genai = importlib.import_module("google.genai")
     client = genai.Client(api_key=os.environ.get("GOOGLE_API_KEY"))
 
     response = client.models.generate_content(
@@ -124,10 +135,205 @@ def _call_gemini(query: str, model: str, temperature: float, system_prompt: str)
     return response.text
 
 
+def _load_nl_query_dotenv() -> None:
+    """Load ``natural_language_query/.env`` so Bedrock works from any entry point.
+
+    Only ``eval_harness_bedrock`` used to call ``load_dotenv``; using
+    ``eval_harness --backend bedrock``, Streamlit, or ``translate()`` directly
+    never loaded ``.env``, which produces NoCredentialsError even when the file
+    exists.
+    """
+    try:
+        from dotenv import load_dotenv  # type: ignore[import-untyped]
+    except ImportError:
+        return
+    env_path = Path(__file__).resolve().parent / ".env"
+    if env_path.is_file():
+        load_dotenv(env_path)
+
+
+def _ensure_bedrock_bearer_token() -> None:
+    """Map custom env name to the variable boto3 expects for Bedrock API keys."""
+    if os.environ.get("AWS_BEARER_TOKEN_BEDROCK"):
+        return
+    legacy = os.environ.get("AWS_BEDROCK_KEY")
+    if legacy:
+        os.environ["AWS_BEARER_TOKEN_BEDROCK"] = legacy
+
+
+def _bedrock_converse_via_http_bearer(
+    region: str,
+    model: str,
+    bearer: str,
+    user_text: str,
+    system_prompt: str,
+    temperature: float,
+) -> dict:
+    """Call Converse with ``Authorization: Bearer`` (AWS-documented path).
+
+    Some boto3/botocore builds still raise ``NoCredentialsError`` for
+    ``bedrock-runtime`` even when ``AWS_BEARER_TOKEN_BEDROCK`` is set; HTTP
+    avoids the SigV4 credential chain entirely.
+    """
+    import requests
+    from urllib.parse import quote
+
+    model_path = quote(model, safe=":/.-")
+    url = (
+        f"https://bedrock-runtime.{region}.amazonaws.com/"
+        f"model/{model_path}/converse"
+    )
+    payload = {
+        "messages": [
+            {
+                "role": "user",
+                "content": [{"text": user_text}],
+            },
+        ],
+        "system": [{"text": system_prompt}],
+        # Many Bedrock models reject requests that set both temperature and topP.
+        "inferenceConfig": {
+            "maxTokens": 1024,
+            "temperature": temperature,
+        },
+    }
+    timeout_sec = int(os.environ.get("BEDROCK_TIMEOUT_SEC", "120"))
+    resp = requests.post(
+        url,
+        json=payload,
+        headers={
+            "Authorization": f"Bearer {bearer}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+        timeout=timeout_sec,
+    )
+    if resp.status_code >= 400:
+        try:
+            body = resp.json()
+            msg = body.get("message", body)
+        except Exception:
+            msg = (resp.text or "")[:500]
+        raise RuntimeError(f"Bedrock HTTP {resp.status_code}: {msg}")
+    return resp.json()
+
+
+def _bedrock_collect_text_from_content(content: list) -> str:
+    """Join all plain-text segments from a Converse ``content`` array.
+
+    Models may return multiple blocks (e.g. reasoning then text); older code
+    only read ``content[0]``, which can be empty non-text blocks.
+    """
+    if not content:
+        return ""
+    parts = []
+    for block in content:
+        if not isinstance(block, dict):
+            continue
+        if block.get("text"):
+            parts.append(block["text"])
+    return "".join(parts)
+
+
+def _call_bedrock(
+    query: str,
+    model: str,
+    temperature: float,
+    system_prompt: str,
+) -> str:
+    """Call Amazon Bedrock Runtime (Converse API).
+
+    Auth (pick one):
+    - Bedrock API key: set ``AWS_BEARER_TOKEN_BEDROCK`` (or ``AWS_BEDROCK_KEY`` as alias).
+      Uses the REST Converse API with a Bearer header (reliable across boto3 versions).
+    - IAM: ``AWS_ACCESS_KEY_ID`` / ``AWS_SECRET_ACCESS_KEY`` (and optional session token)
+      uses boto3/SigV4.
+
+    Region: ``AWS_REGION`` or ``AWS_DEFAULT_REGION`` (defaults to us-east-1 if unset).
+    """
+    import boto3
+    from botocore.exceptions import ClientError
+
+    _load_nl_query_dotenv()
+    _ensure_bedrock_bearer_token()
+    _tok = os.environ.get("AWS_BEARER_TOKEN_BEDROCK")
+    if _tok:
+        os.environ["AWS_BEARER_TOKEN_BEDROCK"] = _tok.strip()
+
+    region = (
+        os.environ.get("AWS_REGION")
+        or os.environ.get("AWS_DEFAULT_REGION")
+        or "us-east-1"
+    )
+
+    bearer = (os.environ.get("AWS_BEARER_TOKEN_BEDROCK") or "").strip()
+    has_iam = bool(
+        os.environ.get("AWS_ACCESS_KEY_ID")
+        and os.environ.get("AWS_SECRET_ACCESS_KEY")
+    )
+    if not bearer and not has_iam:
+        env_path = Path(__file__).resolve().parent / ".env"
+        raise RuntimeError(
+            "Bedrock: no credentials in the process environment. "
+            f"Expected AWS_BEARER_TOKEN_BEDROCK (or IAM keys) after loading {env_path}. "
+            "Install python-dotenv, put variables in that file, and retry — or export them "
+            "in the shell before running Python."
+        )
+
+    user_text = USER_PROMPT_TEMPLATE.format(query=query)
+
+    if bearer:
+        response = _bedrock_converse_via_http_bearer(
+            region=region,
+            model=model,
+            bearer=bearer,
+            user_text=user_text,
+            system_prompt=system_prompt,
+            temperature=temperature,
+        )
+    else:
+        client = boto3.client("bedrock-runtime", region_name=region)
+        try:
+            response = client.converse(
+                modelId=model,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [{"text": user_text}],
+                    },
+                ],
+                system=[{"text": system_prompt}],
+                inferenceConfig={
+                    "maxTokens": 1024,
+                    "temperature": temperature,
+                },
+            )
+        except ClientError as e:
+            err = e.response.get("Error") or {}
+            code = err.get("Code", type(e).__name__)
+            msg = err.get("Message", str(e))
+            raise RuntimeError(f"Bedrock Converse failed ({code}): {msg}") from e
+
+    blocks = (
+        response.get("output", {})
+        .get("message", {})
+        .get("content", [])
+    )
+    text = _bedrock_collect_text_from_content(blocks)
+    if not text.strip():
+        stop = response.get("stopReason", "?")
+        raise RuntimeError(
+            f"Bedrock returned no text (stopReason={stop!r}). "
+            f"Check modelId matches this region/account, and model access is enabled in the console."
+        )
+    return text
+
+
 BACKENDS = {
     "ollama": _call_ollama,
     "anthropic": _call_anthropic,
     "gemini": _call_gemini,
+    "bedrock": _call_bedrock,
 }
 
 
@@ -351,10 +557,11 @@ def translate(
 
     Args:
         query: The natural language question.
-        backend: "ollama", "anthropic", or "gemini".
+        backend: "ollama", "anthropic", "gemini", or "bedrock".
         model: Model name. Defaults per backend:
                ollama="qwen3:8b", anthropic="claude-sonnet-4-5-20250514",
-               gemini="gemini-2.5-flash".
+               gemini="gemini-2.5-flash",
+               bedrock="us.anthropic.claude-haiku-4-5-20251001-v1:0".
         base_url: Ollama server URL (only used for ollama backend).
         temperature: LLM temperature (low = more deterministic).
         max_retries: Retries on parse failure (appends error to prompt).
@@ -376,6 +583,8 @@ def translate(
         "ollama": "qwen3:8b",
         "anthropic": "claude-sonnet-4-5-20250514",
         "gemini": "gemini-2.5-flash",
+        # US cross-region inference profile (on-demand base id is rejected for Converse).
+        "bedrock": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
     }
     if model is None:
         model = default_models.get(backend, "qwen3:8b")
@@ -385,6 +594,13 @@ def translate(
     system_prompt = SYSTEM_PROMPT
     if backend == "ollama" and any(s in (model or "").lower() for s in ("qwen2.5:3b", "3b")):
         system_prompt = SYSTEM_PROMPT_OLLAMA_COMPACT
+    if backend == "bedrock":
+        system_prompt = (
+            system_prompt
+            + "\n\n## JSON OUTPUT (required)\n"
+            "Return exactly one JSON object. Start with `{`. Do not use markdown code fences. "
+            "Include every top-level field the NLQueryOutput schema expects (use null only where allowed)."
+        )
 
     call_kwargs = {
         "query": query,

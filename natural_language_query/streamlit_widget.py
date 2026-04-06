@@ -109,12 +109,7 @@ def render_nl_query_widget(
         # ── Execute against graph ────────────────────────────────
         if G is not None:
             try:
-                # Import query engine from v2 benchmark package.
-                sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-                from pipeline.benchmark.query_engine import (
-                    QuerySpec,
-                    execute_query,
-                )
+                from query_engine import QuerySpec, execute_query
 
                 spec = QuerySpec(**spec_dict)
                 exec_result = execute_query(

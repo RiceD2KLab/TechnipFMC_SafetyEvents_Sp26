@@ -250,6 +250,7 @@ def run_evaluation(
     base_url: str = "http://localhost:11434",
     paraphrases: dict | None = None,
     verbose: bool = True,
+    temperature: float = 0.1,
 ) -> dict:
     """Run full evaluation across all ground truth queries.
 
@@ -278,6 +279,7 @@ def run_evaluation(
                 model=model,
                 base_url=base_url,
                 query_id=query_id,
+                temperature=temperature,
             )
 
             scores = score_query(result, truth)
@@ -298,6 +300,13 @@ def run_evaluation(
                 if not all(scores.values()):
                     failures = [k for k, v in scores.items() if not v]
                     print(f"           FAILED: {failures}")
+                    if not scores.get("parse_success", True):
+                        hint = (result.get("clarification") or "").strip()
+                        if hint:
+                            # Show why translation failed (Bedrock auth, model id, JSON errors, etc.)
+                            max_len = 320
+                            tail = "..." if len(hint) > max_len else ""
+                            print(f"           {hint[:max_len]}{tail}")
 
         per_query[query_id] = query_scores
 
@@ -384,7 +393,12 @@ def print_report(summary: dict):
 
 # ── Interactive mode ─────────────────────────────────────────────────────
 
-def interactive_mode(backend: str, model: str | None, base_url: str):
+def interactive_mode(
+    backend: str,
+    model: str | None,
+    base_url: str,
+    temperature: float = 0.1,
+):
     """Interactive REPL for testing individual queries."""
     print("NL Query Translator — Interactive Mode")
     print("Type a question, or 'quit' to exit.\n")
@@ -399,7 +413,11 @@ def interactive_mode(backend: str, model: str | None, base_url: str):
             break
 
         result = translate(
-            query, backend=backend, model=model, base_url=base_url
+            query,
+            backend=backend,
+            model=model,
+            base_url=base_url,
+            temperature=temperature,
         )
 
         if result["query_spec"] is None:
@@ -449,11 +467,20 @@ def main():
         "--output", "-o", default=None,
         help="Save results JSON to this path",
     )
+    parser.add_argument(
+        "--temperature",
+        type=float,
+        default=0.1,
+        help="LLM sampling temperature (use 0 for reproducible evals)",
+    )
 
     args = parser.parse_args()
 
     if args.interactive:
-        interactive_mode(args.backend, args.model, args.base_url)
+        interactive_mode(
+            args.backend, args.model, args.base_url,
+            temperature=args.temperature,
+        )
         return
 
     # Load custom paraphrases if provided
@@ -471,6 +498,7 @@ def main():
         model=args.model,
         base_url=args.base_url,
         paraphrases=paraphrases,
+        temperature=args.temperature,
     )
 
     print_report(summary)

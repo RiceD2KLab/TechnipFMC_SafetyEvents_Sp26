@@ -1,4 +1,4 @@
-"""Helper functions for benchmark queries."""
+"""Graph helper functions for the safety knowledge graph query engine."""
 
 import re
 import pandas as pd
@@ -10,15 +10,23 @@ import warnings
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
-BASE = Path(__file__).resolve().parent.parent
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+_DEFAULT_DATA_DIR = _PROJECT_ROOT / "pipeline" / "outputs"
 
 
-def load_data():
-    """Load parquet files and build NetworkX graph."""
+def load_data(data_dir=None):
+    """Load parquet files and build NetworkX graph.
+
+    Args:
+        data_dir: Path to directory containing entities.parquet,
+                  relations.parquet, metadata_parsed.parquet.
+                  Defaults to pipeline/outputs/.
+    """
+    data_dir = Path(data_dir) if data_dir else _DEFAULT_DATA_DIR
     print("Loading parquet files...")
-    entities_df = pd.read_parquet(BASE / "outputs" / "entities.parquet")
-    relations_df = pd.read_parquet(BASE / "outputs" / "relations.parquet")
-    metadata_df = pd.read_parquet(BASE / "outputs" / "metadata_parsed.parquet")
+    entities_df = pd.read_parquet(data_dir / "entities.parquet")
+    relations_df = pd.read_parquet(data_dir / "relations.parquet")
+    metadata_df = pd.read_parquet(data_dir / "metadata_parsed.parquet")
 
     print(f"  Entities: {len(entities_df):,}")
     print(f"  Relations: {len(relations_df):,}")
@@ -111,14 +119,32 @@ def safe_get_node_value(G, node_id, default=None):
 
 
 def incidents_matching_narrative(metadata_df, keywords, match_all=True):
-    """Find record_no strings whose narrative contains keywords."""
+    """Find record_no strings whose narrative contains keywords.
+
+    Keyword prefixes:
+      (none)  — exact substring match (default)
+      ~       — bag-of-words: all words in the phrase must appear in the
+                narrative, in any order.  E.g. ``~scaffold fall`` matches
+                "fell from scaffold", "scaffold fell", "fall from the scaffold".
+    """
     # Start with True for AND (all must match), False for OR (any may match)
+    narr_lower = metadata_df["narrative"].str.lower()
     mask = pd.Series(match_all, index=metadata_df.index)
     for kw in keywords:
-        # Escape regex special characters to prevent injection
-        escaped_kw = re.escape(kw.lower())
-        kw_mask = metadata_df["narrative"].str.lower().str.contains(
-            escaped_kw, na=False, regex=True)
+        kw = kw.strip()
+        if kw.startswith("~"):
+            # Bag-of-words: every word must appear somewhere in the narrative
+            words = kw[1:].lower().split()
+            kw_mask = pd.Series(True, index=metadata_df.index)
+            for word in words:
+                escaped_word = re.escape(word)
+                kw_mask = kw_mask & narr_lower.str.contains(
+                    escaped_word, na=False, regex=True)
+        else:
+            # Exact substring match
+            escaped_kw = re.escape(kw.lower())
+            kw_mask = narr_lower.str.contains(
+                escaped_kw, na=False, regex=True)
         mask = mask & kw_mask if match_all else mask | kw_mask
     return set(metadata_df[mask]["record_no"].astype(str).tolist())
 

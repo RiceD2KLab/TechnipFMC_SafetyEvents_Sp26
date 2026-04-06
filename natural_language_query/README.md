@@ -39,7 +39,7 @@ python -m natural_language_query.eval_harness -o eval_results.json
 
 ```python
 from natural_language_query.translator import translate
-from pipeline.benchmark.query_engine import QuerySpec, execute_query
+from query_engine import QuerySpec, execute_query
 
 # Step 1: Translate NL → QuerySpec
 result = translate("How many forklift incidents in 2022?")
@@ -70,8 +70,8 @@ render_nl_query_widget(G, entities_df, relations_df, metadata_df)
 
 ## Golden Set (Dashboard query coverage)
 
-The golden set (52 queries) is defined in `kg_schema/golden_set.csv`. The NLQ
-runner uses the first 44 (excludes IOGP-*). To run the translator on them and
+The golden set (258 queries) is defined in `kg_schema/golden_set.csv`. The NLQ
+runner uses a subset (excludes IOGP-*). To run the translator on them and
 get a pass/fail + latency report:
 
 ```bash

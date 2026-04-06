@@ -24,9 +24,10 @@ enabling structured querying, causal chain analysis, and similar-incident retrie
 ```
 ├── pipeline/                   # Core KG construction pipeline (L1 + ER + L2)
 ├── kg_schema/                  # Single source of truth: entity/relation types, golden set
+├── query_engine/               # Reusable query engine: QuerySpec, execution, graph helpers
 ├── input/                      # Incident dataset (incidents.csv, 23K records)
 ├── natural_language_query/     # NL question -> structured query translation
-├── event_similarity/           # Similar incident retrieval (text + structural)
+├── event_similarity/           # Similar incident retrieval (text + structural + KG embeddings)
 ├── visual_dashboard/           # Dashboard: FastAPI backend, React frontend, Streamlit legacy
 ├── eda/                        # Design-phase analysis (schema validation, ER, topology, ablation)
 ├── cluster/                    # Rice NOTS HPC scripts (SLURM, env setup)
@@ -112,7 +113,7 @@ python pipeline/enrichment/run_l2_enrichment.py \
     --backend ollama --model qwen3:30b-a3b
 ```
 
-### Benchmark (52 golden set queries)
+### Benchmark (258 golden set queries)
 
 ```bash
 cd pipeline && python -m benchmark.run_benchmark
@@ -187,7 +188,7 @@ For a fast end-to-end validation (no GPU, ~5 minutes):
 
 ```bash
 python pipeline/run_gliner_pipeline.py --test     # L1 extraction on 1K records
-cd pipeline && python -m benchmark.run_benchmark   # 52-query benchmark
+cd pipeline && python -m benchmark.run_benchmark   # 258-query benchmark
 python -m event_similarity.run_similarity          # similarity evaluation
 ```
 

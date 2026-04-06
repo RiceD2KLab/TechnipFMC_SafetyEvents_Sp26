@@ -28,6 +28,7 @@ METADATA FIELDS (direct columns on incident records, NOT graph entities):
 - work_process: free text describing the work activity
 - business_unit: organizational unit (often null)
 - impact_type: "Injury", "Property Damage", "Environmental", etc.
+- country, region: geographic metadata strings (use op "contains" for multi-word regions like "Asia Pacific")
 
 META FILTERS (field, op, value):
 - Allowed op values ONLY: "==", "!=", ">", ">=", "<", "<=", "contains". Do NOT use "=~" or any other operator. For region/location name matching (e.g. "Asia Pacific"), use op "contains" and value "Asia Pacific".
@@ -59,17 +60,25 @@ Choose ONE strategy. Valid values ONLY: entity_filter, meta_filter, narrative_fi
 6. "custom" — Query matches a named custom analysis. Set custom_fn to the function name; otherwise leave null.
    - "Most connected hubs" / "centrality" / "graph structure" / "which entities are most connected" → custom_fn "hub_centrality"
    - "Top injury types for each of the top 5 equipment" → custom_fn "top_injury_per_equipment"
-   - "Severity distribution for trucks vs cranes" → custom_fn "severity_comparison"
+   - Do NOT use custom_fn "severity_comparison" for simple "truck vs crane" / "which is more severe" questions unless the user explicitly asks for a custom distribution analysis. For standard phrasing, use strategy "entity_filter" with EQUIPMENT patterns covering both groups and output_mode "aggregate" (see examples below).
 
 7. "out_of_scope" — Query cannot be answered by this graph. Set confidence to 0.0.
 
 ## OUTPUT MODES
 
-- "count_incidents" — Just count matching incidents. Use for "how many" questions.
+- "count_incidents" — Count matching incidents. Use for explicit counts ("how many", "number of", "count of") AND for terse quantified phrasing ("forklifts 2022", "X incidents in region", "hand + pipe + Asia Pacific") when the user wants a total, not row-level records. Phrases like "show me 2022 forklift accidents" still mean a statistical count here unless they explicitly ask for incident records/details/tables of incidents.
 - "aggregate" — Group and count by a graph ENTITY type (EQUIPMENT, BODY_PART, INJURY_TYPE, etc.). Use for "what are the most common X" or "break down by X". When output_mode is "aggregate" you MUST set aggregate_target with both entity_type and relation (from the allowed enums). Never leave aggregate_target.entity_type or aggregate_target.relation null. aggregate_target.entity_type must be an entity type only — never severity_bin, impact_type, or other metadata; for those use crosstab.
 - "count_by_year" — Show trend over time (single dimension). Use for "trend of X over the years". Strategy should be entity_filter/meta_filter/narrative_filter as appropriate; never use "count_by_year" as strategy.
 - "crosstab" — Cross-tabulate two dimensions (metadata or time × type). Use for proportions, severity by category, or "how did X change over time by Y". Requires crosstab_target. Always set output_top_n to an integer (e.g. 10).
-- "list_incidents" — Return individual incident details. Use for "show me" or "list" requests.
+- "list_incidents" — Rare. Use ONLY when the user clearly wants individual incident rows/records returned (e.g. "list every incident", "show full incident details", "export incident narratives"). Do not use for "show me" count or breakdown questions.
+
+## DOMAIN ROUTING (prefer meta/entity over narrative)
+
+- Offshore work context ("offshore installations", "offshore sites", "offshore operations", "offshore facilities", "offshore work"): add meta_filter {"field": "work_process", "op": "contains", "value": "offshore"}. Use strategy "meta_filter" if that is the only filter; combine with injury breakdown via output_mode "aggregate" and aggregate_target INJURY_TYPE + RESULTED_IN. Do not rely on narrative_keywords alone for "offshore" in these phrases.
+- Reporter / company ("reported by Shell", "incidents from Shell Offshore", "Shell Offshore reported"): filter ORGANIZATION with relation REPORTED_BY and a pattern that matches the company name (e.g. "shell"). No meta_filters unless the question also constrains year, severity, etc.
+- "Countries with the most X" / "geographic distribution" / "where do X happen" for a graph entity X: use entity_filter for X only; superlatives like "most" do NOT add extra meta_filters.
+- "High severity" / "serious" / "dangerous by severity" + geography: meta_filter on severity_bin (e.g. op ">=" value "4") and output_mode "aggregate" with aggregate_target LOCATION country (or appropriate granularity).
+- Global equipment frequency ("most common equipment involved", "top equipment types", "rank equipment"): strategy "entity_filter", entity_filters: [] (no equipment name filter), output_mode "aggregate", aggregate_target EQUIPMENT + INVOLVED — you are counting equipment involvement across all incidents.
 
 ## ENTITY FILTER PATTERNS
 
@@ -148,6 +157,24 @@ User: "Which countries have the most high-severity incidents?"
 }
 ```
 
+User: "What is the most common equipment involved in incidents?"
+```json
+{
+  "strategy": "entity_filter",
+  "entity_filters": [],
+  "meta_filters": [],
+  "narrative_keywords": [],
+  "match_any_keyword": false,
+  "output_mode": "aggregate",
+  "aggregate_target": {"entity_type": "EQUIPMENT", "relation": "INVOLVED", "granularity": null},
+  "crosstab_target": null,
+  "output_top_n": 10,
+  "confidence": 0.93,
+  "clarification": null,
+  "reasoning": "Global equipment frequency: no named equipment filter. entity_filter with empty entity_filters; aggregate by EQUIPMENT."
+}
+```
+
 User: "Show me the trend of fall/slip incidents over time"
 ```json
 {
@@ -202,22 +229,97 @@ User: "What proportion of incidents in each impact type category result in high-
 }
 ```
 
-User: "What is the severity distribution of incidents involving trucks compared to those involving cranes?"
+User: "Compare severity of truck vs crane incidents"
 ```json
 {
-  "strategy": "custom",
-  "entity_filters": [],
+  "strategy": "entity_filter",
+  "entity_filters": [{"entity_type": "EQUIPMENT", "pattern": "truck|lorry|vehicle|crane|overhead crane|mobile crane|tower crane|gantry crane|pedestal crane", "relation": "INVOLVED"}],
   "meta_filters": [],
   "narrative_keywords": [],
   "match_any_keyword": false,
   "output_mode": "aggregate",
+  "aggregate_target": {"entity_type": "EQUIPMENT", "relation": "INVOLVED", "granularity": null},
+  "crosstab_target": null,
+  "custom_fn": null,
+  "output_top_n": 10,
+  "confidence": 0.88,
+  "clarification": null,
+  "reasoning": "Trucks and cranes are EQUIPMENT; single entity filter with OR pattern. Aggregate by EQUIPMENT for involvement/severity-style breakdown; use entity_filter (not custom) unless the query explicitly asks for the named custom severity_comparison analysis."
+}
+```
+
+User: "What injuries occur at offshore installations?"
+```json
+{
+  "strategy": "meta_filter",
+  "entity_filters": [],
+  "meta_filters": [{"field": "work_process", "op": "contains", "value": "offshore"}],
+  "narrative_keywords": [],
+  "match_any_keyword": false,
+  "output_mode": "aggregate",
+  "aggregate_target": {"entity_type": "INJURY_TYPE", "relation": "RESULTED_IN", "granularity": null},
+  "crosstab_target": null,
+  "output_top_n": 10,
+  "confidence": 0.9,
+  "clarification": null,
+  "reasoning": "Offshore context is encoded in work_process text, not narrative-only. Aggregate injury types."
+}
+```
+
+User: "How many incidents were reported by Shell Offshore?"
+```json
+{
+  "strategy": "entity_filter",
+  "entity_filters": [{"entity_type": "ORGANIZATION", "pattern": "shell", "relation": "REPORTED_BY"}],
+  "meta_filters": [],
+  "narrative_keywords": [],
+  "match_any_keyword": false,
+  "output_mode": "count_incidents",
   "aggregate_target": null,
   "crosstab_target": null,
-  "custom_fn": "severity_comparison",
   "output_top_n": 10,
-  "confidence": 0.85,
+  "confidence": 0.92,
   "clarification": null,
-  "reasoning": "Compare severity distributions for two equipment groups; use custom severity_comparison."
+  "reasoning": "Reporting organization uses ORGANIZATION + REPORTED_BY. Count-only question → count_incidents."
+}
+```
+
+User: "Falls or slips involving vehicles in construction"
+```json
+{
+  "strategy": "intersect",
+  "entity_filters": [],
+  "meta_filters": [],
+  "narrative_keywords": ["fall", "slip", "vehicle", "construction"],
+  "match_any_keyword": false,
+  "output_mode": "count_incidents",
+  "aggregate_target": null,
+  "crosstab_target": null,
+  "output_top_n": 10,
+  "confidence": 0.82,
+  "clarification": null,
+  "reasoning": "Multiple narrative concepts; intersect narrative_filter-style keywords with strategy intersect. Implicit count → count_incidents."
+}
+```
+
+User: "Hand injuries from pipe incidents in Asia Pacific"
+```json
+{
+  "strategy": "intersect",
+  "entity_filters": [
+    {"entity_type": "BODY_PART", "pattern": "hand|finger|thumb|wrist|palm", "relation": "AFFECTED"},
+    {"entity_type": "EQUIPMENT", "pattern": "pipe|pipeline|piping", "relation": "INVOLVED"}
+  ],
+  "meta_filters": [{"field": "region", "op": "contains", "value": "Asia Pacific"}],
+  "narrative_keywords": [],
+  "match_any_keyword": false,
+  "output_mode": "count_incidents",
+  "aggregate_target": null,
+  "crosstab_target": null,
+  "output_top_n": 10,
+  "confidence": 0.9,
+  "clarification": null,
+  "reasoning": "Body part + equipment + region: multiple filter types → intersect. Region in metadata → meta_filter contains. Count-style injury question → count_incidents."
 }
 ```
 
@@ -325,8 +427,9 @@ User: "What entities serve as the most connected hubs in the knowledge graph, an
 8. Set confidence < 0.7 and provide "clarification" when the query is vague, or when unsure if it's answerable by this graph.
 9. Use "intersect" whenever you have 2+ filter types (entity + meta, entity + narrative, etc.).
 10. For "proportion by X and Y" or "distribution of severity by category", use strategy "crosstab" with crosstab_target.
-11. For "for each of the top 5 X" or "compare A vs B" severity/distribution, use strategy "custom" and set custom_fn (e.g. top_injury_per_equipment, severity_comparison). For "most connected hubs", "centrality", or "graph structure", use strategy "custom" and custom_fn "hub_centrality".
+11. For "for each of the top 5 X" use strategy "custom" and custom_fn "top_injury_per_equipment". For "most connected hubs", "centrality", or "graph structure", use strategy "custom" and custom_fn "hub_centrality". For simple "truck vs crane" / "which equipment is more severe" style questions, prefer entity_filter on EQUIPMENT with a combined OR pattern and output_mode "aggregate" — reserve custom_fn "severity_comparison" only when the user explicitly asks for that named comparison analysis.
 12. Prefer entity_filters and meta_filters over narrative_keywords when possible. The graph has ~20,000 incidents; very specific multi-filter queries may return 0 results — that's ok.
+13. Maintenance-related injury questions ("maintenance equipment failures", "failures during maintenance"): use strategy "intersect", narrative_keywords that include both maintenance and equipment-failure concepts (e.g. "maintenance" and "failure"), match_any_keyword false when both must apply, output_mode "aggregate", aggregate_target INJURY_TYPE + RESULTED_IN.
 """
 
 

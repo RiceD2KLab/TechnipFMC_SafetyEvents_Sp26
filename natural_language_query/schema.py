@@ -8,7 +8,7 @@ works unchanged.
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -103,15 +103,15 @@ class NLQueryOutput(BaseModel):
     strategy: Strategy = Field(
         description="Which execution strategy to use."
     )
-    entity_filters: list[EntityFilter] = Field(
+    entity_filters: List[EntityFilter] = Field(
         default_factory=list,
         description="Entity-based filters. Each one narrows the incident set."
     )
-    meta_filters: list[MetaFilter] = Field(
+    meta_filters: List[MetaFilter] = Field(
         default_factory=list,
         description="Metadata-based filters (year, severity, type, etc.)."
     )
-    narrative_keywords: list[str] = Field(
+    narrative_keywords: List[str] = Field(
         default_factory=list,
         description="Keywords to search in incident narratives. "
         "Use only when entities/metadata don't capture the concept."
