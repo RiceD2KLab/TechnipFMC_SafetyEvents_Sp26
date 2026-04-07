@@ -11,8 +11,13 @@ Phase 3: Rebuild graph, compute Gate 2 metrics, spot-check merge quality.
 
 Reads from pipeline/outputs/ and pipeline/er_prep/.
 Writes to pipeline/er_execution/outputs/.
+
+Usage:
+    python -m pipeline.er_execution.run_er_execution
+    python -m pipeline.er_execution.run_er_execution --input-dir pipeline/outputs/benchmark_large --prep-dir pipeline/er_prep/benchmark_large --output-dir pipeline/er_execution/outputs/benchmark_large
 """
 
+import argparse
 import re
 import random
 from pathlib import Path
@@ -26,10 +31,19 @@ random.seed(42)
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
+_parser = argparse.ArgumentParser(description="ER Execution")
+_parser.add_argument("--input-dir", type=str, default=None,
+                     help="Directory with entities/relations/metadata parquets (default: pipeline/outputs/)")
+_parser.add_argument("--prep-dir", type=str, default=None,
+                     help="Directory with ER prep artifacts (default: pipeline/er_prep/)")
+_parser.add_argument("--output-dir", type=str, default=None,
+                     help="Output directory (default: pipeline/er_execution/outputs/)")
+_args = _parser.parse_args()
+
 BASE = Path(__file__).resolve().parent.parent  # pipeline/
-SRC_DIR = BASE / "outputs"
-PREP_DIR = BASE / "er_prep"
-OUT_DIR = Path(__file__).resolve().parent / "outputs"
+SRC_DIR = Path(_args.input_dir) if _args.input_dir else BASE / "outputs"
+PREP_DIR = Path(_args.prep_dir) if _args.prep_dir else BASE / "er_prep"
+OUT_DIR = Path(_args.output_dir) if _args.output_dir else Path(__file__).resolve().parent / "outputs"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # ---------------------------------------------------------------------------
@@ -352,7 +366,7 @@ high_sim = merge_cands[merge_cands["similarity_score"] >= 0.90].copy()
 
 # Also include exact_normalized and legal_suffix_strip regardless of score
 rule_based = merge_cands[merge_cands["merge_rule"].isin(
-    ["exact_normalized", "legal_suffix_strip", "laterality_strip",
+    ["exact_normalized", "legal_suffix_strip",
      "severity_strip", "obsolete_prefix", "substring_match",
      "manual_approved"]
 )]

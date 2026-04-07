@@ -477,8 +477,20 @@ def _execute_spot_check(spec, G, entities_df):
         for v in [safe_get_node_value(G, e)] if v is not None)
     found_lower = {v.lower() for v in found_vals}
 
-    missing = spec.ground_truth - found_lower
-    extra = found_lower - spec.ground_truth
+    # Bidirectional substring match: a GT term is satisfied if any extracted
+    # value contains it OR is contained within it.  This handles morphological
+    # variants ("lip"/"lips"/"lower lip") and qualified spans
+    # ("fracture"/"confirmed fracture") that exact matching would reject.
+    def _gt_matched(gt_term: str) -> bool:
+        gt = gt_term.lower()
+        return any(gt in fv or fv in gt for fv in found_lower)
+
+    matched_gt = {gt for gt in spec.ground_truth if _gt_matched(gt)}
+    missing = spec.ground_truth - matched_gt
+    matched_found = {fv for fv in found_lower
+                     if any(gt.lower() in fv or fv in gt.lower()
+                            for gt in spec.ground_truth)}
+    extra = found_lower - matched_found
 
     lines = [
         f"{etype} found for {inc_id}: {found_vals}",
@@ -487,8 +499,7 @@ def _execute_spot_check(spec, G, entities_df):
         f"Extra (unexpected): {sorted(extra) if extra else 'none'}",
     ]
 
-    count = len(found_lower & spec.ground_truth) if spec.ground_truth \
-        else len(found_vals)
+    count = len(matched_gt) if spec.ground_truth else len(found_vals)
     coverage = _score_coverage(spec, {"count": count})
     diag = "EXTRACTION_GAP" if missing else "CLEAN"
 
@@ -689,14 +700,23 @@ def run_all_queries(specs, G, entities_df, relations_df, metadata_df,
     results = {}
     for spec in specs:
         print(f"  Running {spec.query_id}: {spec.name}...")
-        result = execute_query(
-            spec, G, entities_df, relations_df, metadata_df,
-            custom_registry=custom_registry, results=results)
+        try:
+            result = execute_query(
+                spec, G, entities_df, relations_df, metadata_df,
+                custom_registry=custom_registry, results=results)
+        except Exception as exc:
+            result = {
+                "coverage": "❌",
+                "diagnosis": "ERROR",
+                "result_summary": f"Crashed: {exc}",
+                "detail": "",
+                "elapsed": "0.0s",
+            }
         result["name"] = spec.name
         result["type"] = spec.query_type
         results[spec.query_id] = result
         validation = result.get('validation', '—')
-        print(f"    -> {result['coverage']} | "
-              f"{result['diagnosis']} | {validation} "
-              f"({result['elapsed']})")
+        print(f"    -> {result.get('coverage', '?')} | "
+              f"{result.get('diagnosis', '?')} | {validation} "
+              f"({result.get('elapsed', '?')})")
     return results

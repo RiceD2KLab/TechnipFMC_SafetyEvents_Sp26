@@ -15,20 +15,23 @@ ENTITY_TYPES: dict[str, dict[str, str]] = {
 L1_ENTITY_TYPE_NAMES: frozenset[str] = frozenset(ENTITY_TYPES.keys())
 
 # ── GLiNER Labels ─────────────────────────────────────────────────────────
+# Descriptive labels improve zero-shot GLiNER recall.  The model matches
+# spans against label text, so domain-specific phrasing captures more
+# entities than generic one-word labels.
 GLINER_LABELS: list[str] = [
-    "equipment",       # → EQUIPMENT
-    "body part",       # → BODY_PART
-    "injury type",     # → INJURY_TYPE
-    "location",        # → LOCATION (supplementary to metadata-parsed locations)
-    "organization",    # → ORGANIZATION (supplementary to metadata-parsed orgs)
+    "equipment",                                          # → EQUIPMENT
+    "body part or anatomical region",                     # → BODY_PART
+    "type of injury, harm, or medical condition",         # → INJURY_TYPE
+    "location, site, facility, or geographic area",       # → LOCATION
+    "organization, company, or business unit",            # → ORGANIZATION
 ]
 
 GLINER_TYPE_MAP: dict[str, str] = {
-    "equipment":     "EQUIPMENT",
-    "body part":     "BODY_PART",
-    "injury type":   "INJURY_TYPE",
-    "location":      "LOCATION",
-    "organization":  "ORGANIZATION",
+    "equipment":                                         "EQUIPMENT",
+    "body part or anatomical region":                    "BODY_PART",
+    "type of injury, harm, or medical condition":        "INJURY_TYPE",
+    "location, site, facility, or geographic area":      "LOCATION",
+    "organization, company, or business unit":           "ORGANIZATION",
 }
 
 # ── Incident Node Properties (NOT separate entity nodes) ─────────────────
@@ -51,5 +54,11 @@ INCIDENT_PROPERTIES: dict[str, dict[str, str]] = {
 # of 23,311) exceed this limit; 32.7% of those contain unique entity
 # keywords only in the truncated tail (~588 missed instances).  Chunking
 # with overlap recovers these without affecting short narratives.
-CHUNK_MAX_TOKENS: int = 350   # subword tokens per chunk (< 384 model window limit)
-CHUNK_OVERLAP: int = 50       # token overlap between consecutive chunks
+CHUNK_MAX_TOKENS: int = 150   # subword tokens per chunk (< 384 model window limit)
+CHUNK_OVERLAP: int = 30       # token overlap between consecutive chunks
+# Note: max=150 chosen empirically.  Larger windows (350) cause GLiNER's
+# confidence on minority entity types (BODY_PART, INJURY_TYPE) to collapse
+# below threshold when surrounded by mechanical/operational context.  E.g.
+# in #569346 "his jaw under the chin" extracts cleanly at 150 (jaw=0.56,
+# chin=0.59) but is missed entirely at 350.  Smaller windows also reduce
+# chunk-boundary artifacts like spurious cross-sentence spans.

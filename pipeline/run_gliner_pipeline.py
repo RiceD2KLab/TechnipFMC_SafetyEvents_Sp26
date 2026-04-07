@@ -38,18 +38,23 @@ def main() -> None:
                         help="Skip GLiNER extraction, use existing output")
     parser.add_argument("--data-path", type=str, default=None,
                         help=f"Path to dataset CSV (default: {DEFAULT_DATA_PATH})")
-    parser.add_argument("--threshold", type=float, default=0.5,
-                        help="GLiNER confidence threshold (default: 0.5)")
+    parser.add_argument("--threshold", type=float, default=0.40,
+                        help="GLiNER confidence threshold (default: 0.40)")
+    parser.add_argument("--model-name", type=str, default="urchade/gliner_large-v2.1",
+                        help="HuggingFace GLiNER model (default: urchade/gliner_large-v2.1)")
+    parser.add_argument("--output-dir", type=str, default=None,
+                        help="Output directory (default: pipeline/outputs/)")
     args = parser.parse_args()
 
     data_path = Path(args.data_path) if args.data_path else DEFAULT_DATA_PATH
-    OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
+    output_dir = Path(args.output_dir) if args.output_dir else OUTPUTS_DIR
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    gliner_output = OUTPUTS_DIR / "gliner_extractions.parquet"
-    metadata_output = OUTPUTS_DIR / "metadata_parsed.parquet"
-    nodes_output = OUTPUTS_DIR / "entities.parquet"
-    edges_output = OUTPUTS_DIR / "relations.parquet"
-    report_output = OUTPUTS_DIR / "metrics_report.md"
+    gliner_output = output_dir / "gliner_extractions.parquet"
+    metadata_output = output_dir / "metadata_parsed.parquet"
+    nodes_output = output_dir / "entities.parquet"
+    edges_output = output_dir / "relations.parquet"
+    report_output = output_dir / "metrics_report.md"
 
     t_start = time.time()
 
@@ -77,35 +82,122 @@ def main() -> None:
     print("=" * 60)
 
     from extraction.gliner_extract import parse_narrative
+    from langdetect import detect, DetectorFactory, LangDetectException
+    DetectorFactory.seed = 42  # deterministic detection
 
-    def _is_english(text: str, threshold: float = 0.30) -> bool:
-        """Fast ASCII-ratio heuristic for English detection."""
-        if not text:
-            return False
-        ascii_chars = sum(1 for c in text if ord(c) < 128)
-        return (ascii_chars / len(text)) >= threshold
+    def _detect_lang(text: str) -> str:
+        """Detect language of narrative.  Returns ISO code or 'err'."""
+        if not text or len(text.strip()) < 20:
+            return "err"
+        # Use first 600 chars — fast and reliable
+        try:
+            return detect(text[:600])
+        except LangDetectException:
+            return "err"
+
+    def _split_bilingual(text: str) -> str:
+        """If a narrative is bilingual (non-English followed by English
+        translation), return just the English portion.
+
+        Strategy:
+          1. Check the LAST 500 chars are English.  If not, no recovery.
+          2. Walk backward through sentences.  Detect language ON EACH
+             SENTENCE INDIVIDUALLY (sentences < 30 chars are skipped as
+             unreliable).  Stop at the first sentence that's clearly
+             non-English; everything from the next sentence onward is the
+             English portion.
+          3. Require ≥300 chars of recovered English to be useful.
+        """
+        import re as _re
+        if len(text) < 500:
+            return ""
+        try:
+            if detect(text[-500:]) != "en":
+                return ""
+        except LangDetectException:
+            return ""
+
+        sentences = _re.split(r'(?<=[.!?])\s+', text.strip())
+        if len(sentences) < 2:
+            return ""
+
+        # Walk backward; find the boundary where language switches.
+        # `english_start_idx` = first index whose sentence is English (or
+        # short/ambiguous and surrounded by English).
+        english_start_idx = len(sentences)  # exclusive end
+        for i in range(len(sentences) - 1, -1, -1):
+            sent = sentences[i].strip()
+            if len(sent) < 30:
+                # Too short to detect reliably — defer judgement, keep walking
+                english_start_idx = i
+                continue
+            try:
+                lang = detect(sent)
+            except LangDetectException:
+                english_start_idx = i
+                continue
+            if lang == "en":
+                english_start_idx = i
+            else:
+                # Hit a non-English sentence — stop here
+                break
+
+        recovered = " ".join(sentences[english_start_idx:]).strip()
+        if len(recovered) < 300:
+            return ""
+        # Final validation on the recovered portion
+        try:
+            if detect(recovered[:600]) == "en":
+                return recovered
+        except LangDetectException:
+            pass
+        return ""
 
     df_all = df  # Keep full dataset for metadata parsing
     pre_filter_count = len(df)
     empty_narrative = 0
     non_english = 0
+    bilingual_recovered = 0
     gliner_mask = []
-    for _, row in df.iterrows():
+    narratives_for_gliner: dict[int, str] = {}  # row index -> narrative text
+    for idx, row in df.iterrows():
         narrative = parse_narrative(str(row.get("text", "")))
         if not narrative:
             gliner_mask.append(False)
             empty_narrative += 1
-        elif not _is_english(narrative):
-            gliner_mask.append(False)
-            non_english += 1
-        else:
+            continue
+        lang = _detect_lang(narrative)
+        if lang == "en":
             gliner_mask.append(True)
+            narratives_for_gliner[idx] = narrative
+        else:
+            # Try to recover an English portion from bilingual narratives
+            english_part = _split_bilingual(narrative)
+            if english_part and len(english_part) >= 50:
+                gliner_mask.append(True)
+                narratives_for_gliner[idx] = english_part
+                bilingual_recovered += 1
+            else:
+                gliner_mask.append(False)
+                non_english += 1
 
     df_for_gliner = df[gliner_mask].copy()
+    # Replace narrative text in df_for_gliner with the cleaned English-only version
+    # so downstream extraction sees only English
+    if bilingual_recovered > 0:
+        # Rebuild text column wrapped in NARRATIVE: marker so parse_narrative still works
+        new_texts = []
+        for idx, row in df_for_gliner.iterrows():
+            cleaned = narratives_for_gliner.get(idx, "")
+            new_texts.append(f"NARRATIVE: {cleaned}")
+        df_for_gliner = df_for_gliner.copy()
+        df_for_gliner["text"] = new_texts
+
     filtered_count = pre_filter_count - len(df_for_gliner)
     print(f"  Total records: {pre_filter_count:,}")
     print(f"  Empty narratives: {empty_narrative:,}")
     print(f"  Non-English narratives: {non_english:,}")
+    print(f"  Bilingual recovered (English portion only): {bilingual_recovered:,}")
     print(f"  Records for GLiNER: {len(df_for_gliner):,} ({filtered_count:,} filtered)")
 
     # ── Step 1: GLiNER Entity Extraction ──────────────────────────────────
@@ -116,7 +208,7 @@ def main() -> None:
         t0 = time.time()
 
         from extraction.gliner_extract import run_gliner_extraction
-        gliner_df = run_gliner_extraction(df_for_gliner, gliner_output, threshold=args.threshold)
+        gliner_df = run_gliner_extraction(df_for_gliner, gliner_output, threshold=args.threshold, model_name=args.model_name)
 
         t1 = time.time()
         print(f"  Time: {t1 - t0:.1f}s ({(t1 - t0) / 60:.1f} min)")
@@ -183,7 +275,7 @@ def main() -> None:
     print(f"  Nodes: {len(nodes_df):,}")
     print(f"  Edges: {len(edges_df):,}")
     print(f"  Gate 1: {gate_status}")
-    print(f"\n  Outputs saved to: {OUTPUTS_DIR}/")
+    print(f"\n  Outputs saved to: {output_dir}/")
     print(f"    - entities.parquet")
     print(f"    - relations.parquet")
     print(f"    - metrics_report.md")
