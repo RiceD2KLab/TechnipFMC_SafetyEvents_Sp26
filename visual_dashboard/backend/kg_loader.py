@@ -17,6 +17,7 @@ _kg_cache = {
     "G": None,
     "entities_df": None,
     "relations_df": None,
+    "metadata_df": None,
     "incident_display_map": None,
 }
 
@@ -59,7 +60,7 @@ def load_kg_data():
         tuple: (G: nx.DiGraph, entities_df: pd.DataFrame, relations_df: pd.DataFrame)
     """
     if _kg_cache["G"] is not None:
-        return _kg_cache["G"], _kg_cache["entities_df"], _kg_cache["relations_df"]
+        return _kg_cache["G"], _kg_cache["entities_df"], _kg_cache["relations_df"], _kg_cache["metadata_df"]
 
     entities_path = _KG_DATA_DIR / "entities.parquet"
     relations_path = _KG_DATA_DIR / "relations.parquet"
@@ -105,11 +106,19 @@ def load_kg_data():
     ]
     G.add_edges_from(edges_with_attrs)
 
+    # Load metadata (required for NLQ query execution)
+    metadata_path = _KG_DATA_DIR / "metadata_parsed.parquet"
+    if metadata_path.exists():
+        metadata_df = pd.read_parquet(metadata_path)
+    else:
+        metadata_df = pd.DataFrame()
+
     _kg_cache["G"] = G
     _kg_cache["entities_df"] = entities_df
     _kg_cache["relations_df"] = relations_df
+    _kg_cache["metadata_df"] = metadata_df
 
-    return G, entities_df, relations_df
+    return G, entities_df, relations_df, metadata_df
 
 
 def get_incident_display_map(entities_df):

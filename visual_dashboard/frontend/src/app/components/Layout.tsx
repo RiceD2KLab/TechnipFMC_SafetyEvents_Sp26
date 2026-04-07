@@ -1,11 +1,44 @@
+import { useRef, useEffect } from "react";
 import { Outlet, Link, useLocation } from "react-router";
-import { Activity, BarChart3, GitBranch, Search } from "lucide-react";
+import {
+  Activity,
+  BarChart3,
+  GitBranch,
+  Search,
+  Clock,
+  Copy,
+  Share2,
+  Loader2,
+  Sparkles,
+  X,
+} from "lucide-react";
 import { Card } from "./ui/card";
 import { useQuery } from "../context/QueryContext";
+import { toast } from "sonner";
+
+const SUGGESTED_QUERIES = [
+  "What equipment is most linked to near misses?",
+  "Which sites show recurring confined space hazards?",
+  "Trend analysis for LOTO deviations this quarter",
+  "High-severity incidents involving temporary work at height",
+];
 
 export default function Layout() {
   const location = useLocation();
-  const { query, setQuery, setSearchResults } = useQuery();
+  const {
+    query,
+    setQuery,
+    isLoading,
+    error,
+    result,
+    runQuery,
+    clearResult,
+    recentQueries,
+    isDropdownOpen,
+    setIsDropdownOpen,
+  } = useQuery();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const navigation = [
     { name: "Dashboard", path: "/", icon: BarChart3 },
@@ -16,15 +49,67 @@ export default function Layout() {
 
   const handleSearch = () => {
     if (query.trim()) {
-      setSearchResults(`Searching for: "${query}"`);
+      runQuery();
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSearch();
     }
+    if (e.key === "Escape") {
+      setIsDropdownOpen(false);
+    }
   };
+
+  const handleSuggestionClick = (q: string) => {
+    setQuery(q);
+    runQuery(q);
+  };
+
+  const handleCopy = () => {
+    if (!result) return;
+    const text = `${result.title}\n\n${result.summary.join("\n")}\n\n${result.result_summary}`;
+    navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard");
+  };
+
+  const handleShare = () => {
+    if (!result) return;
+    const url = `${window.location.origin}${location.pathname}?q=${encodeURIComponent(result.original_query)}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Link copied to clipboard");
+  };
+
+  const formatTimestamp = (ts: number) => {
+    const d = new Date(ts);
+    return (
+      d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) +
+      ", " +
+      d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
+    );
+  };
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [setIsDropdownOpen]);
+
+  // Show error toast
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -37,8 +122,12 @@ export default function Layout() {
                 <Activity className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="font-semibold text-gray-900">Safety Analytics Platform</h1>
-                <p className="text-sm text-gray-500">TechnipFMC Industrial Safety</p>
+                <h1 className="font-semibold text-gray-900">
+                  Safety Analytics Platform
+                </h1>
+                <p className="text-sm text-gray-500">
+                  TechnipFMC Industrial Safety
+                </p>
               </div>
             </div>
           </div>
@@ -77,25 +166,192 @@ export default function Layout() {
           <Card className="p-6 shadow-sm border-gray-200">
             <div className="flex items-center gap-3 mb-2">
               <Search className="w-5 h-5 text-blue-600" />
-              <label className="font-medium text-gray-900">Natural Language Query</label>
+              <label className="font-medium text-gray-900">
+                Natural Language Query
+              </label>
             </div>
-            <div className="relative">
+
+            {/* Search bar + dropdown wrapper */}
+            <div className="relative" ref={dropdownRef}>
               <input
+                ref={inputRef}
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onFocus={() => !result && setIsDropdownOpen(true)}
+                onKeyDown={handleKeyDown}
                 placeholder="Ask a safety question (e.g., What equipment is most linked to near misses?)"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder:text-gray-400"
+                disabled={isLoading}
               />
-              <button 
+              <button
                 onClick={handleSearch}
-                className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                disabled={isLoading || !query.trim()}
+                className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
               >
-                Search
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Search"
+                )}
               </button>
+
+              {/* Dropdown: Recent + Suggested Queries */}
+              {isDropdownOpen && !isLoading && !result && (
+                <div className="absolute z-50 left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-[400px] overflow-y-auto">
+                  {/* Recent Queries */}
+                  <div className="p-4 border-b border-gray-100">
+                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                      Recent Queries
+                    </h3>
+                    {recentQueries.length === 0 ? (
+                      <p className="text-sm text-gray-400">
+                        No recent searches yet.
+                      </p>
+                    ) : (
+                      <div className="space-y-1">
+                        {recentQueries.map((rq, i) => (
+                          <button
+                            key={i}
+                            onClick={() => handleSuggestionClick(rq.query)}
+                            className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-50 flex items-start gap-3"
+                          >
+                            <Clock className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
+                            <div>
+                              <p className="text-sm text-gray-900">
+                                {rq.query}
+                              </p>
+                              <p className="text-xs text-gray-400">
+                                {formatTimestamp(rq.timestamp)}
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Suggested Queries */}
+                  <div className="p-4">
+                    <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                      Suggested Queries
+                    </h3>
+                    <div className="space-y-1">
+                      {SUGGESTED_QUERIES.map((sq, i) => (
+                        <button
+                          key={i}
+                          onClick={() => handleSuggestionClick(sq)}
+                          className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-50 text-sm text-gray-700"
+                        >
+                          {sq}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
+
+            {/* Loading State */}
+            {isLoading && (
+              <div className="mt-4 flex items-center gap-3 text-blue-600">
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span className="text-sm">
+                  Analyzing your query against the knowledge graph...
+                </span>
+              </div>
+            )}
           </Card>
+
+          {/* Results Panel (outside the search Card, below it) */}
+          {result && !isLoading && (
+            <Card className="mt-4 p-6 border-l-4 border-l-blue-600 shadow-sm">
+              {/* Title row */}
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-3 min-w-0">
+                  <Sparkles className="w-6 h-6 text-blue-600 mt-1 shrink-0" />
+                  <div className="min-w-0">
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      {result.title}
+                    </h2>
+                    <p className="text-sm text-gray-500 mt-0.5">
+                      &ldquo;{result.original_query}&rdquo;
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0 ml-4">
+                  <button
+                    onClick={handleCopy}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                  >
+                    <Copy className="w-3.5 h-3.5" /> Copy
+                  </button>
+                  <button
+                    onClick={handleShare}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                  >
+                    <Share2 className="w-3.5 h-3.5" /> Share
+                  </button>
+                  <button
+                    onClick={clearResult}
+                    className="p-1.5 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-50"
+                    title="Dismiss results"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Low confidence warning */}
+              {result.confidence < 0.7 && result.clarification && (
+                <div className="mt-3 px-3 py-2 bg-amber-50 border border-amber-200 rounded text-sm text-amber-800">
+                  Low confidence ({(result.confidence * 100).toFixed(0)}%):{" "}
+                  {result.clarification}
+                </div>
+              )}
+
+              {/* Summary section */}
+              <div className="mt-4">
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                  Summary
+                </h3>
+                <ul className="space-y-1.5">
+                  {result.summary.map((bullet, i) => (
+                    <li
+                      key={i}
+                      className="flex items-start gap-2 text-sm text-gray-700"
+                    >
+                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0" />
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Referenced Safety Reports */}
+              {result.referenced_reports.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                    Referenced Safety Reports
+                  </h3>
+                  <div className="flex flex-wrap gap-x-6 gap-y-1">
+                    {result.referenced_reports.map((report) => (
+                      <span
+                        key={report.incident_id}
+                        className="text-sm text-blue-600"
+                      >
+                        SER-{report.incident_id}
+                        {report.incident_type &&
+                          ` \u2014 ${report.incident_type}`}
+                        {report.description &&
+                          ` \u2014 ${report.description}`}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </Card>
+          )}
         </div>
       </div>
 

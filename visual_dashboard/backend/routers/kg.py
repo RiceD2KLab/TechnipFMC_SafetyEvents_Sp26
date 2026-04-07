@@ -28,7 +28,7 @@ router = APIRouter(prefix="/kg", tags=["knowledge-graph"])
 @router.get("/incidents", response_model=IncidentListResponse)
 def list_incidents():
     """Return all INCIDENT entities for the browse-incidents dropdown."""
-    _, entities_df, _ = load_kg_data()
+    _, entities_df, _, _ = load_kg_data()
     display_map = get_incident_display_map(entities_df)
     incidents = [
         IncidentOption(label=label, entity_id=eid)
@@ -51,7 +51,7 @@ def search_entities(
         except re.error as e:
             raise HTTPException(status_code=400, detail=f"Invalid regex pattern: {e}")
 
-    _, entities_df, _ = load_kg_data()
+    _, entities_df, _, _ = load_kg_data()
     raw = find_entities_by_value(
         entities_df,
         entity_type=entity_type,
@@ -72,7 +72,7 @@ def get_subgraph(
     entity_type_filter: list[str] | None = Query(None, description="Entity types to include. Omit for all."),
 ):
     """Extract and return a subgraph centered on a given node."""
-    G, _, _ = load_kg_data()
+    G, _, _, _ = load_kg_data()
 
     if node_id not in G:
         raise HTTPException(status_code=404, detail=f"Node '{node_id}' not found in graph.")

@@ -3,12 +3,15 @@
 import logging
 from contextlib import asynccontextmanager
 
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from kg_loader import load_kg_data
-from routers import kg
+from routers import kg, nlq
 from schemas import HealthResponse
+
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -18,11 +21,12 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """Pre-load the Knowledge Graph on startup."""
     logger.info("Loading Knowledge Graph data...")
-    G, entities_df, relations_df = load_kg_data()
+    G, entities_df, relations_df, metadata_df = load_kg_data()
     logger.info(
-        "KG loaded: %d nodes, %d edges",
+        "KG loaded: %d nodes, %d edges, %d metadata rows",
         G.number_of_nodes(),
         G.number_of_edges(),
+        len(metadata_df),
     )
     yield
 
@@ -47,13 +51,14 @@ app.add_middleware(
 )
 
 app.include_router(kg.router, prefix="/api")
+app.include_router(nlq.router, prefix="/api")
 
 
 @app.get("/api/health", response_model=HealthResponse)
 def health_check():
     """Health check endpoint."""
     try:
-        G, _, _ = load_kg_data()
+        G, _, _, _ = load_kg_data()
         return HealthResponse(
             status="ok",
             graph_loaded=True,

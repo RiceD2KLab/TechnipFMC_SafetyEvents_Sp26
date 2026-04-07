@@ -60,3 +60,31 @@ export interface EntityTypeInfo {
 export interface EntityTypeListResponse {
   entity_types: EntityTypeInfo[];
 }
+
+// ── NLQ Types ──────────────────────────────────────────────────
+
+export interface ReferencedReport {
+  incident_id: string;
+  incident_type: string | null;
+  description: string | null;
+}
+
+export interface NLQResponse {
+  title: string;
+  original_query: string;
+  summary: string[];
+  referenced_reports: ReferencedReport[];
+  confidence: number;
+  clarification: string | null;
+  result_summary: string;
+  detail: string;
+  reasoning: string | null;
+  latency_ms: number;
+  elapsed: string;
+}
+
+export interface RecentQuery {
+  query: string;
+  timestamp: number;
+  title: string | null;
+}
