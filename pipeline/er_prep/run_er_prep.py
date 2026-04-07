@@ -3,8 +3,13 @@
 
 Reads from pipeline/outputs/ (does not modify).
 Writes to pipeline/er_prep/.
+
+Usage:
+    python -m pipeline.er_prep.run_er_prep
+    python -m pipeline.er_prep.run_er_prep --input-dir pipeline/outputs/benchmark_large --output-dir pipeline/er_prep/benchmark_large
 """
 
+import argparse
 import re
 from pathlib import Path
 
@@ -13,13 +18,21 @@ import pandas as pd
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-BASE = Path(__file__).resolve().parent.parent  # pipeline/
-OUT_DIR = BASE / "er_prep"
-OUT_DIR.mkdir(exist_ok=True)
+_parser = argparse.ArgumentParser(description="ER Prep")
+_parser.add_argument("--input-dir", type=str, default=None,
+                     help="Directory with entities/relations/gliner parquets (default: pipeline/outputs/)")
+_parser.add_argument("--output-dir", type=str, default=None,
+                     help="Output directory (default: pipeline/er_prep/)")
+_args = _parser.parse_args()
 
-ENTITIES_PATH = BASE / "outputs" / "entities.parquet"
-RELATIONS_PATH = BASE / "outputs" / "relations.parquet"
-GLINER_PATH = BASE / "outputs" / "gliner_extractions.parquet"
+BASE = Path(__file__).resolve().parent.parent  # pipeline/
+INPUT_DIR = Path(_args.input_dir) if _args.input_dir else BASE / "outputs"
+OUT_DIR = Path(_args.output_dir) if _args.output_dir else BASE / "er_prep"
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+ENTITIES_PATH = INPUT_DIR / "entities.parquet"
+RELATIONS_PATH = INPUT_DIR / "relations.parquet"
+GLINER_PATH = INPUT_DIR / "gliner_extractions.parquet"
 
 # ---------------------------------------------------------------------------
 # Load data
@@ -51,9 +64,72 @@ STOP_WORDS = {
     "we", "he", "she", "it", "they", "them", "his", "her", "its", "our",
     "to", "of", "in", "on", "at", "for", "with", "by", "from",
     "so", "no", "not", "yes",
+    # Safety-domain pronouns/role-words that GLiNER mislabels as ORG
+    "ip", "iv",  # IP = "Injured Person", IV = "Involved Person" — pronouns, not orgs
+    "him", "us",
 }
 
-KNOWN_ABBREVIATIONS = {"HP", "IP", "UK", "US", "UV", "AC", "DC", "CO", "H2", "O2", "ER", "BP", "DP"}
+# Note: "IP" removed from KNOWN_ABBREVIATIONS — in safety reports it always
+# means "Injured Person" (a pronoun/role), never a company.
+KNOWN_ABBREVIATIONS = {"HP", "UK", "USA", "UV", "AC", "DC", "CO2", "H2", "O2", "ER", "BP", "DP"}
+
+# Per-type domain stopwords: generic role/category words that GLiNER labels
+# as entities but carry no information for graph queries.  These vary by
+# entity type because the same word can be valid for one type but noise for
+# another (e.g. "site" is meaningless as LOCATION but fine elsewhere).
+DOMAIN_STOPWORDS = {
+    "ORGANIZATION": {
+        # Generic roles
+        "client", "clients", "company", "contractor", "contractors",
+        "subcontractor", "subcontractors",
+        "crew", "customer", "customers", "employee", "employees",
+        "employer", "foreman", "operator", "operators", "personnel",
+        "project", "staff", "supervisor", "team", "worker", "workers",
+        "witness", "witnesses",
+        # Role titles often mistagged
+        "medic", "nurse", "doctor", "patient", "visitor", "driver",
+        "manager", "engineer", "technician",
+        # Department/function labels
+        "maintenance", "management", "operations", "production",
+        "hse department", "hse team", "safety team", "safety department",
+        # Processes/documents mistagged as orgs
+        "jsa", "sds", "toolbox talk",
+        # Pronouns/generics
+        "ip", "we", "they", "he", "she", "it", "everyone", "someone",
+        # Generic nouns that end up as orgs
+        "vessel", "vehicle",
+        # Numeric/generic
+        "911", "999", "118",
+    },
+    "EQUIPMENT": {
+        "equipment", "machine", "machinery", "tool", "tools",
+        "item", "items", "object", "objects", "unit", "units",
+        "device", "devices", "part", "parts", "component", "components",
+    },
+    "LOCATION": {
+        "area", "site", "location", "place", "building", "floor",
+        "ground", "workplace", "worksite", "facility",
+        "room", "the area", "the site", "the location", "the place",
+        "the floor", "the ground", "the building", "work area",
+    },
+    "INJURY_TYPE": {
+        "injury", "injuries", "damage", "harm", "wound", "wounds",
+    },
+    "BODY_PART": {
+        "body", "ip",  # "IP" can be mislabeled as body part too
+    },
+}
+
+# Negation phrases that GLiNER mislabels as INJURY_TYPE.  E.g. "no injury",
+# "No one was harmed" — these mean the OPPOSITE of an injury and must be
+# filtered.  Pattern-based to catch variations.
+INJURY_NEGATION_PATTERNS = [
+    re.compile(r"^no\s+\w+", re.IGNORECASE),
+    re.compile(r"^none\b", re.IGNORECASE),
+    re.compile(r"\b(?:no\s+one|nobody|nothing)\b", re.IGNORECASE),
+    re.compile(r"^limited\s+or\s+no\b", re.IGNORECASE),
+    re.compile(r"^without\b", re.IGNORECASE),
+]
 
 # Exclude INCIDENT and ROOT_CAUSE_CATEGORY
 mask_eligible = ~ent["entity_type"].isin(["INCIDENT", "ROOT_CAUSE_CATEGORY"])
@@ -96,15 +172,17 @@ for _, row in candidates.iterrows():
         flag(row, "short_non_abbreviation")
         continue
 
-    # 5. Generic/circular entity terms (exact match, type-aware)
-    STOP_ENTITIES = {
-        "EQUIPMENT": {"equipment", "machine", "tool", "device"},
-        "INJURY_TYPE": {"injury", "injuries"},
-    }
-    stop_set = STOP_ENTITIES.get(row["entity_type"], set())
-    if val.lower() in stop_set:
-        flag(row, "stop_entity")
+    # 5. Domain-specific per-type stopwords (exact match, lowercased)
+    domain_stop = DOMAIN_STOPWORDS.get(row["entity_type"], set())
+    if val.lower() in domain_stop:
+        flag(row, "domain_stopword")
         continue
+
+    # 6. Injury negation phrases ("no injury", "No one was harmed", etc.)
+    if row["entity_type"] == "INJURY_TYPE":
+        if any(p.search(val) for p in INJURY_NEGATION_PATTERNS):
+            flag(row, "injury_negation")
+            continue
 
 garbage_df = pd.DataFrame(garbage_rows)
 
@@ -236,9 +314,24 @@ LEGAL_SUFFIXES = {"PLC", "INC", "INC.", "LLC", "LTD", "LTD.", "S.A.", "AG", "GMB
 ABBREVIATION_MAP = {"TFMC": "TECHNIPFMC"}
 
 
+# Leading determiners/possessives to strip for canonicalization.
+# GLiNER often emits "the crane", "his jaw", "a forklift" — canonicalize
+# by dropping the leading article/possessive so they dedupe with the bare noun.
+_LEADING_DET_RE = re.compile(
+    r"^(the|a|an|his|her|their|this|that|these|those|my|our|your)\s+",
+    re.IGNORECASE,
+)
+
+
 def normalize_base(val):
-    """Lowercase, strip, remove trailing 's'."""
+    """Lowercase, strip leading determiners/possessives, strip trailing 's'."""
     v = val.lower().strip()
+    # Strip leading determiner/possessive (may apply multiple times, e.g.
+    # "the the" edge case from chunk artifacts)
+    prev = None
+    while v != prev:
+        prev = v
+        v = _LEADING_DET_RE.sub("", v).strip()
     if len(v) > 3 and v.endswith("s") and not v.endswith("ss"):
         v = v[:-1]
     return v
@@ -251,7 +344,9 @@ def normalize_equipment(val):
 
 def normalize_body_part(val):
     tokens = val.lower().strip().split()
-    stripped = [t for t in tokens if t not in LATERALITY_TOKENS and t not in ORDINAL_TOKENS]
+    # Keep laterality tokens (left/right) — clinically significant.
+    # Only strip ordinal tokens (index/middle/ring finger variants).
+    stripped = [t for t in tokens if t not in ORDINAL_TOKENS]
     base = " ".join(stripped) if stripped else val.lower().strip()
     base = normalize_base(base)
     return base, base[:3] if len(base) >= 3 else base
@@ -358,15 +453,16 @@ for etype, cfg in TYPE_CONFIGS.items():
                     else:
                         rule = "jaro_winkler"
 
-                    # Special rules for BODY_PART
+                    # Special rules for BODY_PART: preserve laterality
                     if etype == "BODY_PART":
                         a_tokens = set(val_a.lower().split())
                         b_tokens = set(val_b.lower().split())
                         if a_tokens & LATERALITY_TOKENS != b_tokens & LATERALITY_TOKENS:
-                            if a_tokens & LATERALITY_TOKENS and b_tokens & LATERALITY_TOKENS:
-                                # "left hand" vs "right hand" — skip
-                                continue
-                            rule = "laterality_strip"
+                            # Any laterality mismatch — skip entirely.
+                            # "left hand" vs "right hand" = different body parts.
+                            # "left knee" vs "knee" = keep separate (laterality is
+                            # clinically significant in safety incident reporting).
+                            continue
 
                     if etype == "INJURY_TYPE":
                         a_tokens = set(val_a.lower().split())
