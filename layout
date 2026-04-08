@@ -1,0 +1,26 @@
+petro-super-pipeline/
+│
+├── README.md
+├── requirements.txt
+├── .gitignore
+├── .env.example
+│
+├── data/
+│   └── sample/
+│
+├── pipeline/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── extractor.py
+│   ├── resolver.py
+│   ├── graph.py
+│   ├── label_generator.py   ← ⭐ your innovation
+│   └── pipeline.py
+│
+├── scripts/
+│   └── run_pipeline.py
+│
+├── tests/
+│   └── test_pipeline.py
+│
+└── notebooks/
