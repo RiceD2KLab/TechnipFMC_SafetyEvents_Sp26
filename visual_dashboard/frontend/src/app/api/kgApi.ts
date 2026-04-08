@@ -3,12 +3,27 @@ import type {
   EntityTypeListResponse,
   EntitySearchResponse,
   SubgraphResponse,
+  NLQResponse,
 } from "../types/kg";
 
 const API_BASE = "/api/kg";
+const NLQ_BASE = "/api/nlq";
 
 async function fetchJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
+  if (!res.ok) {
+    const detail = await res.text();
+    throw new Error(`API error ${res.status}: ${detail}`);
+  }
+  return res.json();
+}
+
+async function postJson<T>(url: string, body: unknown): Promise<T> {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
   if (!res.ok) {
     const detail = await res.text();
     throw new Error(`API error ${res.status}: ${detail}`);
@@ -50,4 +65,8 @@ export function fetchSubgraph(params: {
     }
   }
   return fetchJson(`${API_BASE}/subgraph?${qs}`);
+}
+
+export function executeNLQuery(query: string): Promise<NLQResponse> {
+  return postJson(`${NLQ_BASE}/query`, { query });
 }

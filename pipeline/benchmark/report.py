@@ -42,16 +42,17 @@ def generate_report(results, G, entities_df, metadata_df, output_path, relations
 
     for qid in sorted(results.keys()):
         r = results[qid]
+        cov = r.get('coverage', '❌')
         lines.append(
             f"| {qid} | {r['name']} | {r['type']} | "
-            f"{r['coverage']} | {r['result_summary']} |")
+            f"{cov} | {r.get('result_summary', '?')} |")
     lines.append("")
 
     # ── Coverage summary ─────────────────────────────────────────────
     passing = sum(1 for r in results.values()
-                  if r["coverage"] == "\u2705")
+                  if r.get("coverage") == "\u2705")
     failing = sum(1 for r in results.values()
-                  if r["coverage"] in ("\u26a0\ufe0f", "\u274c"))
+                  if r.get("coverage") in ("\u26a0\ufe0f", "\u274c"))
     lines.append(
         f"**Overall:** {passing} \u2705 passing / "
         f"{failing} \u26a0\ufe0f failing out of {len(results)} queries")
@@ -65,24 +66,24 @@ def generate_report(results, G, entities_df, metadata_df, output_path, relations
         r = results[qid]
         lines.append(f"### {qid}: {r['name']}")
         lines.append(
-            f"**Type:** {r['type']} | **Status:** {r['coverage']} | "
+            f"**Type:** {r['type']} | **Status:** {r.get('coverage', '❌')} | "
             f"**Time:** {r.get('elapsed', '?')}")
         lines.append("")
         lines.append("```")
-        lines.append(r["detail"])
+        lines.append(r.get("detail", ""))
         lines.append("```")
         lines.append("")
 
     # ── Failures ─────────────────────────────────────────────────────
     failing_queries = [
         (qid, r) for qid, r in sorted(results.items())
-        if r["coverage"] != "\u2705"
+        if r.get("coverage") != "\u2705"
     ]
     if failing_queries:
         lines.append("## 3. Failing Queries")
         lines.append("")
         for qid, r in failing_queries:
-            lines.append(f"- **{qid}** ({r['name']}): {r['result_summary']}")
+            lines.append(f"- **{qid}** ({r['name']}): {r.get('result_summary', '?')}")
         lines.append("")
 
     # ── Regression Snapshot ────────────────────────────────────────────
@@ -91,8 +92,8 @@ def generate_report(results, G, entities_df, metadata_df, output_path, relations
     for qid, r in results.items():
         current_snapshot[qid] = {
             "name": r["name"],
-            "coverage": r["coverage"],
-            "result_summary": r["result_summary"],
+            "coverage": r.get("coverage", "❌"),
+            "result_summary": r.get("result_summary", "?"),
         }
 
     previous_snapshot = None
@@ -115,9 +116,9 @@ def generate_report(results, G, entities_df, metadata_df, output_path, relations
             elif prev and not curr:
                 changes.append(f"- **{qid}**: REMOVED")
             elif prev and curr:
-                if prev["coverage"] != curr["coverage"]:
+                if prev.get("coverage") != curr.get("coverage"):
                     changes.append(
-                        f"- **{qid}**: {prev['coverage']} → {curr['coverage']}")
+                        f"- **{qid}**: {prev.get('coverage', '?')} → {curr.get('coverage', '?')}")
         if changes:
             lines.extend(changes)
         else:
