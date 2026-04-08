@@ -1,0 +1,28 @@
+import pandas as pd
+
+class LabelGenerator:
+    def __init__(self, catalogue_path):
+        self.catalogue_path = catalogue_path
+
+    def generate_labels(self):
+        df = pd.read_excel(self.catalogue_path)
+
+        labels = {
+            "EQUIPMENT", "HAZARD", "LOCATION", "INCIDENT",
+            "ACTIVITY", "INJURY", "CONSEQUENCE", "JOB_TITLE",
+            "DATE", "ROOT_CAUSE"
+        }
+
+        for _, row in df.iterrows():
+            col_name = str(row.get('Full Name', '')).strip().upper()
+            desc = str(row.get('Description (No Formatting)', '')).strip()
+
+            if len(col_name) > 2 and 'ID' not in col_name:
+                col_name = col_name.replace("_", " ")
+
+                if desc and desc != 'nan':
+                    labels.add(f"{col_name} ({desc[:50]})")
+                else:
+                    labels.add(col_name)
+
+        return list(labels)
