@@ -359,7 +359,92 @@ def build_comparison_table(
     _write_markdown(df, md_path, k=k, n_gold=len(valid_gold))
     print(f"  Markdown table   → {md_path}")
 
+    # ── Pairwise correlation matrices ─────────────────────────────────────
+    # Collect all available method matrices on valid_gold
+    all_matrices: dict[str, np.ndarray] = {
+        "Text Embedding":     text_mat,
+        "Structural Overlap": struct_mat,
+    }
+    for method_key, label in kg_label_map.items():
+        emb = emb_maps.get(method_key, {})
+        if emb:
+            sub_ids = [g for g in valid_gold if g in emb]
+            if len(sub_ids) == len(valid_gold):
+                all_matrices[label.replace("KG Embedding — ", "").replace("GNN Embedding — ", "")] = _cosine_matrix(emb, valid_gold)
+    if len(available_mats) >= 2:
+        all_matrices["Hybrid"] = hybrid_mat
+
+    pearson_df, spearman_df = build_pairwise_correlation_matrices(all_matrices)
+
+    pearson_csv = output_dir / "pairwise_pearson.csv"
+    pearson_df.to_csv(pearson_csv)
+    print(f"  Pairwise Pearson  → {pearson_csv}")
+
+    spearman_csv = output_dir / "pairwise_spearman.csv"
+    spearman_df.to_csv(spearman_csv)
+    print(f"  Pairwise Spearman → {spearman_csv}")
+
+    pearson_md = output_dir / "pairwise_pearson.md"
+    _write_pairwise_markdown(pearson_df, pearson_md, metric="Pearson r", n_gold=len(valid_gold))
+    print(f"  Pairwise Pearson MD  → {pearson_md}")
+
+    spearman_md = output_dir / "pairwise_spearman.md"
+    _write_pairwise_markdown(spearman_df, spearman_md, metric="Spearman ρ", n_gold=len(valid_gold))
+    print(f"  Pairwise Spearman MD → {spearman_md}")
+
     return df
+
+
+# ── Pairwise correlation matrix ───────────────────────────────────────────
+
+
+def build_pairwise_correlation_matrices(
+    method_matrices: dict[str, np.ndarray],
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Compute all-pairs Pearson r and Spearman ρ between every method pair.
+
+    Each method is used as the reference point against every other method,
+    producing a symmetric N×N matrix where entry (i, j) is the correlation
+    between method i and method j over all pairwise similarity scores in the
+    gold standard subset.
+
+    Args:
+        method_matrices: {method_label: (N×N) similarity matrix}.
+                         All matrices must share the same N and ordering.
+
+    Returns:
+        (pearson_df, spearman_df) — two square DataFrames with method labels
+        as both index and columns.  Diagonal entries are 1.0.
+    """
+    labels = list(method_matrices.keys())
+    n = len(labels)
+    pearson_vals  = np.ones((n, n))
+    spearman_vals = np.ones((n, n))
+
+    for i, label_i in enumerate(labels):
+        mat_i = method_matrices[label_i]
+        idx   = np.tril_indices(mat_i.shape[0], k=-1)
+        v_i   = mat_i[idx]
+        for j, label_j in enumerate(labels):
+            if i == j:
+                continue
+            if j < i:
+                # Symmetric — copy already-computed value
+                pearson_vals[i, j]  = pearson_vals[j, i]
+                spearman_vals[i, j] = spearman_vals[j, i]
+                continue
+            mat_j = method_matrices[label_j]
+            v_j   = mat_j[idx]
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                pr, _ = pearsonr(v_i, v_j)
+                sr, _ = spearmanr(v_i, v_j)
+            pearson_vals[i, j]  = round(float(pr), 4)
+            spearman_vals[i, j] = round(float(sr), 4)
+
+    pearson_df  = pd.DataFrame(pearson_vals,  index=labels, columns=labels)
+    spearman_df = pd.DataFrame(spearman_vals, index=labels, columns=labels)
+    return pearson_df, spearman_df
 
 
 def _write_markdown(df: pd.DataFrame, path: Path, k: int, n_gold: int) -> None:
@@ -410,6 +495,30 @@ def _write_markdown(df: pd.DataFrame, path: Path, k: int, n_gold: int) -> None:
             str(row["status"]),
         ]
         lines.append("| " + " | ".join(cells) + " |")
+
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def _write_pairwise_markdown(df: pd.DataFrame, path: Path, metric: str, n_gold: int) -> None:
+    """Write a pairwise correlation matrix as a Markdown table."""
+    labels = list(df.columns)
+    lines = [
+        f"# Pairwise {metric} — All Methods vs All Methods",
+        "",
+        f"**Test incidents (N):** {n_gold}",
+        "",
+        f"Each cell shows the {metric} between the row method (reference) and the column method.",
+        "Diagonal entries are 1.0 (each method perfectly correlates with itself).",
+        "",
+    ]
+
+    header = "| Method | " + " | ".join(labels) + " |"
+    lines.append(header)
+    lines.append("| " + " | ".join(["---"] * (len(labels) + 1)) + " |")
+
+    for row_label in labels:
+        cells = [f"{df.loc[row_label, col]:.4f}" for col in labels]
+        lines.append(f"| {row_label} | " + " | ".join(cells) + " |")
 
     path.write_text("\n".join(lines), encoding="utf-8")
 
@@ -475,6 +584,7 @@ def main() -> None:
 
     # Print to console
     print("\n" + df.to_string(index=False))
+    print("\n  Pairwise correlation matrices also written to outputs/.")
 
 
 if __name__ == "__main__":

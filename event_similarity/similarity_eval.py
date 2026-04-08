@@ -1,6 +1,6 @@
 """Tier 1 event similarity evaluation (Section 5.5 of the project report).
 
-For each of the 50 Gold Standard query incidents this module computes:
+For each of the Gold Standard query incidents this module computes:
 
   1. Top-10 most similar incidents under text embedding similarity.
   2. Top-10 most similar incidents under schema-constrained structural overlap.
@@ -18,6 +18,7 @@ Results are serialised to JSON in event_similarity/outputs/.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import numpy as np
@@ -36,6 +37,58 @@ from .text_similarity import (
 
 
 # ── Gold standard selection ───────────────────────────────────────────────
+
+
+def load_gold_ids_from_golden_set(
+    golden_set_path: Path,
+    metadata_df: pd.DataFrame,
+    seed: int = 42,
+) -> list[str]:
+    """Derive gold standard incident IDs from a golden_set_results.json file.
+
+    Strategy:
+      1. Extract every incident record number explicitly referenced in the
+         query text (pattern ``#<digits>``) as seed IDs — these are curated
+         spot-check incidents that must appear in the evaluation set.
+      2. Fill remaining slots via stratified random sampling (same logic as
+         ``select_gold_standard_ids``) so that the total equals the number of
+         queries in the golden-set file.
+
+    Args:
+        golden_set_path: Path to the golden_set_results.json file.
+        metadata_df: DataFrame with at minimum columns record_no, incident_type,
+                     severity_bin.
+        seed: Random seed for the stratified fill step.
+
+    Returns:
+        List of record_no strings (length == number of queries in file).
+    """
+    with open(golden_set_path) as fh:
+        data = json.load(fh)
+
+    queries = data.get("queries", [])
+    n = len(queries)
+
+    # Step 1 — collect explicitly referenced incident IDs (de-duplicated, ordered)
+    seen: set[str] = set()
+    seed_ids: list[str] = []
+    for q in queries:
+        for match in re.findall(r"#(\d+)", q.get("query", "")):
+            if match not in seen:
+                seen.add(match)
+                seed_ids.append(match)
+
+    # Step 2 — fill remainder with stratified sample
+    remaining_n = max(0, n - len(seed_ids))
+    if remaining_n > 0:
+        fill = select_gold_standard_ids(
+            metadata_df, n=remaining_n + len(seed_ids), seed=seed
+        )
+        # keep only those not already in seed_ids
+        fill = [r for r in fill if r not in seen]
+        seed_ids.extend(fill[: remaining_n])
+
+    return seed_ids[:n]
 
 
 def select_gold_standard_ids(

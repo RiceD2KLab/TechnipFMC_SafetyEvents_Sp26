@@ -1,6 +1,6 @@
 # Event Similarity Method Comparison
 
-**Test incidents (N):** 50  |  **Top-K:** 10
+**Test incidents (N):** 44  |  **Top-K:** 10
 
 Correlation columns are computed against the text embedding baseline.
 Hit rate = avg fraction of top-K retrievals sharing ≥1 entity of the given type with the query.
@@ -8,10 +8,10 @@ Overlap = avg Jaccard overlap of top-K lists with text embedding top-K.
 
 | Method | Pearson r (vs text) | Spearman ρ (vs text) | Hit Rate — Equipment | Hit Rate — Injury | Hit Rate — Location | Top-K Overlap (vs text) | N | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Text Embedding (all-MiniLM-L6-v2) | 1.0000 | 1.0000 | 0.0111 | 0.0000 | 0.3040 | 1.0000 | 50 | active (baseline) |
-| Structural Overlap (Weighted Jaccard) | 0.1331 | 0.1197 | 0.0083 | 0.0000 | 0.6980 | 0.1646 | 50 | active |
-| KG Embedding — Node2Vec | 0.1927 | 0.1710 | 0.0028 | 0.0000 | 0.7380 | 0.1897 | 50 | active |
-| KG Embedding — TransE | 0.1614 | 0.1677 | 0.0000 | 0.0000 | 0.6280 | 0.1589 | 50 | active |
-| KG Embedding — RDF2Vec | 0.0722 | 0.0427 | 0.0111 | 0.0000 | 0.6740 | 0.1733 | 50 | active |
-| GNN Embedding — GraphSAGE | 0.0798 | 0.0714 | 0.0056 | 0.0000 | 0.2340 | 0.1455 | 50 | active |
-| Hybrid (weighted combination) | 0.7444 | 0.7513 | 0.0083 | 0.0000 | 0.6480 | 0.4033 | 50 | active |
+| Text Embedding (all-MiniLM-L6-v2) | 1.0000 | 1.0000 | 0.0257 | 0.0200 | 0.2409 | 1.0000 | 44 | active (baseline) |
+| Structural Overlap (Weighted Jaccard) | 0.1552 | 0.1106 | 0.0343 | 0.0200 | 0.6250 | 0.1790 | 44 | active |
+| KG Embedding — Node2Vec | 0.1758 | 0.1599 | 0.0086 | 0.0100 | 0.6545 | 0.1976 | 44 | active |
+| KG Embedding — TransE | 0.1491 | 0.1408 | 0.0200 | 0.0200 | 0.6114 | 0.1981 | 44 | active |
+| KG Embedding — RDF2Vec | 0.0822 | 0.0563 | 0.0286 | 0.0200 | 0.6000 | 0.1766 | 44 | active |
+| GNN Embedding — GraphSAGE | 0.0672 | 0.0591 | 0.0086 | 0.0200 | 0.1932 | 0.1709 | 44 | active |
+| Hybrid (weighted combination) | 0.7381 | 0.7493 | 0.0314 | 0.0200 | 0.5477 | 0.4433 | 44 | active |

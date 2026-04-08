@@ -3,7 +3,7 @@
 Executes the full Tier 1 evaluation workflow:
   1. Load incident narratives from pipeline/outputs/metadata_parsed.parquet.
   2. Load post-ER entity sets from pipeline/er_execution/outputs/.
-  3. Select (or load) the 50 Gold Standard incident IDs.
+  3. Select (or load) the Gold Standard incident IDs.
   4. Compute sentence-transformer text embeddings (cached to outputs/).
   5. Run Tier 1 evaluation for both weight configurations:
        - domain_informed (EQUIPMENT=0.25, INJURY_TYPE=0.25, …)
@@ -15,10 +15,10 @@ Executes the full Tier 1 evaluation workflow:
   7. Build the sponsor comparison table across all available methods.
 
 Usage:
-    python -m event_similarity.run_similarity
-    python -m event_similarity.run_similarity --recompute
-    python -m event_similarity.run_similarity --tier2
-    python -m event_similarity.run_similarity --tier2 --recompute
+    python -m event_similarity.run_similarity                        # always replaces pkl files (default)
+    python -m event_similarity.run_similarity --cache               # reuse existing pkl files if present
+    python -m event_similarity.run_similarity --tier2               # also train KG/GNN embeddings
+    python -m event_similarity.run_similarity --tier2 --cache       # tier2 + reuse caches
     python -m event_similarity.run_similarity --gold-ids-file path/to/ids.json
 
 Outputs (all written to event_similarity/outputs/):
@@ -47,6 +47,7 @@ from .config import (
     GOLD_STANDARD_IDS,
     GOLD_STANDARD_N,
     GOLD_STANDARD_SEED,
+    GOLDEN_SET_PATH,
     METADATA_PATH,
     OUTPUT_DIR,
     RELATIONS_PATH,
@@ -55,6 +56,7 @@ from .config import (
     TOP_K,
 )
 from .similarity_eval import (
+    load_gold_ids_from_golden_set,
     print_summary,
     run_tier1_evaluation,
     select_gold_standard_ids,
@@ -83,7 +85,7 @@ def _check_inputs() -> None:
 
 
 def main(
-    recompute: bool = False,
+    recompute: bool = True,
     gold_ids_file: Path | None = None,
     run_tier2: bool = False,
 ) -> None:
@@ -122,6 +124,14 @@ def main(
         with open(gold_ids_cache) as fh:
             gold_ids = json.load(fh)
         print(f"      Loaded {len(gold_ids)} cached IDs from {gold_ids_cache}")
+
+    elif GOLDEN_SET_PATH.exists():
+        gold_ids = load_gold_ids_from_golden_set(
+            GOLDEN_SET_PATH, metadata_df, seed=GOLD_STANDARD_SEED
+        )
+        with open(gold_ids_cache, "w") as fh:
+            json.dump(gold_ids, fh, indent=2)
+        print(f"      Derived {len(gold_ids)} IDs from {GOLDEN_SET_PATH.name} → {gold_ids_cache}")
 
     else:
         gold_ids = select_gold_standard_ids(
@@ -276,9 +286,12 @@ if __name__ == "__main__":
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
-        "--recompute",
+        "--cache",
         action="store_true",
-        help="Ignore cached embeddings and gold IDs; recompute from scratch.",
+        help=(
+            "Load embeddings and gold IDs from existing .pkl / .json cache files "
+            "instead of recomputing. By default all pkl files are replaced on every run."
+        ),
     )
     parser.add_argument(
         "--gold-ids-file",
@@ -296,4 +309,4 @@ if __name__ == "__main__":
         ),
     )
     args = parser.parse_args()
-    main(recompute=args.recompute, gold_ids_file=args.gold_ids_file, run_tier2=args.tier2)
+    main(recompute=not args.cache, gold_ids_file=args.gold_ids_file, run_tier2=args.tier2)

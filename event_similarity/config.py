@@ -59,10 +59,24 @@ HIGH_VALUE_TYPES: list[str] = ["EQUIPMENT", "INJURY_TYPE", "LOCATION"]
 # When None, run_similarity.py calls select_gold_standard_ids() and caches the
 # result in OUTPUT_DIR/gold_standard_ids.json for reproducibility.
 #
-# N=50 matches the sponsor's Finalized Project Objectives (Objective 2):
-#   "Table comparing … across a standard set of (50) test safety incidents."
+# GOLDEN_SET_PATH points to the curated golden-set evaluation file.  When
+# present, run_similarity.py seeds the gold standard with any specific incident
+# IDs referenced in those queries (e.g. "#29857") and fills the remainder via
+# stratified random sampling so that N equals the number of queries in that file.
+GOLDEN_SET_PATH: Path = ROOT / "golden_set_results.json"
+
 GOLD_STANDARD_IDS: list[str] | None = None
-GOLD_STANDARD_N: int = 50
+
+def _gold_standard_n_default() -> int:
+    """Return the number of queries in GOLDEN_SET_PATH, falling back to 50."""
+    try:
+        import json as _json
+        with open(GOLDEN_SET_PATH) as _fh:
+            return len(_json.load(_fh).get("queries", []))
+    except Exception:
+        return 50
+
+GOLD_STANDARD_N: int = _gold_standard_n_default()
 GOLD_STANDARD_SEED: int = 42
 
 # ── Retrieval ─────────────────────────────────────────────────────────────
