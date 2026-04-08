@@ -1,0 +1,5 @@
+mkdir petro-super-pipeline
+cd petro-super-pipeline
+
+mkdir -p data/sample pipeline scripts tests notebooks
+touch README.md requirements.txt .gitignore .env.example
