@@ -70,3 +70,21 @@ export function fetchSubgraph(params: {
 export function executeNLQuery(query: string): Promise<NLQResponse> {
   return postJson(`${NLQ_BASE}/query`, { query });
 }
+
+export async function exportNLQPdf(data: {
+  title: string;
+  original_query: string;
+  summary: string[];
+  referenced_reports: { incident_id: string; incident_type: string | null; description: string | null }[];
+}): Promise<Blob> {
+  const res = await fetch(`${NLQ_BASE}/export-pdf`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const detail = await res.text();
+    throw new Error(`PDF export failed: ${detail}`);
+  }
+  return res.blob();
+}

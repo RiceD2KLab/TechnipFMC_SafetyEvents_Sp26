@@ -1,10 +1,15 @@
 """FastAPI router for Natural Language Query endpoints."""
 
+import csv
+import io
 import logging
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
+from fpdf import FPDF
 from pydantic import BaseModel
 
 # Add project root so we can import natural_language_query and query_engine
@@ -18,6 +23,34 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/nlq", tags=["natural-language-query"])
 
+# ── Incidents CSV loader (cached) ────────────────────────────────────────
+
+_INCIDENTS_CSV = _PROJECT_ROOT / "input" / "incidents.csv"
+_incidents_cache: dict[str, str] | None = None
+
+
+def _load_incidents_csv() -> dict[str, str]:
+    """Load input/incidents.csv into a dict: record_no -> full text."""
+    global _incidents_cache
+    if _incidents_cache is not None:
+        return _incidents_cache
+
+    lookup: dict[str, str] = {}
+    if _INCIDENTS_CSV.exists():
+        with open(_INCIDENTS_CSV, encoding="utf-8", errors="replace") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                record_no = row.get("RECORD_NO_LOSS_POTENTIAL", "").strip()
+                text = row.get("text", "").strip()
+                if record_no:
+                    lookup[record_no] = text
+        logger.info("Loaded %d incident records from CSV", len(lookup))
+    else:
+        logger.warning("incidents.csv not found at %s", _INCIDENTS_CSV)
+
+    _incidents_cache = lookup
+    return lookup
+
 
 # ── Pydantic models ──────────────────────────────────────────────────────
 
@@ -30,6 +63,13 @@ class ReferencedReport(BaseModel):
     incident_id: str
     incident_type: str | None = None
     description: str | None = None
+
+
+class PDFExportRequest(BaseModel):
+    title: str
+    original_query: str
+    summary: list[str]
+    referenced_reports: list[ReferencedReport]
 
 
 class NLQResponse(BaseModel):
@@ -232,4 +272,225 @@ def run_nlq(request: NLQRequest):
         reasoning=reasoning,
         latency_ms=translate_result["latency_ms"],
         elapsed=exec_result.get("elapsed", ""),
+    )
+
+
+# ── PDF Export ────────────────────────────────────────────────────────────
+
+
+class _ReportPDF(FPDF):
+    """Custom PDF with TechnipFMC header/footer."""
+
+    def header(self):
+        self.set_font("Helvetica", "B", 10)
+        self.set_text_color(59, 130, 246)  # blue-500
+        self.cell(0, 8, "TechnipFMC Safety Analytics Platform", ln=True)
+        self.set_draw_color(229, 231, 235)  # gray-200
+        self.line(10, self.get_y(), self.w - 10, self.get_y())
+        self.ln(4)
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font("Helvetica", "", 8)
+        self.set_text_color(156, 163, 175)  # gray-400
+        self.cell(0, 10, f"Page {self.page_no()}/{{nb}}", align="C")
+
+
+def _parse_incident_text(raw: str) -> dict[str, str]:
+    """Parse the structured text blob from incidents.csv into sections.
+
+    The CSV stores newlines as literal two-char ``\\n`` sequences, so we
+    normalise those to real newlines before splitting.
+    """
+    # Normalise literal \n to real newlines
+    text = raw.replace("\\n", "\n")
+
+    sections: dict[str, str] = {}
+    current_key = ""
+    current_lines: list[str] = []
+
+    for line in text.split("\n"):
+        stripped = line.strip()
+        if stripped.startswith("INCIDENT_LABEL:"):
+            sections["label"] = stripped.split(":", 1)[1].strip()
+        elif stripped.startswith("NARRATIVE:"):
+            if current_key and current_lines:
+                sections[current_key] = "\n".join(current_lines).strip()
+            current_key = "narrative"
+            current_lines = []
+        elif stripped.startswith("ENTITY_FACTS:"):
+            if current_key and current_lines:
+                sections[current_key] = "\n".join(current_lines).strip()
+            current_key = "entity_facts"
+            current_lines = []
+        elif stripped.startswith("META_FACTS:"):
+            if current_key and current_lines:
+                sections[current_key] = "\n".join(current_lines).strip()
+            current_key = "meta_facts"
+            current_lines = []
+        else:
+            if stripped:
+                current_lines.append(stripped)
+
+    if current_key and current_lines:
+        sections[current_key] = "\n".join(current_lines).strip()
+
+    return sections
+
+
+def _safe_text(text: str) -> str:
+    """Replace characters that fpdf2 can't encode in latin-1."""
+    return text.encode("latin-1", errors="replace").decode("latin-1")
+
+
+@router.post("/export-pdf")
+def export_pdf(request: PDFExportRequest):
+    """Generate a PDF report for an NLQ result with full incident details."""
+    incidents_lookup = _load_incidents_csv()
+
+    pdf = _ReportPDF()
+    pdf.alias_nb_pages()
+    pdf.set_auto_page_break(auto=True, margin=20)
+    pdf.add_page()
+
+    # ── Title ─────────────────────────────────────────────────────────
+    pdf.set_font("Helvetica", "B", 16)
+    pdf.set_text_color(17, 24, 39)  # gray-900
+    pdf.multi_cell(0, 8, _safe_text(request.title))
+    pdf.ln(2)
+
+    # ── Query ─────────────────────────────────────────────────────────
+    pdf.set_font("Helvetica", "I", 11)
+    pdf.set_text_color(107, 114, 128)  # gray-500
+    pdf.multi_cell(0, 6, _safe_text(f'Query: "{request.original_query}"'))
+    pdf.ln(1)
+    pdf.set_font("Helvetica", "", 9)
+    pdf.cell(0, 5, f"Generated: {datetime.now(timezone.utc).strftime('%B %d, %Y at %H:%M UTC')}", ln=True)
+    pdf.ln(4)
+
+    # ── Summary ───────────────────────────────────────────────────────
+    pdf.set_font("Helvetica", "B", 12)
+    pdf.set_text_color(17, 24, 39)
+    pdf.cell(0, 8, "Summary", ln=True)
+    pdf.set_draw_color(229, 231, 235)
+    pdf.line(10, pdf.get_y(), pdf.w - 10, pdf.get_y())
+    pdf.ln(3)
+
+    pdf.set_font("Helvetica", "", 10)
+    pdf.set_text_color(55, 65, 81)  # gray-700
+    for bullet in request.summary:
+        pdf.cell(5)
+        pdf.cell(5, 6, "-")
+        pdf.multi_cell(0, 6, _safe_text(f"  {bullet}"))
+        pdf.ln(1)
+    pdf.ln(4)
+
+    # ── Referenced Safety Reports ─────────────────────────────────────
+    orig_l_margin = pdf.l_margin        # 10
+    orig_r_margin = pdf.r_margin        # 10
+    page_width = pdf.w                  # 210
+    content_width = page_width - orig_l_margin - orig_r_margin  # 190
+    body_margin = orig_l_margin + 8     # indented left margin for body text
+    body_width = content_width - 16     # body text width (8 padding each side)
+
+    if request.referenced_reports:
+        pdf.set_font("Helvetica", "B", 12)
+        pdf.set_text_color(17, 24, 39)
+        pdf.cell(0, 8, f"Referenced Safety Reports ({len(request.referenced_reports)})", ln=True)
+        pdf.set_draw_color(229, 231, 235)
+        pdf.line(orig_l_margin, pdf.get_y(), page_width - orig_r_margin, pdf.get_y())
+        pdf.ln(6)
+
+        for i, report in enumerate(request.referenced_reports):
+            raw_text = incidents_lookup.get(report.incident_id, "")
+            sections = _parse_incident_text(raw_text) if raw_text else {}
+
+            # ── Header line (bold, dark text — no background rect) ──
+            label = sections.get("label", f"Incident {report.incident_id}")
+            pdf.set_font("Helvetica", "B", 11)
+            pdf.set_text_color(59, 130, 246)  # blue
+            pdf.set_left_margin(orig_l_margin)
+            pdf.set_x(orig_l_margin)
+            pdf.multi_cell(content_width, 6, _safe_text(
+                f"SER-{report.incident_id}  |  {label}"
+            ))
+            # Underline below header
+            pdf.set_draw_color(59, 130, 246)
+            pdf.line(orig_l_margin, pdf.get_y(), page_width - orig_r_margin, pdf.get_y())
+            pdf.ln(4)
+
+            # ── Body: shift margins inward ──
+            pdf.set_left_margin(body_margin)
+            pdf.set_right_margin(orig_r_margin + 8)
+
+            # Narrative
+            narrative = sections.get("narrative", "")
+            if narrative:
+                pdf.set_x(body_margin)
+                pdf.set_font("Helvetica", "B", 9)
+                pdf.set_text_color(30, 64, 175)  # blue-800
+                pdf.cell(body_width, 6, "Narrative", ln=True)
+                pdf.set_font("Helvetica", "", 9)
+                pdf.set_text_color(55, 65, 81)
+                pdf.set_x(body_margin)
+                pdf.multi_cell(body_width, 4.5, _safe_text(narrative))
+                pdf.ln(3)
+
+            # Entity facts
+            entity_facts = sections.get("entity_facts", "")
+            if entity_facts:
+                pdf.set_x(body_margin)
+                pdf.set_font("Helvetica", "B", 9)
+                pdf.set_text_color(30, 64, 175)
+                pdf.cell(body_width, 6, "Incident Details", ln=True)
+                pdf.set_font("Helvetica", "", 8.5)
+                pdf.set_text_color(55, 65, 81)
+                for fact_line in entity_facts.split("\n"):
+                    fact_line = fact_line.strip().lstrip("- ")
+                    if not fact_line:
+                        continue
+                    pdf.set_x(body_margin + 2)
+                    pdf.cell(3, 4.5, "-")
+                    pdf.multi_cell(body_width - 5, 4.5, _safe_text(f" {fact_line}"))
+                pdf.ln(3)
+
+            # Meta facts
+            meta_facts = sections.get("meta_facts", "")
+            if meta_facts:
+                pdf.set_x(body_margin)
+                pdf.set_font("Helvetica", "B", 9)
+                pdf.set_text_color(30, 64, 175)
+                pdf.cell(body_width, 6, "Additional Metadata", ln=True)
+                pdf.set_font("Helvetica", "", 8.5)
+                pdf.set_text_color(55, 65, 81)
+                for meta_line in meta_facts.split("\n"):
+                    meta_line = meta_line.strip().lstrip("- ")
+                    if not meta_line:
+                        continue
+                    cleaned = meta_line.replace("META[", "").replace("]", "")
+                    pdf.set_x(body_margin + 2)
+                    pdf.cell(3, 4.5, "-")
+                    pdf.multi_cell(body_width - 5, 4.5, _safe_text(f" {cleaned}"))
+                pdf.ln(2)
+
+            # ── Restore margins ──
+            pdf.set_left_margin(orig_l_margin)
+            pdf.set_right_margin(orig_r_margin)
+
+            # Separator between reports (simple line, no rect)
+            if i < len(request.referenced_reports) - 1:
+                pdf.set_draw_color(209, 213, 219)  # gray-300
+                pdf.line(orig_l_margin + 10, pdf.get_y(),
+                         page_width - orig_r_margin - 10, pdf.get_y())
+                pdf.ln(6)
+
+    # ── Output ────────────────────────────────────────────────────────
+    buf = io.BytesIO()
+    buf.write(pdf.output())
+    buf.seek(0)
+
+    return StreamingResponse(
+        buf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": "inline; filename=safety_query_report.pdf"},
     )

@@ -1,19 +1,17 @@
-import { useRef, useEffect } from "react";
-import { Outlet, Link, useLocation } from "react-router";
+import { useRef, useEffect, useState } from "react";
+import { Outlet } from "react-router";
 import {
   Activity,
-  BarChart3,
-  GitBranch,
   Search,
   Clock,
-  Copy,
-  Share2,
+  FileDown,
   Loader2,
   Sparkles,
   X,
 } from "lucide-react";
 import { Card } from "./ui/card";
 import { useQuery } from "../context/QueryContext";
+import { exportNLQPdf } from "../api/kgApi";
 import { toast } from "sonner";
 
 const SUGGESTED_QUERIES = [
@@ -24,7 +22,6 @@ const SUGGESTED_QUERIES = [
 ];
 
 export default function Layout() {
-  const location = useLocation();
   const {
     query,
     setQuery,
@@ -39,13 +36,6 @@ export default function Layout() {
   } = useQuery();
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const navigation = [
-    { name: "Dashboard", path: "/", icon: BarChart3 },
-    { name: "Graph Reasoning", path: "/reasoning", icon: GitBranch },
-    { name: "Data Extraction", path: "/extraction", icon: Search },
-    { name: "Event Similarity", path: "/similarity", icon: Activity },
-  ];
 
   const handleSearch = () => {
     if (query.trim()) {
@@ -67,18 +57,27 @@ export default function Layout() {
     runQuery(q);
   };
 
-  const handleCopy = () => {
-    if (!result) return;
-    const text = `${result.title}\n\n${result.summary.join("\n")}\n\n${result.result_summary}`;
-    navigator.clipboard.writeText(text);
-    toast.success("Copied to clipboard");
-  };
+  const [isExporting, setIsExporting] = useState(false);
 
-  const handleShare = () => {
+  const handleExportPdf = async () => {
     if (!result) return;
-    const url = `${window.location.origin}${location.pathname}?q=${encodeURIComponent(result.original_query)}`;
-    navigator.clipboard.writeText(url);
-    toast.success("Link copied to clipboard");
+    setIsExporting(true);
+    try {
+      const blob = await exportNLQPdf({
+        title: result.title,
+        original_query: result.original_query,
+        summary: result.summary,
+        referenced_reports: result.referenced_reports,
+      });
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "PDF export failed";
+      toast.error(msg);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const formatTimestamp = (ts: number) => {
@@ -133,32 +132,6 @@ export default function Layout() {
           </div>
         </div>
       </header>
-
-      {/* Navigation */}
-      <nav className="bg-white border-b border-gray-200">
-        <div className="px-6">
-          <div className="flex gap-1">
-            {navigation.map((item) => {
-              const Icon = item.icon;
-              const isActive = location.pathname === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
-                    isActive
-                      ? "border-blue-600 text-blue-600"
-                      : "border-transparent text-gray-600 hover:text-gray-900 hover:border-gray-300"
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span className="text-sm font-medium">{item.name}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </nav>
 
       {/* Persistent Natural Language Query Section */}
       <div className="bg-white border-b border-gray-200">
@@ -281,16 +254,16 @@ export default function Layout() {
                 </div>
                 <div className="flex items-center gap-2 shrink-0 ml-4">
                   <button
-                    onClick={handleCopy}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                    onClick={handleExportPdf}
+                    disabled={isExporting}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
                   >
-                    <Copy className="w-3.5 h-3.5" /> Copy
-                  </button>
-                  <button
-                    onClick={handleShare}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
-                  >
-                    <Share2 className="w-3.5 h-3.5" /> Share
+                    {isExporting ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <FileDown className="w-3.5 h-3.5" />
+                    )}
+                    {isExporting ? "Exporting..." : "Export to PDF"}
                   </button>
                   <button
                     onClick={clearResult}
