@@ -1,0 +1,11 @@
+pandas
+torch
+gliner
+neo4j
+transformers
+scikit-learn
+python-dateutil
+tqdm
+PyMuPDF
+python-dotenv
+
