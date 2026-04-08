@@ -56,25 +56,27 @@ HIGH_VALUE_TYPES: list[str] = ["EQUIPMENT", "INJURY_TYPE", "LOCATION"]
 
 # ── Gold standard selection ───────────────────────────────────────────────
 # GOLD_STANDARD_IDS: pre-set list of record_no strings, or None to auto-select.
-# When None, run_similarity.py calls select_gold_standard_ids() and caches the
-# result in OUTPUT_DIR/gold_standard_ids.json for reproducibility.
+# When None, run_similarity.py calls load_gold_ids_from_golden_set() which reads
+# directly from kg_schema/golden_set.csv — the canonical source of truth for all
+# 258 benchmark queries.  No LLM translation step is required.
 #
-# GOLDEN_SET_PATH points to the curated golden-set evaluation file.  When
-# present, run_similarity.py seeds the gold standard with any specific incident
-# IDs referenced in those queries (e.g. "#29857") and fills the remainder via
-# stratified random sampling so that N equals the number of queries in that file.
-GOLDEN_SET_PATH: Path = ROOT / "golden_set_results.json"
+# Incident IDs explicitly referenced in query names (e.g. "#29857") are used as
+# seed IDs; remaining slots are filled via stratified random sampling so that the
+# total equals the number of queries in the CSV (currently 258).
+from kg_schema.golden_set import GOLDEN_SET_CSV
+
+GOLDEN_SET_PATH: Path = GOLDEN_SET_CSV   # points to kg_schema/golden_set.csv
 
 GOLD_STANDARD_IDS: list[str] | None = None
 
 def _gold_standard_n_default() -> int:
-    """Return the number of queries in GOLDEN_SET_PATH, falling back to 50."""
+    """Return the number of rows in the golden set CSV, falling back to 258."""
     try:
-        import json as _json
-        with open(GOLDEN_SET_PATH) as _fh:
-            return len(_json.load(_fh).get("queries", []))
+        import csv as _csv
+        with open(GOLDEN_SET_PATH, newline="", encoding="utf-8") as _fh:
+            return sum(1 for _ in _csv.DictReader(_fh))
     except Exception:
-        return 50
+        return 258
 
 GOLD_STANDARD_N: int = _gold_standard_n_default()
 GOLD_STANDARD_SEED: int = 42

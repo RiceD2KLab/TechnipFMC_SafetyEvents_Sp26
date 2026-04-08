@@ -8,17 +8,29 @@ Executes the full Tier 1 evaluation workflow:
   5. Run Tier 1 evaluation for both weight configurations:
        - domain_informed (EQUIPMENT=0.25, INJURY_TYPE=0.25, …)
        - uniform (all entity types weighted equally — ablation)
-  6. (Optional, --tier2) Train KG and GNN embeddings:
-       - Node2Vec   (requires: pip install torch torch_geometric)
-       - TransE     (requires: pip install torch pykeen)
-       - GraphSAGE  (requires: pip install torch torch_geometric)
+  6. Train any requested KG / GNN embeddings (--models):
+       - node2vec   (requires: pip install torch torch_geometric)
+       - transe     (requires: pip install torch pykeen)
+       - rdf2vec    (requires: pip install gensim)
+       - graphsage  (requires: pip install torch torch_geometric)
   7. Build the sponsor comparison table across all available methods.
 
 Usage:
-    python -m event_similarity.run_similarity                        # always replaces pkl files (default)
-    python -m event_similarity.run_similarity --cache               # reuse existing pkl files if present
-    python -m event_similarity.run_similarity --tier2               # also train KG/GNN embeddings
-    python -m event_similarity.run_similarity --tier2 --cache       # tier2 + reuse caches
+    # Tier 1 only (text + structural) — default, always replaces pkl files
+    python -m event_similarity.run_similarity
+
+    # Add specific KG/GNN models
+    python -m event_similarity.run_similarity --models node2vec
+    python -m event_similarity.run_similarity --models node2vec transe
+    python -m event_similarity.run_similarity --models node2vec transe rdf2vec graphsage
+
+    # Run all models
+    python -m event_similarity.run_similarity --models all
+
+    # Reuse existing pkl caches instead of recomputing
+    python -m event_similarity.run_similarity --models node2vec --cache
+
+    # Supply a custom gold IDs file
     python -m event_similarity.run_similarity --gold-ids-file path/to/ids.json
 
 Outputs (all written to event_similarity/outputs/):
@@ -26,12 +38,14 @@ Outputs (all written to event_similarity/outputs/):
     text_embeddings.pkl             Cached sentence-transformer embeddings
     tier1_eval_domain_informed.json Per-query results + aggregate metrics
     tier1_eval_uniform.json         Ablation run with uniform weights
-    node2vec_embeddings.pkl         Node2Vec KG embeddings (--tier2 only)
-    transe_embeddings.pkl           TransE KG embeddings   (--tier2 only)
-    rdf2vec_embeddings.pkl          RDF2Vec KG embeddings  (--tier2 only)
-    graphsage_embeddings.pkl        GraphSAGE GNN embeddings (--tier2 only)
+    node2vec_embeddings.pkl         Node2Vec KG embeddings (if requested)
+    transe_embeddings.pkl           TransE KG embeddings   (if requested)
+    rdf2vec_embeddings.pkl          RDF2Vec KG embeddings  (if requested)
+    graphsage_embeddings.pkl        GraphSAGE GNN embeddings (if requested)
     method_comparison.csv           All-method comparison table (always regenerated)
     method_comparison.md            Markdown version of comparison table (always regenerated)
+    pairwise_pearson.csv/md         Pairwise Pearson r matrix (always regenerated)
+    pairwise_spearman.csv/md        Pairwise Spearman ρ matrix (always regenerated)
 """
 from __future__ import annotations
 
@@ -84,12 +98,25 @@ def _check_inputs() -> None:
         )
 
 
+ALL_KG_MODELS = ("node2vec", "transe", "rdf2vec", "graphsage")
+
+
 def main(
     recompute: bool = True,
     gold_ids_file: Path | None = None,
-    run_tier2: bool = False,
+    models: set | None = None,
 ) -> None:
-    """Run the event similarity pipeline end-to-end."""
+    """Run the event similarity pipeline end-to-end.
+
+    Args:
+        recompute: When True (default), replace existing pkl files.
+        gold_ids_file: Optional path to a pre-built gold IDs JSON file.
+        models: Set of KG/GNN model names to train, e.g. {"node2vec", "transe"}.
+                Pass an empty set (or None) to run Tier 1 only.
+                Pass set(ALL_KG_MODELS) to run everything.
+    """
+    if models is None:
+        models = set()
     print("=" * 65)
     print("  Event Similarity Pipeline — Section 4.3")
     print("=" * 65)
@@ -182,83 +209,54 @@ def main(
         output_dir=OUTPUT_DIR,
     )
 
-    # ── 6. Tier 2: KG and GNN embeddings ─────────────────────────────────
+    # ── 6. KG and GNN embeddings ──────────────────────────────────────────
+    import pickle
+
     tier2_emb_maps: dict[str, dict] = {}
 
-    if run_tier2:
-        print("\n[6/7] Training Tier 2 KG / GNN embeddings …")
-
-        from .gnn_similarity import train_graphsage
-        from .kg_embeddings import train_node2vec, train_rdf2vec, train_transe
-
-        n2v_cache    = OUTPUT_DIR / "node2vec_embeddings.pkl"
-        transe_cache = OUTPUT_DIR / "transe_embeddings.pkl"
-        sage_cache   = OUTPUT_DIR / "graphsage_embeddings.pkl"
-
-        if recompute:
-            for _p in (n2v_cache, transe_cache, sage_cache):
-                _p.unlink(missing_ok=True)
-
-        print("  → Node2Vec …")
-        try:
-            node2vec_emb = train_node2vec(cache_path=n2v_cache)
-            if node2vec_emb:
-                tier2_emb_maps["node2vec"] = node2vec_emb
-                print(f"     Node2Vec embeddings: {len(node2vec_emb):,} incidents")
-            else:
-                print("     Node2Vec returned empty — skipped")
-        except ImportError as e:
-            print(f"     Node2Vec skipped: {e}")
-
-        print("  → TransE …")
-        try:
-            transe_emb = train_transe(cache_path=transe_cache)
-            if transe_emb:
-                tier2_emb_maps["transe"] = transe_emb
-                print(f"     TransE embeddings: {len(transe_emb):,} incidents")
-            else:
-                print("     TransE returned empty — skipped")
-        except ImportError as e:
-            print(f"     TransE skipped: {e}")
-
-        print("  → RDF2Vec …")
-        try:
-            rdf2vec_cache = OUTPUT_DIR / "rdf2vec_embeddings.pkl"
-            if recompute:
-                rdf2vec_cache.unlink(missing_ok=True)
-            rdf2vec_emb = train_rdf2vec(cache_path=rdf2vec_cache)
-            if rdf2vec_emb:
-                tier2_emb_maps["rdf2vec"] = rdf2vec_emb
-                print(f"     RDF2Vec embeddings: {len(rdf2vec_emb):,} incidents")
-            else:
-                print("     RDF2Vec returned empty — skipped")
-        except ImportError as e:
-            print(f"     RDF2Vec skipped: {e}")
-
-        print("  → GraphSAGE …")
-        try:
-            graphsage_emb = train_graphsage(cache_path=sage_cache)
-            if graphsage_emb:
-                tier2_emb_maps["graphsage"] = graphsage_emb
-                print(f"     GraphSAGE embeddings: {len(graphsage_emb):,} incidents")
-            else:
-                print("     GraphSAGE returned empty (quality gate not met) — skipped")
-        except ImportError as e:
-            print(f"     GraphSAGE skipped: {e}")
-    else:
-        print("\n[6/7] Tier 2 skipped (pass --tier2 to train KG/GNN embeddings)")
-
-    # ── Load any cached Tier 2 embeddings not trained this run ───────────
-    # Ensures the comparison table is always complete even without --tier2,
-    # as long as the .pkl files exist from a prior --tier2 run.
-    import pickle
-    _tier2_caches = {
+    _model_configs = {
         "node2vec":  OUTPUT_DIR / "node2vec_embeddings.pkl",
         "transe":    OUTPUT_DIR / "transe_embeddings.pkl",
         "rdf2vec":   OUTPUT_DIR / "rdf2vec_embeddings.pkl",
         "graphsage": OUTPUT_DIR / "graphsage_embeddings.pkl",
     }
-    for _method, _cache in _tier2_caches.items():
+
+    if models:
+        print(f"\n[6/7] Training KG / GNN embeddings: {', '.join(sorted(models))} …")
+
+        from .gnn_similarity import train_graphsage
+        from .kg_embeddings import train_node2vec, train_rdf2vec, train_transe
+
+        _trainers = {
+            "node2vec":  lambda cache: train_node2vec(cache_path=cache),
+            "transe":    lambda cache: train_transe(cache_path=cache),
+            "rdf2vec":   lambda cache: train_rdf2vec(cache_path=cache),
+            "graphsage": lambda cache: train_graphsage(cache_path=cache),
+        }
+
+        for model_name in ALL_KG_MODELS:
+            if model_name not in models:
+                continue
+            cache = _model_configs[model_name]
+            if recompute:
+                cache.unlink(missing_ok=True)
+            print(f"  → {model_name} …")
+            try:
+                emb = _trainers[model_name](cache)
+                if emb:
+                    tier2_emb_maps[model_name] = emb
+                    print(f"     {model_name} embeddings: {len(emb):,} incidents")
+                else:
+                    print(f"     {model_name} returned empty — skipped")
+            except ImportError as e:
+                print(f"     {model_name} skipped (missing dependency): {e}")
+    else:
+        print("\n[6/7] No KG/GNN models requested (pass --models to select)")
+
+    # ── Load cached embeddings for models not trained this run ────────────
+    # Ensures the comparison table includes any previously trained models
+    # even if they were not requested in this run.
+    for _method, _cache in _model_configs.items():
         if _method not in tier2_emb_maps and _cache.exists():
             with open(_cache, "rb") as _f:
                 tier2_emb_maps[_method] = pickle.load(_f)
@@ -301,12 +299,26 @@ if __name__ == "__main__":
         help="Path to a JSON file containing a list of gold standard incident IDs.",
     )
     parser.add_argument(
-        "--tier2",
-        action="store_true",
+        "--models",
+        nargs="+",
+        metavar="MODEL",
+        default=[],
         help=(
-            "Train Tier 2 KG and GNN embeddings (Node2Vec, TransE, RDF2Vec, GraphSAGE). "
-            "Requires: pip install torch torch_geometric pykeen gensim"
+            "KG/GNN models to train. Choose any combination of: "
+            "node2vec, transe, rdf2vec, graphsage. "
+            "Use 'all' to run every model. "
+            "Example: --models node2vec transe"
         ),
     )
     args = parser.parse_args()
-    main(recompute=not args.cache, gold_ids_file=args.gold_ids_file, run_tier2=args.tier2)
+
+    requested = set(args.models)
+    if "all" in requested:
+        requested = set(ALL_KG_MODELS)
+
+    invalid = requested - set(ALL_KG_MODELS)
+    if invalid:
+        parser.error(f"Unknown model(s): {', '.join(sorted(invalid))}. "
+                     f"Valid options: {', '.join(ALL_KG_MODELS)}")
+
+    main(recompute=not args.cache, gold_ids_file=args.gold_ids_file, models=requested)

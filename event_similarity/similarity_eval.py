@@ -44,36 +44,40 @@ def load_gold_ids_from_golden_set(
     metadata_df: pd.DataFrame,
     seed: int = 42,
 ) -> list[str]:
-    """Derive gold standard incident IDs from a golden_set_results.json file.
+    """Derive gold standard incident IDs from kg_schema/golden_set.csv.
+
+    Reads the canonical CSV directly via ``kg_schema.load_golden_set()`` —
+    no LLM translation step required.
 
     Strategy:
       1. Extract every incident record number explicitly referenced in the
-         query text (pattern ``#<digits>``) as seed IDs — these are curated
-         spot-check incidents that must appear in the evaluation set.
+         query ``name`` column (pattern ``#<digits>``) as seed IDs.  These are
+         the curated spot-check incidents and similarity queries that must appear
+         in the evaluation set.  De-duplicated so each incident appears once.
       2. Fill remaining slots via stratified random sampling (same logic as
          ``select_gold_standard_ids``) so that the total equals the number of
-         queries in the golden-set file.
+         rows in the CSV (currently 258).
 
     Args:
-        golden_set_path: Path to the golden_set_results.json file.
+        golden_set_path: Path to the golden set CSV (kg_schema/golden_set.csv).
+                         Accepted for API consistency; ``load_golden_set()`` is
+                         used internally and always reads from this path.
         metadata_df: DataFrame with at minimum columns record_no, incident_type,
                      severity_bin.
         seed: Random seed for the stratified fill step.
 
     Returns:
-        List of record_no strings (length == number of queries in file).
+        List of record_no strings (length == number of rows in CSV).
     """
-    with open(golden_set_path) as fh:
-        data = json.load(fh)
-
-    queries = data.get("queries", [])
-    n = len(queries)
+    from kg_schema.golden_set import load_golden_set
+    rows = load_golden_set()
+    n = len(rows)
 
     # Step 1 — collect explicitly referenced incident IDs (de-duplicated, ordered)
     seen: set[str] = set()
     seed_ids: list[str] = []
-    for q in queries:
-        for match in re.findall(r"#(\d+)", q.get("query", "")):
+    for row in rows:
+        for match in re.findall(r"#(\d+)", row.get("name", "")):
             if match not in seen:
                 seen.add(match)
                 seed_ids.append(match)
