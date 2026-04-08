@@ -8,9 +8,9 @@ class LabelGenerator:
         df = pd.read_excel(self.catalogue_path)
 
         labels = {
-            "EQUIPMENT", "HAZARD", "LOCATION", "INCIDENT",
-            "ACTIVITY", "INJURY", "CONSEQUENCE", "JOB_TITLE",
-            "DATE", "ROOT_CAUSE"
+            "EQUIPMENT","HAZARD","LOCATION","INCIDENT",
+            "ACTIVITY","INJURY","CONSEQUENCE",
+            "JOB_TITLE","DATE","ROOT_CAUSE"
         }
 
         for _, row in df.iterrows():
@@ -26,3 +26,4 @@ class LabelGenerator:
                     labels.add(col_name)
 
         return list(labels)
+
