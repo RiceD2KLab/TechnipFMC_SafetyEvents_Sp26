@@ -393,7 +393,7 @@ def train_rdf2vec(
     relations_path: Path = RELATIONS_PATH,
     embedding_dim: int = 128,
     walks_per_node: int = 200,
-    walk_depth: int = 4,
+    walk_depth: int = 40,
     window_size: int = 5,
     epochs: int = 5,
     sg: int = 1,
