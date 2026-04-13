@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { Card } from "./ui/card";
+import SiteGuideDialog from "./SiteGuideDialog";
 import { useQuery } from "../context/QueryContext";
 import { exportNLQPdf } from "../api/kgApi";
 import { toast } from "sonner";
@@ -115,12 +116,12 @@ export default function Layout() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
                 <Activity className="w-6 h-6 text-white" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <h1 className="font-semibold text-gray-900">
                   Safety Analytics Platform
                 </h1>
@@ -129,6 +130,7 @@ export default function Layout() {
                 </p>
               </div>
             </div>
+            <SiteGuideDialog />
           </div>
         </div>
       </header>
