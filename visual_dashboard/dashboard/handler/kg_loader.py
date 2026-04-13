@@ -27,6 +27,12 @@ ENTITY_COLORS = {
     "LOCATION": "#27AE60",
     "ORGANIZATION": "#1ABC9C",
     "ROOT_CAUSE_CATEGORY": "#F1C40F",
+    "EVENT": "#E91E63",
+    "CONDITION": "#795548",
+    "ACTION": "#607D8B",
+    "INJURY": "#9C27B0",
+    "MATERIAL": "#FF9800",
+    "PERSON": "#00BCD4",
 }
 
 ENTITY_TYPE_LABELS = {
@@ -37,6 +43,12 @@ ENTITY_TYPE_LABELS = {
     "LOCATION": "Location",
     "ORGANIZATION": "Organization",
     "ROOT_CAUSE_CATEGORY": "Root Cause",
+    "EVENT": "Event",
+    "CONDITION": "Condition",
+    "ACTION": "Action",
+    "INJURY": "Injury",
+    "MATERIAL": "Material",
+    "PERSON": "Person",
 }
 
 # Max nodes to return in a subgraph (prevents mega-hub browser freeze)

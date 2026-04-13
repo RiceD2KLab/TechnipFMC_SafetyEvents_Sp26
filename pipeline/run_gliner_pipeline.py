@@ -44,6 +44,10 @@ def main() -> None:
                         help="HuggingFace GLiNER model (default: urchade/gliner_large-v2.1)")
     parser.add_argument("--output-dir", type=str, default=None,
                         help="Output directory (default: pipeline/outputs/)")
+    parser.add_argument("--validate", action="store_true",
+                        help="v6: apply allow-list validation to GLiNER extractions "
+                             "between Step 1 and Step 2. Writes "
+                             "gliner_extractions_validated.parquet and validation_report.md.")
     args = parser.parse_args()
 
     data_path = Path(args.data_path) if args.data_path else DEFAULT_DATA_PATH
@@ -215,10 +219,65 @@ def main() -> None:
     else:
         print("\n[Skipping GLiNER extraction — loading existing output]")
         if not gliner_output.exists():
-            print(f"ERROR: {gliner_output} not found. Run without --skip-gliner first.")
-            sys.exit(1)
-        gliner_df = pd.read_parquet(gliner_output)
+            # v6: allow pointing --skip-gliner at an external source dir.
+            # If the output dir doesn't have gliner_extractions.parquet but
+            # pipeline/outputs/v5 does, fall back to that so users can run:
+            #   python run_gliner_pipeline.py --full --skip-gliner --validate \
+            #       --output-dir pipeline/outputs/v6
+            fallback = PROJECT_ROOT / "pipeline" / "outputs" / "v5" / "gliner_extractions.parquet"
+            if fallback.exists():
+                print(f"  (not found in {output_dir}, falling back to {fallback})")
+                gliner_df = pd.read_parquet(fallback)
+                # Write a copy into the new output dir so the validated parquet
+                # sits alongside its source
+                gliner_df.to_parquet(gliner_output, index=False)
+            else:
+                print(f"ERROR: {gliner_output} not found. Run without --skip-gliner first.")
+                sys.exit(1)
+        else:
+            gliner_df = pd.read_parquet(gliner_output)
         print(f"  Loaded {len(gliner_df):,} entities from {gliner_output}")
+
+    # ── Step 1b: Validation (v6) ──────────────────────────────────────────
+    # Applies allow-list filters over the raw GLiNER extractions to drop
+    # noise and reclassify mis-types. Runs only if --validate is passed so
+    # v5-style runs remain unchanged.
+    if args.validate:
+        print("\n" + "=" * 60)
+        print("Step 1b: Validation (v6 allow-list filter)")
+        print("=" * 60)
+        t0 = time.time()
+
+        from pipeline.validation.validator import validate_extractions
+        from pipeline.validation.run_validation import write_report as write_validation_report
+
+        result = validate_extractions(gliner_df)
+        s = result.stats
+        print(f"  input={s['input']:,}  kept={s['kept']:,}  "
+              f"reclassified={s['reclassified']:,}  dropped={s['dropped']:,} "
+              f"({s['drop_rate_pct']}%)")
+
+        validated_output = output_dir / "gliner_extractions_validated.parquet"
+        result.validated.to_parquet(validated_output, index=False)
+
+        validation_report_path = output_dir / "validation_report.md"
+        write_validation_report(result, validation_report_path)
+
+        # Dropped rows CSV for manual review
+        if len(result.dropped) > 0:
+            (output_dir / "validation_dropped.csv").write_text(
+                result.dropped.to_csv(index=False)
+            )
+        if len(result.reclassified) > 0:
+            (output_dir / "validation_reclassified.csv").write_text(
+                result.reclassified.to_csv(index=False)
+            )
+
+        # Downstream steps use the validated df
+        gliner_df = result.validated
+        t1 = time.time()
+        print(f"  Time: {t1 - t0:.1f}s")
+        print(f"  Wrote {validated_output.name} + validation_report.md")
 
     # ── Step 2: Metadata Parsing ──────────────────────────────────────────
     print("\n" + "=" * 60)

@@ -227,39 +227,57 @@ def _output_count(spec, incidents, G):
 
 
 def _output_aggregate(spec, incidents, G):
+    """Aggregate entity values across matching incidents.
+
+    output_target format:
+        ETYPE:RELATION                     — single type
+        ETYPE[granularity]:RELATION        — filter by granularity (e.g. LOCATION[region])
+        ETYPE1:REL1+ETYPE2:REL2            — union across multiple type/relation pairs
+                                             (v6: used by MH-08 to span INJURY_TYPE + EVENT)
+    """
     target = spec.output_target
-    gran = None
-    m = re.match(r"(\w+)\[(\w+)\]:(\w+)", target)
-    if m:
-        etype, gran, relation = m.groups()
-    else:
-        parts = target.split(":")
-        etype = parts[0]
-        relation = parts[1] if len(parts) > 1 else None
+
+    # v6: multi-type aggregation via '+' delimiter. Each clause is parsed
+    # independently and the counts are unioned. `etype` for display is set
+    # to a joined label so the user sees what was aggregated.
+    clauses: list[tuple[str, str | None, str | None]] = []  # (etype, gran, relation)
+    for clause in target.split("+"):
+        clause = clause.strip()
+        gran = None
+        m = re.match(r"(\w+)\[(\w+)\]:(\w+)", clause)
+        if m:
+            etype, gran, relation = m.groups()
+        else:
+            parts = clause.split(":")
+            etype = parts[0]
+            relation = parts[1] if len(parts) > 1 else None
+        clauses.append((etype, gran, relation))
 
     counts = Counter()
     for inc_id in incidents:
         if inc_id not in G:
             continue
-        entities = get_entities_for_incident(
-            G, inc_id, entity_type=etype, relation_type=relation)
-        for ent in entities:
-            if gran and G.nodes[ent].get("granularity") != gran:
-                continue
-            val = safe_get_node_value(G, ent)
-            if val:
-                counts[val] += 1
+        for etype, gran, relation in clauses:
+            entities = get_entities_for_incident(
+                G, inc_id, entity_type=etype, relation_type=relation)
+            for ent in entities:
+                if gran and G.nodes[ent].get("granularity") != gran:
+                    continue
+                val = safe_get_node_value(G, ent)
+                if val:
+                    counts[val] += 1
 
     top_n = counts.most_common(spec.output_top_n)
+    display_etype = "+".join(c[0] for c in clauses)
     lines = [
         f"Matching incidents: {len(incidents)}",
-        f"Distinct {etype} values: {len(counts)}",
+        f"Distinct {display_etype} values: {len(counts)}",
         f"Top {spec.output_top_n}:",
     ] + [f"  {val}: {cnt}" for val, cnt in top_n]
 
     count = len(top_n)
     summary = (f"{len(incidents)} incidents, "
-               f"{len(counts)} {etype.lower()} values")
+               f"{len(counts)} {display_etype.lower()} values")
     if top_n:
         summary += f", top: {top_n[0][0]}"
     return {"count": count, "detail_lines": lines,

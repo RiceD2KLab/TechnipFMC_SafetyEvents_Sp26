@@ -10,6 +10,11 @@ ENTITY_TYPES: dict[str, dict[str, str]] = {
     "LOCATION":            {"source": "metadata", "description": "Geographic: site, city, country, region"},
     "ORGANIZATION":        {"source": "metadata", "description": "Client or organizational unit"},
     "ROOT_CAUSE_CATEGORY": {"source": "metadata", "description": "CASE_CATEGORIZATION taxonomy (117 values)"},
+    # v6: EVENT captures event-like nouns (leak, spill, fall, explosion,
+    # rupture, ...) reclassified from BODY_PART/INJURY_TYPE/LOCATION drops
+    # by the validation layer. L2 enrichment also produces EVENT entities;
+    # they share the same type so L1 and L2 events merge naturally.
+    "EVENT":               {"source": "validation", "description": "Physical event or failure occurrence"},
 }
 
 L1_ENTITY_TYPE_NAMES: frozenset[str] = frozenset(ENTITY_TYPES.keys())

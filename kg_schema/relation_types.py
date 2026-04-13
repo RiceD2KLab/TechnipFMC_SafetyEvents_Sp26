@@ -10,6 +10,11 @@ RELATION_MAP: dict[str, str] = {
     "LOCATION":            "OCCURRED_AT",
     "ORGANIZATION":        "REPORTED_BY",
     "ROOT_CAUSE_CATEGORY": "CATEGORIZED_AS",
+    # v6: EVENT captures event nouns (leak, spill, fall, explosion, ...)
+    # that were previously mis-tagged as INJURY_TYPE or dropped. Linked to
+    # the incident via INVOLVED. L2 also produces EVENT entities; L1 and
+    # L2 EVENT rows share the same type/relation and merge naturally.
+    "EVENT":               "INVOLVED",
 }
 
 HIERARCHY_RELATION: str = "LOCATED_IN"  # finer → coarser (site → city → country → region)

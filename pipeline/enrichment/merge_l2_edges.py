@@ -33,13 +33,20 @@ def make_entity_id(entity_type: str, entity_value: str) -> str:
 
 
 def load_l2_edges(l2_dir: Path) -> list[dict]:
-    """Load all L2 edge JSONL files from shard directories."""
+    """Load all L2 edge JSONL files from shard directories.
+
+    Deduplicates edges by (record_no, source, target, relation) so that
+    loading from a directory containing both raw shards and a merged file
+    does not double-count.
+    """
     edges = []
     # Support both flat (l2_dir/l2_edges.jsonl) and sharded (l2_dir/shard_*/l2_edges.jsonl)
     jsonl_files = sorted(l2_dir.glob("**/l2_edges.jsonl"))
     if not jsonl_files:
         raise FileNotFoundError(f"No l2_edges.jsonl files found in {l2_dir}")
 
+    seen: set[tuple] = set()
+    duplicates = 0
     for jf in jsonl_files:
         with jf.open("r", encoding="utf-8") as fp:
             for line in fp:
@@ -47,9 +54,22 @@ def load_l2_edges(l2_dir: Path) -> list[dict]:
                 if not line:
                     continue
                 try:
-                    edges.append(json.loads(line))
+                    edge = json.loads(line)
                 except json.JSONDecodeError:
                     continue
+                key = (
+                    str(edge.get("record_no", "")),
+                    str(edge.get("source", "")).strip().upper(),
+                    str(edge.get("target", "")).strip().upper(),
+                    str(edge.get("relation", "")),
+                )
+                if key in seen:
+                    duplicates += 1
+                    continue
+                seen.add(key)
+                edges.append(edge)
+    if duplicates:
+        print(f"  Deduplicated {duplicates} duplicate L2 edges at load time")
     return edges
 
 
@@ -77,9 +97,18 @@ def merge_l2_into_graph(
     new_entities: dict[str, dict] = {}  # entity_id -> row dict
     new_relations: list[dict] = []
 
-    # L1 entity type mapping: map L2 types to nearest L1 type where possible
-    # L2 types not in L1: Event, Condition, Action, Material, Person, Injury
-    # These get added as new entity types in the graph.
+    # Map LLM-generated L2 entity types to canonical L1 schema types where
+    # there is an honest 1:1 mapping. The L2 LLM assigns free-text types
+    # (Event, Action, Condition, etc.) — only 5 map cleanly to L1.
+    # The remaining 4 (CONDITION, ACTION, MATERIAL, PERSON) have no clean
+    # L1 equivalent and are kept as-is.
+    L2_TYPE_MAP: dict[str, str] = {
+        "EVENT":     "EVENT",
+        "EQUIPMENT": "EQUIPMENT",
+        "LOCATION":  "LOCATION",
+        "INCIDENT":  "INCIDENT",
+        "INJURY":    "INJURY_TYPE",
+    }
 
     stats = {
         "l2_edges_input": len(l2_edges),
@@ -99,9 +128,11 @@ def merge_l2_into_graph(
     for edge in l2_edges:
         record_no = str(edge.get("record_no") or "")
         source_val = str(edge.get("source") or "").strip()
-        source_type = str(edge.get("source_type") or "").strip().upper()
+        source_type_raw = str(edge.get("source_type") or "").strip().upper()
+        source_type = L2_TYPE_MAP.get(source_type_raw, source_type_raw)
         target_val = str(edge.get("target") or "").strip()
-        target_type = str(edge.get("target_type") or "").strip().upper()
+        target_type_raw = str(edge.get("target_type") or "").strip().upper()
+        target_type = L2_TYPE_MAP.get(target_type_raw, target_type_raw)
         relation = str(edge.get("relation") or "")
         evidence = str(edge.get("evidence") or "")
         confidence = edge.get("confidence")

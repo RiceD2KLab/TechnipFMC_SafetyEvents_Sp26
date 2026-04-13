@@ -35,11 +35,14 @@ EMBEDDING_BATCH_SIZE = 64
 # Domain-informed configuration: EQUIPMENT and INJURY_TYPE carry more weight
 # because shared equipment and injury patterns are stronger similarity signals
 # than shared dates or organisations (per Section 4.3.1).
+# EVENT added in v6 — captures physical occurrences (leak, spill, explosion)
+# reclassified from BODY_PART/INJURY_TYPE by the validation layer + L2 edges.
 SCHEMA_WEIGHTS: dict[str, float] = {
-    "EQUIPMENT":           0.25,
-    "INJURY_TYPE":         0.25,
-    "BODY_PART":           0.15,
-    "LOCATION":            0.15,
+    "EQUIPMENT":           0.22,
+    "INJURY_TYPE":         0.22,
+    "EVENT":               0.12,
+    "BODY_PART":           0.12,
+    "LOCATION":            0.12,
     "ORGANIZATION":        0.10,
     "ROOT_CAUSE_CATEGORY": 0.10,
 }
@@ -52,7 +55,7 @@ assert not _unknown, f"SCHEMA_WEIGHTS references unknown entity types: {_unknown
 SCHEMA_WEIGHTS_UNIFORM: dict[str, float] = {k: 1 / len(SCHEMA_WEIGHTS) for k in SCHEMA_WEIGHTS}
 
 # ── Structural hit rate: high-value entity types (Section 5.5) ────────────
-HIGH_VALUE_TYPES: list[str] = ["EQUIPMENT", "INJURY_TYPE", "LOCATION"]
+HIGH_VALUE_TYPES: list[str] = ["EQUIPMENT", "INJURY_TYPE", "EVENT", "LOCATION"]
 
 # ── Gold standard selection ───────────────────────────────────────────────
 # GOLD_STANDARD_IDS: pre-set list of record_no strings, or None to auto-select.
