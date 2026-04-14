@@ -63,10 +63,14 @@ export default function Layout() {
     if (!result) return;
     setIsExporting(true);
     try {
+      // Include the answer at the top of the PDF summary
+      const pdfSummary = result.answer
+        ? [result.answer, ...result.summary]
+        : result.summary;
       const blob = await exportNLQPdf({
         title: result.title,
         original_query: result.original_query,
-        summary: result.summary,
+        summary: pdfSummary,
         referenced_reports: result.referenced_reports,
       });
       const url = URL.createObjectURL(blob);
@@ -283,23 +287,37 @@ export default function Layout() {
                 </div>
               )}
 
-              {/* Summary section */}
-              <div className="mt-4">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                  Summary
-                </h3>
-                <ul className="space-y-1.5">
-                  {result.summary.map((bullet, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-2 text-sm text-gray-700"
-                    >
-                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0" />
-                      {bullet}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {/* Direct answer section */}
+              {result.answer && (
+                <div className="mt-4 px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h3 className="text-xs font-semibold text-blue-700 uppercase tracking-wide mb-2">
+                    Answer
+                  </h3>
+                  <div className="text-sm text-gray-900 font-medium whitespace-pre-line">
+                    {result.answer}
+                  </div>
+                </div>
+              )}
+
+              {/* Supporting context */}
+              {result.summary.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                    Context
+                  </h3>
+                  <ul className="space-y-1.5">
+                    {result.summary.map((bullet, i) => (
+                      <li
+                        key={i}
+                        className="flex items-start gap-2 text-sm text-gray-700"
+                      >
+                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0" />
+                        {bullet}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Referenced Safety Reports */}
               {result.referenced_reports.length > 0 && (

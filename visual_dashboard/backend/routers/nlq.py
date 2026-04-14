@@ -75,6 +75,7 @@ class PDFExportRequest(BaseModel):
 class NLQResponse(BaseModel):
     title: str
     original_query: str
+    answer: str | None = None
     summary: list[str]
     referenced_reports: list[ReferencedReport]
     confidence: float
@@ -165,8 +166,43 @@ def _generate_title(query: str, reasoning: str | None, result_summary: str) -> s
     return f"Analysis: {query[:80]}"
 
 
+def _generate_answer(exec_result: dict) -> str | None:
+    """Extract the direct answer from execution results.
+
+    Looks for "Top N:" aggregation data in the detail field, which represents
+    the concrete answer to the user's query. Falls back to result_summary if
+    no Top N block is found but the summary itself is substantive.
+    """
+    detail = exec_result.get("detail", "")
+    detail_lines = detail.split("\n")
+
+    for i, line in enumerate(detail_lines):
+        stripped = line.strip()
+        if stripped.startswith("Top ") and stripped.endswith(":"):
+            data_items: list[str] = []
+            for j in range(i + 1, len(detail_lines)):
+                data_line = detail_lines[j].strip()
+                if not data_line:
+                    break
+                data_items.append(data_line)
+            if data_items:
+                return stripped + "\n" + "\n".join(data_items)
+            return stripped
+
+    # Fallback: use result_summary if it contains a concrete "top:" mention
+    result_summary = exec_result.get("result_summary", "")
+    if result_summary and "top:" in result_summary.lower():
+        return result_summary
+
+    return None
+
+
 def _generate_summary(reasoning: str | None, exec_result: dict) -> list[str]:
-    """Generate summary bullet points from reasoning and execution result."""
+    """Generate supporting context bullet points from reasoning and execution result.
+
+    The primary answer (Top N data) is handled separately by _generate_answer(),
+    so this function focuses on contextual information.
+    """
     bullets: list[str] = []
 
     result_summary = exec_result.get("result_summary", "")
@@ -178,25 +214,6 @@ def _generate_summary(reasoning: str | None, exec_result: dict) -> list[str]:
         for sentence in sentences[:2]:
             if sentence not in bullets:
                 bullets.append(sentence + ".")
-
-    # Extract "Top N:" header AND the data lines that follow it
-    detail = exec_result.get("detail", "")
-    detail_lines = detail.split("\n")
-    for i, line in enumerate(detail_lines):
-        stripped = line.strip()
-        if stripped.startswith("Top ") and stripped.endswith(":"):
-            # Collect the data lines below the header into a single bullet
-            data_items: list[str] = []
-            for j in range(i + 1, len(detail_lines)):
-                data_line = detail_lines[j].strip()
-                if not data_line:
-                    break
-                data_items.append(data_line)
-            if data_items:
-                bullets.append(stripped + " " + ", ".join(data_items))
-            else:
-                bullets.append(stripped)
-            break
 
     return bullets[:5]
 
@@ -258,11 +275,13 @@ def run_nlq(request: NLQRequest):
     matched_incidents = _collect_matched_incidents(spec, G, entities_df, metadata_df)
     referenced_reports = _build_referenced_reports(matched_incidents, G)
     title = _generate_title(query, reasoning, exec_result.get("result_summary", ""))
+    answer = _generate_answer(exec_result)
     summary = _generate_summary(reasoning, exec_result)
 
     return NLQResponse(
         title=title,
         original_query=query,
+        answer=answer,
         summary=summary,
         referenced_reports=referenced_reports,
         confidence=translate_result["confidence"],

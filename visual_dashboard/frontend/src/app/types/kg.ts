@@ -72,6 +72,7 @@ export interface ReferencedReport {
 export interface NLQResponse {
   title: string;
   original_query: string;
+  answer: string | null;
   summary: string[];
   referenced_reports: ReferencedReport[];
   confidence: number;
