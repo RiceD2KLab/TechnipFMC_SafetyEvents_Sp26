@@ -59,6 +59,17 @@ export default function Layout() {
 
   const [isExporting, setIsExporting] = useState(false);
 
+  const answerTextRaw = result?.result_summary?.trim() ?? "";
+  const answerText =
+    answerTextRaw.length > 0 ? answerTextRaw : (result?.summary?.[0] ?? "").trim();
+  const supportingBullets = (result?.summary ?? []).filter((b) => {
+    const t = b.trim();
+    if (!t) return false;
+    if (!answerText) return true;
+    const a = answerText.trim();
+    return t !== a && t !== a.replace(/\.$/, "");
+  });
+
   const handleExportPdf = async () => {
     if (!result) return;
     setIsExporting(true);
@@ -283,23 +294,37 @@ export default function Layout() {
                 </div>
               )}
 
-              {/* Summary section */}
-              <div className="mt-4">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                  Summary
-                </h3>
-                <ul className="space-y-1.5">
-                  {result.summary.map((bullet, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-2 text-sm text-gray-700"
-                    >
-                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0" />
-                      {bullet}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {/* Answer (put the most important thing first) */}
+              {answerText && (
+                <div className="mt-4 rounded-lg border border-blue-100 bg-blue-50 px-4 py-3">
+                  <h3 className="text-xs font-semibold text-blue-900 uppercase tracking-wide mb-1">
+                    Answer
+                  </h3>
+                  <p className="text-sm text-blue-950 leading-relaxed">
+                    {answerText}
+                  </p>
+                </div>
+              )}
+
+              {/* Supporting summary bullets */}
+              {supportingBullets.length > 0 && (
+                <div className="mt-4">
+                  <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                    Key points
+                  </h3>
+                  <ul className="space-y-1.5">
+                    {supportingBullets.map((bullet, i) => (
+                      <li
+                        key={i}
+                        className="flex items-start gap-2 text-sm text-gray-700"
+                      >
+                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0" />
+                        {bullet}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Referenced Safety Reports */}
               {result.referenced_reports.length > 0 && (
