@@ -78,13 +78,13 @@ def _incident_nodes(node2idx: dict[str, int]) -> dict[str, int]:
 def train_node2vec(
     relations_path: Path = RELATIONS_PATH,
     embedding_dim: int = 128,
-    walk_length: int = 40,
-    context_size: int = 20,
+    walk_length: int = 20,
+    context_size: int = 10,
     walks_per_node: int = 10,
     num_neg_samples: int = 1,
     p: float = 1.0,
     q: float = 1.0,
-    epochs: int = 5,
+    epochs: int = 20,
     batch_size: int = 128,
     lr: float = 0.01,
     cache_path: Path | None = OUTPUT_DIR / "node2vec_embeddings.pkl",
@@ -393,9 +393,9 @@ def train_rdf2vec(
     relations_path: Path = RELATIONS_PATH,
     embedding_dim: int = 128,
     walks_per_node: int = 200,
-    walk_depth: int = 40,
+    walk_depth: int = 5,
     window_size: int = 5,
-    epochs: int = 5,
+    epochs: int = 20,
     sg: int = 1,
     workers: int = 4,
     seed: int = 42,
@@ -419,7 +419,7 @@ def train_rdf2vec(
         relations_path : Path to relations_post_er.parquet.
         embedding_dim  : Embedding dimension.
         walks_per_node : Number of random walks per incident node.
-        walk_depth     : Hops per walk (token length = 2 * walk_depth + 1).
+        walk_depth     : Hops per walk (token length = 2 * walk_depth + 1). Should match window_size.
         window_size    : Word2Vec context window.
         epochs         : Word2Vec training epochs.
         sg             : 1 = skip-gram (recommended), 0 = CBOW.

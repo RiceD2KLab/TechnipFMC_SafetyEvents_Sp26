@@ -8,10 +8,10 @@ Overlap = avg Jaccard overlap of top-K lists with text embedding top-K.
 
 | Method | Pearson r (vs text) | Spearman ρ (vs text) | Hit Rate — Equipment | Hit Rate — Injury | Hit Rate — Location | Top-K Overlap (vs text) | N | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Text Embedding (all-MiniLM-L6-v2) | 1.0000 | 1.0000 | 0.0409 | 0.0438 | 0.3814 | 1.0000 | 258 | active (baseline) |
-| Structural Overlap (Weighted Jaccard) | 0.1603 | 0.1327 | 0.0649 | 0.1260 | 0.6504 | 0.0839 | 258 | active |
-| KG Embedding — Node2Vec | 0.2050 | 0.2014 | 0.0236 | 0.0329 | 0.9318 | 0.0666 | 258 | active |
-| KG Embedding — TransE | 0.1628 | 0.1537 | 0.0269 | 0.0370 | 0.8461 | 0.0619 | 258 | active |
-| KG Embedding — RDF2Vec | 0.1105 | 0.0990 | 0.0582 | 0.0795 | 0.8705 | 0.0747 | 258 | active |
-| GNN Embedding — GraphSAGE | 0.0914 | 0.0841 | 0.0115 | 0.0411 | 0.2907 | 0.0358 | 258 | active |
-| Hybrid (weighted combination) | 0.7664 | 0.7669 | 0.0611 | 0.0973 | 0.8140 | 0.2442 | 258 | active |
+| Text Embedding (all-MiniLM-L6-v2) | 1.0000 | 1.0000 | 0.1550 | 0.0787 | 0.3795 | 1.0000 | 258 | active (baseline) |
+| Structural Overlap (Weighted Jaccard) | 0.1713 | 0.1504 | 0.1382 | 0.2040 | 0.6155 | 0.0814 | 258 | active |
+| KG Embedding — Node2Vec | 0.2241 | 0.2188 | 0.1164 | 0.0800 | 0.8857 | 0.0781 | 258 | active |
+| KG Embedding — TransE | 0.1628 | 0.1537 | 0.0929 | 0.0573 | 0.8446 | 0.0619 | 258 | active |
+| KG Embedding — RDF2Vec | 0.1178 | 0.1051 | 0.1794 | 0.0960 | 0.7872 | 0.0814 | 258 | active |
+| GNN Embedding — GraphSAGE | nan | nan | nan | nan | nan | nan | 0 | not trained / threshold not met |
+| Hybrid (weighted combination) | 0.7842 | 0.7806 | 0.1790 | 0.1600 | 0.7775 | 0.2604 | 258 | active |
