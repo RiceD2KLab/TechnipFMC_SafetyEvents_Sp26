@@ -97,8 +97,15 @@ CJ (31 conjunctive), SC (39 spot-check), IOGP (28 IOGP Life-Saving Rules).
 intersect, crosstab, spot_check, custom (37 functions including extraction gap analysis
 and embedding similarity retrieval).
 
+**Ground-truth coverage: 258 / 258 (100%).** 218 queries carry a scalar `expected_count`
+(backfilled from the v6-merged graph, cross-validated against raw pandas on source
+metadata); 40 spot-check queries carry value-level `ground_truth` pipe-lists. All 258 pass
+their coverage threshold under the current pipeline.
+
 Used by:
 - `pipeline/benchmark/run_benchmark.py` — automated benchmark execution
+- `pipeline/benchmark/cross_validate.py` — independent pandas cross-check of query counts
+- `pipeline/benchmark/backfill_expected_counts.py` — re-sync `expected_count` after pipeline changes
 - `natural_language_query/run_golden_set.py` — NLQ translation testing
 - `natural_language_query/eval_harness.py` — scoring criteria reference
 

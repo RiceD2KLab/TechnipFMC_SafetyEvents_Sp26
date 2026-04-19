@@ -1550,11 +1550,15 @@ def _load_similarity():
     else:
         _SIM_CACHE["text"] = {}
 
-    # Node2Vec embeddings
-    n2v_path = sim_dir / "node2vec_embeddings.pkl"
-    if n2v_path.exists():
-        with open(n2v_path, "rb") as f:
-            _SIM_CACHE["node2vec"] = pickle.load(f)
+    # Structural KG embeddings — prefer RDF2Vec (current), fall back to
+    # Node2Vec if the older file is still around. Both live under the
+    # "node2vec" cache key for backward compat with callers.
+    for cand in ("rdf2vec_embeddings.pkl", "node2vec_embeddings.pkl"):
+        p = sim_dir / cand
+        if p.exists():
+            with open(p, "rb") as f:
+                _SIM_CACHE["node2vec"] = pickle.load(f)
+            break
     else:
         _SIM_CACHE["node2vec"] = {}
 

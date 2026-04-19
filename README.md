@@ -116,8 +116,15 @@ python pipeline/enrichment/run_l2_enrichment.py \
 ### Benchmark (258 golden set queries)
 
 ```bash
-cd pipeline && python -m benchmark.run_benchmark
+python -m pipeline.benchmark.run_benchmark \
+    --data-dir pipeline/outputs/v6_merged \
+    --report-path pipeline/benchmark/benchmark_v6_merged_results.md
 ```
+
+Current status: **258 / 258 passing**. The golden set has 100% ground-truth coverage
+(218 scalar `expected_count` + 40 value-level `ground_truth`), all backfilled from the
+v6-merged graph. Run `python -m pipeline.benchmark.cross_validate` for an independent
+pandas cross-check of query counts.
 
 ### Natural language querying
 

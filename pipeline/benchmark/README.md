@@ -6,25 +6,38 @@ This is a CSV-driven benchmark system for the v2 safety knowledge graph. Adding 
 query means adding a row to `kg_schema/golden_set.csv`. No Python changes are required
 unless the query logic cannot be expressed via CSV (see Section 5).
 
-**258 total queries across 7 categories:**
-- 213 are fully CSV-driven (strategies: entity_filter, meta_filter,
-  narrative_filter, intersect, crosstab, spot_check)
+**258 total queries across 7 categories with 100% ground-truth coverage:**
+- 218 queries carry a scalar `expected_count` (within-10% tolerance)
+- 40 spot-check queries carry value-level `ground_truth` (pipe-separated expected entities)
 - 37 use custom Python functions registered in `query_engine/custom_queries.py`
-- 58+ metadata-verifiable queries have `expected_count` for ground truth validation
-- 39 spot-check queries verify per-record extraction quality across equipment,
-  body parts, injury types, locations, and organizations
 - 8 extraction-gap queries compare narrative mentions vs entity extraction
 - 8 embedding-similarity queries test semantic retrieval via text/KG embeddings
 
 **Query types covered:** Single-hop, Aggregation, Multi-hop, Global, Conjunctive
 
-**Run command (from `pipeline/`):**
+**Run command (from repo root):**
 
 ```bash
-python -m benchmark.run_benchmark
+python -m pipeline.benchmark.run_benchmark \
+    --data-dir pipeline/outputs/v6_merged \
+    --report-path pipeline/benchmark/benchmark_v6_merged_results.md
 ```
 
-Output is written to `pipeline/benchmark/benchmark_results.md`.
+Output is written to the specified `--report-path` (default: `pipeline/benchmark/benchmark_results.md`).
+
+**Current benchmark status:** 258 / 258 passing against the v6-merged graph (111,115 nodes, 267,682 edges).
+
+### Independent validation tooling
+
+Two helper scripts cross-validate the golden set against the source data:
+
+- `pipeline/benchmark/cross_validate.py` — runs a curated set of queries *twice*, once
+  via the graph pipeline and once via raw pandas on `metadata_parsed.parquet`. The two
+  paths share no code, so agreement is strong evidence the pipeline preserved the signal
+  in the source narratives/metadata. Produces `cross_validation_report.md`.
+- `pipeline/benchmark/backfill_expected_counts.py` — idempotent migration that
+  backfills `expected_count` from the live graph. Re-runnable with `--force` after any
+  pipeline iteration so the golden set stays aligned to the current production graph.
 
 ---
 
@@ -199,17 +212,19 @@ The `granularity` filter in aggregate mode matches the `granularity` node attrib
 - Example: `Pre-ER variants are separate`
 
 ### `expected_count`
-- Optional
-- Integer ground truth count computed from `metadata_parsed.parquet` or manual verification
-- Used by the validation scoring engine to compare graph results against known answers
+- Integer ground truth; present on 218 of 258 queries (spot-checks use `ground_truth` instead).
+- Sourced from the live v6-merged graph via `backfill_expected_counts.py` and cross-validated
+  against raw pandas on `metadata_parsed.parquet` where a metadata equivalent exists.
+- Used by the validation scoring engine to compare graph results against known answers.
 - Scoring logic:
   - Within 10% of expected: `VALIDATED`
-  - Within 25% of expected: `CLOSE` (acceptable for GLiNER-dependent queries)
-  - Over 25% divergence: `DRIFT` (indicates extraction or pipeline issue)
-  - No expected_count: `—` (not validated)
-- For metadata-verifiable queries (filters on year, severity, work_process), the expected
-  count is deterministic. For GLiNER-dependent queries, some drift is expected since the
-  NER model may extract more or fewer entities than a simple text grep.
+  - Within 25% of expected: `CLOSE`
+  - Over 25% divergence: `DRIFT` (indicates extraction or pipeline regression)
+- Update procedure after pipeline changes:
+  ```bash
+  python -m pipeline.benchmark.backfill_expected_counts \
+      --data-dir pipeline/outputs/v6_merged --force
+  ```
 
 ---
 

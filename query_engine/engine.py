@@ -632,6 +632,7 @@ def _execute_traverse(spec, G, entities_df, relations_df):
     return {
         "coverage": coverage,
         "diagnosis": diag,
+        "count": len(current_nodes),
         "result_summary": (f"{len(current_nodes)} endpoints, "
                            f"{len(value_counts)} distinct {collect_type}"),
         "detail": "\n".join(walk_log),
