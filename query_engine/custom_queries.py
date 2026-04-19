@@ -1550,10 +1550,11 @@ def _load_similarity():
     else:
         _SIM_CACHE["text"] = {}
 
-    # Structural KG embeddings — prefer RDF2Vec (current), fall back to
-    # Node2Vec if the older file is still around. Both live under the
-    # "node2vec" cache key for backward compat with callers.
-    for cand in ("rdf2vec_embeddings.pkl", "node2vec_embeddings.pkl"):
+    # Structural KG embeddings — prefer Node2Vec (matches the query's
+    # display label), fall back to RDF2Vec if only that one has been
+    # generated. Both live under the "node2vec" cache key for backward
+    # compat with callers.
+    for cand in ("node2vec_embeddings.pkl", "rdf2vec_embeddings.pkl"):
         p = sim_dir / cand
         if p.exists():
             with open(p, "rb") as f:
