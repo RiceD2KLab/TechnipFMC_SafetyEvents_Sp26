@@ -14,7 +14,7 @@ that the pipeline preserves the raw signal in the source data.
 Usage:
     python -m pipeline.benchmark.cross_validate
     python -m pipeline.benchmark.cross_validate \
-        --data-dir pipeline/outputs/v6 \
+        --data-dir pipeline/outputs \
         --report-path pipeline/benchmark/cross_validation_report.md
 """
 
@@ -32,7 +32,7 @@ from query_engine import load_data, load_queries, execute_query, CUSTOM_REGISTRY
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_DATA_DIR = REPO_ROOT / "pipeline" / "outputs" / "v6_merged"
+DEFAULT_DATA_DIR = REPO_ROOT / "pipeline" / "outputs"
 DEFAULT_REPORT = REPO_ROOT / "pipeline" / "benchmark" / "cross_validation_report.md"
 
 

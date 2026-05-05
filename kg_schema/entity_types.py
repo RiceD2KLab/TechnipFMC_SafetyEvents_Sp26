@@ -1,7 +1,7 @@
 """L1 entity types, GLiNER config, incident properties, and chunking config."""
 from __future__ import annotations
 
-# ── Entity Types (7) ──────────────────────────────────────────────────────
+# ── Entity Types (8) ──────────────────────────────────────────────────────
 ENTITY_TYPES: dict[str, dict[str, str]] = {
     "INCIDENT":            {"source": "header",   "description": "Hub node, one per record"},
     "EQUIPMENT":           {"source": "gliner",   "description": "Physical equipment, tools, machinery, vehicles"},

@@ -6,26 +6,25 @@ This is a CSV-driven benchmark system for the v2 safety knowledge graph. Adding 
 query means adding a row to `kg_schema/golden_set.csv`. No Python changes are required
 unless the query logic cannot be expressed via CSV (see Section 5).
 
-**258 total queries across 7 categories with 100% ground-truth coverage:**
+**258 total queries across 7 ID-prefix groups with 100% ground-truth coverage:**
 - 218 queries carry a scalar `expected_count` (within-10% tolerance)
-- 40 spot-check queries carry value-level `ground_truth` (pipe-separated expected entities)
+- 48 rows carry value-level `ground_truth` (pipe-separated expected entities)
 - 37 use custom Python functions registered in `query_engine/custom_queries.py`
 - 8 extraction-gap queries compare narrative mentions vs entity extraction
 - 8 embedding-similarity queries test semantic retrieval via text/KG embeddings
 
 **Query types covered:** Single-hop, Aggregation, Multi-hop, Global, Conjunctive
 
-**Run command (from repo root):**
+**Run command (from repo root, default current graph):**
 
 ```bash
-python -m pipeline.benchmark.run_benchmark \
-    --data-dir pipeline/outputs/v6_merged \
-    --report-path pipeline/benchmark/benchmark_v6_merged_results.md
+python -m pipeline.benchmark.run_benchmark
 ```
 
 Output is written to the specified `--report-path` (default: `pipeline/benchmark/benchmark_results.md`).
 
-**Current benchmark status:** 258 / 258 passing against the v6-merged graph (111,115 nodes, 267,682 edges).
+**Current benchmark status:** 258 / 258 passing against `pipeline/outputs/`
+(111,115 nodes, 267,682 NetworkX edges; generated 2026-05-04).
 
 ### Independent validation tooling
 
@@ -212,8 +211,8 @@ The `granularity` filter in aggregate mode matches the `granularity` node attrib
 - Example: `Pre-ER variants are separate`
 
 ### `expected_count`
-- Integer ground truth; present on 218 of 258 queries (spot-checks use `ground_truth` instead).
-- Sourced from the live v6-merged graph via `backfill_expected_counts.py` and cross-validated
+- Integer ground truth; present on 218 of 258 queries (`ground_truth` rows use value-level checks instead).
+- Sourced from the current merged graph via `backfill_expected_counts.py` and cross-validated
   against raw pandas on `metadata_parsed.parquet` where a metadata equivalent exists.
 - Used by the validation scoring engine to compare graph results against known answers.
 - Scoring logic:
@@ -223,7 +222,7 @@ The `granularity` filter in aggregate mode matches the `granularity` node attrib
 - Update procedure after pipeline changes:
   ```bash
   python -m pipeline.benchmark.backfill_expected_counts \
-      --data-dir pipeline/outputs/v6_merged --force
+      --data-dir pipeline/outputs --force
   ```
 
 ---

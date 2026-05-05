@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Benchmark Query Runner — CSV-driven
+"""Benchmark Query Runner — CSV-driven.
 
 Runs 258 benchmark queries against the safety knowledge graph.
 Query definitions live in kg_schema/golden_set.csv; custom query logic
@@ -8,9 +8,8 @@ lives in custom_queries.py.
 Output: pipeline/benchmark/benchmark_results.md
 
 Usage:
-    cd pipeline
-    python -m benchmark.run_benchmark
-    python -m benchmark.run_benchmark --data-dir pipeline/outputs/benchmark_large --report-path pipeline/benchmark/benchmark_large_results.md
+    python -m pipeline.benchmark.run_benchmark
+    python -m pipeline.benchmark.run_benchmark --data-dir pipeline/outputs/benchmark_large --report-path pipeline/benchmark/benchmark_large_results.md
 """
 
 import argparse

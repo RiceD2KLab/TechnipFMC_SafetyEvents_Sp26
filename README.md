@@ -7,7 +7,7 @@ enabling structured querying, causal chain analysis, and similar-incident retrie
 
 1. **Entity extraction** — GLiNER NER identifies equipment, body parts, injuries, locations,
    organizations, and root cause categories from incident narratives
-2. **Graph assembly** — Builds a property graph under a fixed schema (7 L1 entity types,
+2. **Graph assembly** — Builds a property graph under a fixed schema (8 L1 entity types,
    7 relation types) with metadata-parsed incident properties
 3. **Entity resolution** — Deterministic normalization + similarity merge (sim >= 0.90)
    deduplicates entity nodes
@@ -106,8 +106,8 @@ python -m pipeline.er_execution.run_er_execution
 
 ```bash
 python pipeline/enrichment/run_l2_enrichment.py \
-    --nodes-csv pipeline/outputs/entities.parquet \
-    --edges-csv pipeline/outputs/relations.parquet \
+    --nodes-csv pipeline/er_execution/outputs/entities_post_er_loc_dedup.parquet \
+    --edges-csv pipeline/er_execution/outputs/relations_post_er_loc_dedup.parquet \
     --metadata-csv pipeline/outputs/metadata_parsed.parquet \
     --output-dir output/l2/ \
     --backend ollama --model qwen3:30b-a3b
@@ -116,15 +116,14 @@ python pipeline/enrichment/run_l2_enrichment.py \
 ### Benchmark (258 golden set queries)
 
 ```bash
-python -m pipeline.benchmark.run_benchmark \
-    --data-dir pipeline/outputs/v6_merged \
-    --report-path pipeline/benchmark/benchmark_v6_merged_results.md
+python -m pipeline.benchmark.run_benchmark
 ```
 
-Current status: **258 / 258 passing**. The golden set has 100% ground-truth coverage
-(218 scalar `expected_count` + 40 value-level `ground_truth`), all backfilled from the
-v6-merged graph. Run `python -m pipeline.benchmark.cross_validate` for an independent
-pandas cross-check of query counts.
+Current status: **258 / 258 passing** on the default L1+L2 graph in
+`pipeline/outputs/`. The golden set has 100% ground-truth coverage
+(218 scalar `expected_count` + 48 value-level `ground_truth` rows), backfilled from
+the current merged graph. The generated report is
+`pipeline/benchmark/benchmark_results.md`.
 
 ### Natural language querying
 
@@ -162,18 +161,19 @@ All entity types, relation types, and evaluation data are defined in
 
 | Layer | Entity Types | Relation Types |
 |-------|-------------|----------------|
-| L1 (GLiNER + metadata) | 7: INCIDENT, EQUIPMENT, BODY_PART, INJURY_TYPE, LOCATION, ORGANIZATION, ROOT_CAUSE_CATEGORY | 7: INVOLVED, AFFECTED, RESULTED_IN, OCCURRED_AT, REPORTED_BY, CATEGORIZED_AS, LOCATED_IN |
+| L1 (GLiNER + metadata + validation) | 8: INCIDENT, EQUIPMENT, BODY_PART, INJURY_TYPE, LOCATION, ORGANIZATION, ROOT_CAUSE_CATEGORY, EVENT | 7: INVOLVED, AFFECTED, RESULTED_IN, OCCURRED_AT, REPORTED_BY, CATEGORIZED_AS, LOCATED_IN |
 | L2 (LLM enrichment) | 9: Incident, Event, Equipment, Location, Person, Injury, Material, Condition, Action | 4: CAUSAL, PRECEDED_BY, FAILED_CONTROL, MITIGATED_BY |
 
 ## Graph Statistics
 
 | Metric | Value |
 |--------|-------|
-| Incidents processed | 23,311 |
-| L1 entity nodes | ~57,000 |
-| L1 edges | ~196,000 |
+| Source incident rows | 23,311 |
+| Benchmark metadata rows | 19,820 |
+| Post-ER loc-dedup base | 56,366 entities, 199,443 relations |
 | L2 causal edges | ~34,500 |
-| Total graph (merged) | ~100K nodes, ~234K edges |
+| Total graph (merged) | 111,115 entities, 268,781 relation rows |
+| Benchmark graph | 111,115 nodes, 267,682 NetworkX edges |
 
 ## Dependencies
 
@@ -195,7 +195,7 @@ For a fast end-to-end validation (no GPU, ~5 minutes):
 
 ```bash
 python pipeline/run_gliner_pipeline.py --test     # L1 extraction on 1K records
-cd pipeline && python -m benchmark.run_benchmark   # 258-query benchmark
+python -m pipeline.benchmark.run_benchmark        # 258-query benchmark
 python -m event_similarity.run_similarity          # similarity evaluation
 ```
 

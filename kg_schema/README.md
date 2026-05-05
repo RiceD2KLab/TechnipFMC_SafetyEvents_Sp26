@@ -38,9 +38,9 @@ kg_schema/
 
 ## Schema Overview
 
-### L1 — Extracted by GLiNER + metadata parsing
+### L1 — Extracted by GLiNER + metadata parsing + validation
 
-**Entity types (7)**
+**Entity types (8)**
 
 | Type | Source | Description |
 |------|--------|-------------|
@@ -51,6 +51,7 @@ kg_schema/
 | `LOCATION` | metadata | Geographic: site, city, country, region |
 | `ORGANIZATION` | metadata | Client or organizational unit |
 | `ROOT_CAUSE_CATEGORY` | metadata | CASE_CATEGORIZATION taxonomy (117 values) |
+| `EVENT` | validation/L2 merge | Physical event or failure occurrence (for example leak, spill, fall, explosion) |
 
 **Relation types (7)**
 
@@ -90,16 +91,19 @@ kg_schema/
 Each row contains the full natural language question in the `name` column, along with the
 structured query spec (strategy, entity filters, meta filters, expected counts, etc.).
 
-**Categories:** SH (58 single-hop), AG (26 aggregation), MH (44 multi-hop), GL (24 global),
-CJ (31 conjunctive), SC (39 spot-check), IOGP (28 IOGP Life-Saving Rules).
+**ID prefixes:** SH (58 single-hop), AG (26 aggregation), MH (49 multi-hop), GL (24 global),
+CJ (34 conjunctive), SC (39 spot-check), IOGP (28 IOGP Life-Saving Rules).
+
+**Query types:** Single-hop (104), Multi-hop (58), Aggregation (37),
+Conjunctive (35), Global (24).
 
 **Strategies:** entity_filter, meta_filter, narrative_filter (with `~` bag-of-words support),
 intersect, crosstab, spot_check, custom (37 functions including extraction gap analysis
 and embedding similarity retrieval).
 
 **Ground-truth coverage: 258 / 258 (100%).** 218 queries carry a scalar `expected_count`
-(backfilled from the v6-merged graph, cross-validated against raw pandas on source
-metadata); 40 spot-check queries carry value-level `ground_truth` pipe-lists. All 258 pass
+(backfilled from the current merged graph, cross-validated against raw pandas on source
+metadata); 48 rows carry value-level `ground_truth` pipe-lists. All 258 pass
 their coverage threshold under the current pipeline.
 
 Used by:

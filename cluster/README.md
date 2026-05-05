@@ -45,14 +45,20 @@ module load GCC/13.2.0 CUDA/12.6.0
 | `setup_cluster_env.sh` | One-time environment setup (venv, torch, ollama) |
 | `submit_l2_enrichment.sbatch` | L2 causal enrichment via Ollama (4-shard array, qwen3:30b-a3b) |
 | `submit_l2_vllm.sbatch` | L2 enrichment via vLLM backend (4-shard array, Qwen3-30B-A3B-GPTQ-Int4) |
-| `submit_model_comparison.sbatch` | Model comparison run (3 models x 500-record subset) |
+| `build_transfer_bundle.py` | Local code-only tarball builder for refreshing the NOTS repo copy |
+| `run_working_set_30k.sh` | Legacy 30k working-set wrapper retained for audit/reproduction |
 
 ## L2 Enrichment
 
 The production L2 run uses 4-shard SLURM arrays with `--exclusive` to avoid GPU contention:
 
 ```bash
-sbatch cluster/submit_l2_enrichment.sbatch
+sbatch --export=ALL,\
+NODES_CSV=pipeline/er_execution/outputs/entities_post_er_loc_dedup.parquet,\
+EDGES_CSV=pipeline/er_execution/outputs/relations_post_er_loc_dedup.parquet,\
+METADATA_CSV=pipeline/outputs/metadata_parsed.parquet,\
+OUTPUT_DIR=output/l2 \
+cluster/submit_l2_enrichment.sbatch
 ```
 
 Key configuration (set in the sbatch file):
@@ -63,13 +69,28 @@ Key configuration (set in the sbatch file):
 - **Resume:** Enabled — safe to restart interrupted jobs
 - **Per-shard ports:** Base port + `SLURM_ARRAY_TASK_ID` to avoid bind conflicts
 
-Output lands in `output/l2/shard_*/`. After all shards complete, edges are merged
-by the pipeline merge step (`pipeline/outputs/`).
+Output lands in `output/l2/shard_*/`. After all shards complete, merge with:
+
+```bash
+python pipeline/enrichment/merge_l2_edges.py \
+  --l2-dir output/l2 \
+  --entities-parquet pipeline/er_execution/outputs/entities_post_er_loc_dedup.parquet \
+  --relations-parquet pipeline/er_execution/outputs/relations_post_er_loc_dedup.parquet \
+  --output-dir pipeline/outputs/merged
+```
+
+The current dashboard/benchmark graph is the L1+L2 merged graph copied into
+`pipeline/outputs/`.
 
 ### vLLM alternative
 
 ```bash
-sbatch cluster/submit_l2_vllm.sbatch
+sbatch --export=ALL,\
+NODES_CSV=pipeline/er_execution/outputs/entities_post_er_loc_dedup.parquet,\
+EDGES_CSV=pipeline/er_execution/outputs/relations_post_er_loc_dedup.parquet,\
+METADATA_CSV=pipeline/outputs/metadata_parsed.parquet,\
+OUTPUT_DIR=output/l2_vllm \
+cluster/submit_l2_vllm.sbatch
 ```
 
 Same shard/resume behavior, uses vLLM's OpenAI-compatible server instead of Ollama.

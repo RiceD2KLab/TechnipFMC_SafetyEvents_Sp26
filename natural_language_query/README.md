@@ -2,20 +2,20 @@
 
 Translates natural language questions → structured QuerySpec → executes against the existing benchmark query engine. Zero new dependencies beyond `pydantic` and `requests`.
 
-**Requirements:** Python 3.9+ (current `pydantic` and pip do not support 3.8). On Windows with multiple Pythons, use the py launcher: `py -3.12 -m venv .venv` so the venv uses 3.12.
+**Requirements:** Python 3.11+ to match the project environment. On Windows with multiple Pythons, use the py launcher: `py -3.11 -m venv .venv` so the venv uses 3.11.
 
 ## Setup
 
 ```bash
-# Use Python 3.9+ for the venv (Windows: py -3.12 -m venv .venv)
-python -m venv .venv
+# Use Python 3.11+ for the venv (Windows: py -3.11 -m venv .venv)
+python3.11 -m venv .venv
 source .venv/bin/activate   # or on Windows: .\.venv\Scripts\Activate.ps1
 
 # Install deps
 pip install pydantic requests
 
 # Make sure Ollama is running with a model
-ollama pull qwen3:8b        # or qwen3.5:latest when available
+ollama pull qwen3:8b
 ollama serve                 # if not already running
 ```
 
@@ -70,9 +70,9 @@ render_nl_query_widget(G, entities_df, relations_df, metadata_df)
 
 ## Golden Set (Dashboard query coverage)
 
-The golden set (~258 queries) is defined in `kg_schema/golden_set.csv`. The NLQ
+The golden set (258 queries) is defined in `kg_schema/golden_set.csv`. The NLQ
 runner walks **every CSV row** by default. Use `--skip-iogp` to exclude `IOGP-*`
-rows (~230 queries) for a smaller run.
+rows (28 queries) for a smaller run.
 
 ```bash
 # Translation only — all rows

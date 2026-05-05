@@ -1,8 +1,8 @@
-# L1 Benchmark Query Results
+# Benchmark Query Results
 
-**Generated:** 2026-03-30
-**Graph:** 100,407 nodes, 233,856 edges
-**Records:** 19,820 metadata rows, 19,851 incident nodes
+**Generated:** 2026-05-04
+**Graph:** 111,115 nodes, 267,682 edges
+**Records:** 19,820 metadata rows, 19,849 incident nodes
 **Layer:** L1 + L2 (34,499 causal edges)
 
 ## 1. Summary Table
@@ -11,238 +11,238 @@
 |------|-------|------|:------:|--------|
 | AG-01 | What are the most common root causes of dropped object incidents? | Aggregation | ✅ | 1026 incidents, 43 root_cause_category values, top: Stored energy (dropped objects) |
 | AG-02 | Which countries have the highest rate of high-severity incidents? | Aggregation | ✅ | 167 incidents, 22 location values, top: USA |
-| AG-03 | What equipment types are involved in the most incidents overall? | Aggregation | ✅ | 19851 incidents, 13446 equipment values, top: forklift |
+| AG-03 | What equipment types are involved in the most incidents overall? | Aggregation | ✅ | 19849 incidents, 22286 equipment values, top: crane |
 | AG-04 | How do incidents break down by type (accident vs. near miss) across business units? | Aggregation | ✅ | Crosstab: 4 business_unit values x 3 incident_type values |
 | AG-05 | What is the monthly trend of fall/slip incidents over the past 3 years? | Aggregation | ✅ | 1695 incidents across 110 months |
 | AG-06 | What proportion of incidents in each impact type category result in high-severity outcomes? | Aggregation | ✅ | Crosstab: 10 impact_type values x 6 severity_bin values |
-| AG-07 | What are the most common body parts affected across all incidents? | Aggregation | ✅ | 19851 incidents, 1980 body_part values, top: left hand |
-| AG-08 | What are the most common injury types across all incidents? | Aggregation | ✅ | 19851 incidents, 1324 injury_type values, top: injuries |
-| AG-09 | Which organizations report the most incidents? | Aggregation | ✅ | 19851 incidents, 8447 organization values, top: TECHNIPFMC |
+| AG-07 | What are the most common body parts affected across all incidents? | Aggregation | ✅ | 19849 incidents, 1753 body_part values, top: finger |
+| AG-08 | What are the most common injury types across all incidents? | Aggregation | ✅ | 19849 incidents, 1179 injury_type values, top: cut |
+| AG-09 | Which organizations report the most incidents? | Aggregation | ✅ | 19849 incidents, 8830 organization values, top: TECHNIPFMC |
 | AG-10 | What is the annual trend of manual handling incidents? | Aggregation | ✅ | 760 incidents across 108 months |
 | AG-11 | What root cause categories are most common in high-severity incidents? | Aggregation | ✅ | 167 incidents, 22 root_cause_category values, top: Stored energy (dropped objects) |
 | AG-12 | How do incidents break down by impact type over the years? | Aggregation | ✅ | Crosstab: 10 year values x 10 impact_type values |
 | AG-13 | What is the trend of fire/explosion incidents over time? | Aggregation | ✅ | 121 incidents across 16 months |
-| AG-14 | Which cities have the highest incident counts? | Aggregation | ✅ | 19851 incidents, 230 location values, top: Aberdeen |
-| AG-15 | How do incidents distribute across work process categories? | Aggregation | ✅ | 19851 incidents, 65 root_cause_category values, top: Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects) |
-| AG-16 | What is the year-over-year trend of eye injuries? | Aggregation | ✅ | 492 incidents across 103 months |
-| AG-17 | What are the most common injury types at construction sites? | Aggregation | ✅ | 5357 incidents, 583 injury_type values, top: injuries |
-| AG-18 | Which clients report the most high-severity incidents? | Aggregation | ✅ | 167 incidents, 247 organization values, top: TECHNIPFMC |
-| AG-19 | What is the year-over-year trend of fracture injuries? | Aggregation | ✅ | 228 incidents across 78 months |
-| AG-20 | What equipment is most common in incidents at Aberdeen? | Aggregation | ✅ | 2501 incidents, 3183 equipment values, top: crane |
+| AG-14 | Which cities have the highest incident counts? | Aggregation | ✅ | 19849 incidents, 230 location values, top: Aberdeen |
+| AG-15 | How do incidents distribute across work process categories? | Aggregation | ✅ | 19849 incidents, 65 root_cause_category values, top: Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects) |
+| AG-16 | What is the year-over-year trend of eye injuries? | Aggregation | ✅ | 500 incidents across 105 months |
+| AG-17 | What are the most common injury types at construction sites? | Aggregation | ✅ | 5357 incidents, 556 injury_type values, top: contusion |
+| AG-18 | Which clients report the most high-severity incidents? | Aggregation | ✅ | 167 incidents, 234 organization values, top: TECHNIPFMC |
+| AG-19 | What is the year-over-year trend of fracture injuries? | Aggregation | ✅ | 352 incidents across 89 months |
+| AG-20 | What equipment is most common in incidents at Aberdeen? | Aggregation | ✅ | 2499 incidents, 6828 equipment values, top: ROV |
 | AG-21 | How do incidents break down by work process and risk color? | Aggregation | ✅ | Crosstab: 224 work_process values x 4 risk_color values |
 | AG-22 | How do the top countries compare on accident vs near-miss ratios? | Aggregation | ✅ | Crosstab: 233 loc_country values x 3 incident_type values |
 | AG-23 | How do root cause categories distribute across business units? | Aggregation | ✅ | Crosstab: 4 business_unit values x 118 case_categorization values |
 | AG-24 | How does severity distribution vary by year? | Aggregation | ✅ | Crosstab: 10 year values x 6 severity_bin values |
-| AG-25 | What is the year-over-year trend of contusion/bruise injuries? | Aggregation | ✅ | 360 incidents across 86 months |
+| AG-25 | What is the year-over-year trend of contusion/bruise injuries? | Aggregation | ✅ | 510 incidents across 99 months |
 | AG-26 | How do incident counts compare across the top 10 operating centers? | Aggregation | ✅ | Crosstab: 276 operating_center values x 3 incident_type values |
 | CJ-01 | Which incidents match the pattern of corrosion-induced equipment failure leading to fire? | Conjunctive | ✅ | 34,499 causal edges; 800 for fire/explosion |
 | CJ-02 | Find all high-severity incidents where a crane was involved AND a back injury was sustained AND the location was offshore. | Conjunctive | ✅ | 0 incidents |
 | CJ-03 | Identify incidents where maintenance procedures failed, involving pipe equipment, resulting in environmental impact at locations in the Middle East. | Conjunctive | ✅ | 0 incidents |
-| CJ-04 | Which equipment types have caused both injuries AND near-misses at the same location within the same year? | Conjunctive | ✅ | 539 dual-risk equipment/location/year combos |
-| CJ-05 | Find the causal chain pattern: procedural non-compliance -> dropped object -> head/hand injury. How many incidents match? | Conjunctive | ✅ | 324 incidents; 12 procedural causal edges |
-| CJ-06 | Which incidents involve the co-occurrence of slip/fall events AND vehicle/transportation equipment at construction sites? | Conjunctive | ✅ | 16 incidents |
+| CJ-04 | Which equipment types have caused both injuries AND near-misses at the same location within the same year? | Conjunctive | ✅ | 1453 dual-risk equipment/location/year combos |
+| CJ-05 | Find the causal chain pattern: procedural non-compliance -> dropped object -> head/hand injury. How many incidents match? | Conjunctive | ✅ | 451 incidents; 15 procedural causal edges |
+| CJ-06 | Which incidents involve the co-occurrence of slip/fall events AND vehicle/transportation equipment at construction sites? | Conjunctive | ✅ | 29 incidents |
 | CJ-07 | What are the primary effects of corrosion on equipment and incidents in the dataset? | Conjunctive | ✅ | 137 corrosion causal edges across 104 incidents |
-| CJ-08 | Find crane incidents in the UK resulting in fractures. | Conjunctive | ✅ | 0 incidents |
-| CJ-09 | Find forklift incidents at construction sites with severity >= 3. | Conjunctive | ✅ | 13 incidents |
+| CJ-08 | Find crane incidents in the UK resulting in fractures. | Conjunctive | ✅ | 1 incidents |
+| CJ-09 | Find forklift incidents at construction sites with severity >= 3. | Conjunctive | ✅ | 16 incidents |
 | CJ-10 | Find vehicle road accident incidents resulting in injuries in the USA. | Conjunctive | ✅ | 26 incidents |
-| CJ-11 | Find incidents involving PPE with eye injuries during manufacturing. | Conjunctive | ✅ | 13 incidents |
+| CJ-11 | Find incidents involving PPE with eye injuries during manufacturing. | Conjunctive | ✅ | 31 incidents |
 | CJ-12 | Find incidents involving chemical exposure resulting in environmental impact. | Conjunctive | ✅ | 69 incidents |
-| CJ-13 | Find near-miss incidents involving scaffolding at height. | Conjunctive | ✅ | 60 incidents |
-| CJ-14 | Find crane incidents in Houston during 2018. | Conjunctive | ✅ | 17 incidents |
-| CJ-15 | Find stored-energy incidents with head injuries. | Conjunctive | ✅ | 22 incidents |
-| CJ-16 | Find marine incidents involving ROVs with equipment failures. | Conjunctive | ✅ | 7 incidents |
+| CJ-13 | Find near-miss incidents involving scaffolding at height. | Conjunctive | ✅ | 148 incidents |
+| CJ-14 | Find crane incidents in Houston during 2018. | Conjunctive | ✅ | 21 incidents |
+| CJ-15 | Find stored-energy incidents with head injuries. | Conjunctive | ✅ | 37 incidents |
+| CJ-16 | Find marine incidents involving ROVs with equipment failures. | Conjunctive | ✅ | 8 incidents |
 | CJ-17 | Find vehicle road accidents at construction sites with injuries. | Conjunctive | ✅ | 33 incidents |
-| CJ-18 | Find manual handling incidents with sprain/strain injuries. | Conjunctive | ✅ | 19 incidents |
-| CJ-19 | Find stored-energy dropped-object incidents with lacerations. | Conjunctive | ✅ | 12 incidents |
-| CJ-20 | Find near-miss incidents involving forklifts in 2023. | Conjunctive | ✅ | 53 incidents |
-| CJ-21 | What safety controls successfully mitigated harm across all incidents? | Conjunctive | ✅ | 849 MITIGATED_BY edges, 676 distinct controls |
-| CJ-22 | What barriers and controls failed most frequently across all incidents? | Conjunctive | ✅ | 828 FAILED_CONTROL edges, 738 distinct barriers |
+| CJ-18 | Find manual handling incidents with sprain/strain injuries. | Conjunctive | ✅ | 36 incidents |
+| CJ-19 | Find stored-energy dropped-object incidents with lacerations. | Conjunctive | ✅ | 16 incidents |
+| CJ-20 | Find near-miss incidents involving forklifts in 2023. | Conjunctive | ✅ | 63 incidents |
+| CJ-21 | What safety controls successfully mitigated harm across all incidents? | Conjunctive | ✅ | 849 MITIGATED_BY edges, 675 distinct controls |
+| CJ-22 | What barriers and controls failed most frequently across all incidents? | Conjunctive | ✅ | 828 FAILED_CONTROL edges, 737 distinct barriers |
 | CJ-23 | What temporal sequences (event A preceded event B) are most common? | Conjunctive | ✅ | 508 PRECEDED_BY edges, 507 distinct sequences |
 | CJ-24 | What are the top causal factors leading to dropped-object incidents? | Conjunctive | ✅ | 5,311 causal edges for 3,145 dropped-object incidents |
 | CJ-25 | What are the top causal factors in vehicle-related incidents? | Conjunctive | ✅ | 1,663 causal edges for 1,205 vehicle incidents |
-| CJ-26 | What causal chains lead to fracture injuries? | Conjunctive | ✅ | 472 causal edges for 228 fracture incidents |
-| CJ-27 | Find crane incidents in Norway resulting in injuries. | Conjunctive | ✅ | 57 incidents |
+| CJ-26 | What causal chains lead to fracture injuries? | Conjunctive | ✅ | 746 causal edges for 352 fracture incidents |
+| CJ-27 | Find crane incidents in Norway resulting in injuries. | Conjunctive | ✅ | 68 incidents |
 | CJ-28 | Find incidents with both equipment failure and manual handling root causes. | Conjunctive | ✅ | 0 incidents |
-| CJ-29 | Find high-severity incidents at construction sites involving scaffolding. | Conjunctive | ✅ | 2 incidents |
-| CJ-30 | Find incidents involving hoses with environmental impact at offshore locations. | Conjunctive | ✅ | 4 incidents |
+| CJ-29 | Find high-severity incidents at construction sites involving scaffolding. | Conjunctive | ✅ | 7 incidents |
+| CJ-30 | Find incidents involving hoses with environmental impact at offshore locations. | Conjunctive | ✅ | 25 incidents |
 | CJ-31 | Find severity 5 incidents involving cranes with injury impact. | Conjunctive | ✅ | 3 incidents |
-| CJ-32 | What causal chains lead from equipment failures to injuries (L2 traversal)? | Conjunctive | ✅ | 105 endpoints, 105 distinct INJURY |
-| CJ-33 | What events are caused by corrosion conditions (L2 traversal)? | Conjunctive | ✅ | 18 endpoints, 18 distinct EVENT |
-| CJ-34 | What injuries result from failed controls (L2 traversal)? | Conjunctive | ✅ | 11 endpoints, 11 distinct INJURY |
-| GL-01 | What are the most significant safety risk clusters across TechnipFMC global operations? | Global | ✅ | 11125 communities detected |
-| GL-02 | Are there systemic patterns where the same type of equipment failure recurs across different geographic regions? | Global | ✅ | 144 equipment types span 5+ regions |
+| CJ-32 | What causal chains lead from equipment failures to injuries (L2 traversal)? | Conjunctive | ✅ | 160 endpoints, 160 distinct INJURY_TYPE |
+| CJ-33 | What events are caused by corrosion conditions (L2 traversal)? | Conjunctive | ✅ | 17 endpoints, 17 distinct EVENT |
+| CJ-34 | What injuries result from failed controls (L2 traversal)? | Conjunctive | ✅ | 23 endpoints, 23 distinct INJURY_TYPE |
+| GL-01 | What are the most significant safety risk clusters across TechnipFMC global operations? | Global | ✅ | 11149 communities detected |
+| GL-02 | Are there systemic patterns where the same type of equipment failure recurs across different geographic regions? | Global | ✅ | 266 equipment types span 5+ regions |
 | GL-03 | How has the overall safety incident profile changed over the dataset time range? Are certain incident types increasing or decreasing? | Global | ✅ | Crosstab: 10 year values x 3 incident_type values |
 | GL-04 | What entities serve as the most connected hubs in the knowledge graph, and what does their centrality reveal about systemic risk? | Global | ✅ | Hub analysis: degree + PageRank top 20 |
-| GL-05 | What are the most common equipment-body part co-occurrences across all incidents? | Global | ✅ | 13045 equipment–body part pairs |
+| GL-05 | What are the most common equipment-body part co-occurrences across all incidents? | Global | ✅ | 26250 equipment–body part pairs |
 | GL-06 | How do safety profiles compare across the top 5 clients by incident volume? | Global | ✅ | Safety profiles for top 5 clients |
 | GL-07 | Are there seasonal (monthly) patterns in incident frequency? | Global | ✅ | Peaks: none; Troughs: none |
-| GL-08 | What are the top root causes by geographic region? | Global | ✅ | RCC breakdown for 10 regions |
-| GL-09 | How many incidents mention burns in narrative but have no burn injury type extracted? | Global | ✅ | 69 / 177 (39%) missing INJURY_TYPE |
-| GL-10 | How many incidents mention fractures in narrative but have no fracture injury type extracted? | Global | ✅ | 215 / 442 (49%) missing INJURY_TYPE |
-| GL-11 | How many incidents mention cranes in narrative but have no crane equipment extracted? | Global | ✅ | 438 / 1,873 (23%) missing EQUIPMENT |
-| GL-12 | How many incidents mention forklifts in narrative but have no forklift equipment extracted? | Global | ✅ | 161 / 1,075 (15%) missing EQUIPMENT |
-| GL-13 | How many high-severity incidents (>=4) have no injury type extracted? | Global | ✅ | 133 / 167 (80%) high-severity missing INJURY_TYPE |
-| GL-14 | How many injury-impact incidents have no body part extracted? | Global | ✅ | 5,604 / 11,736 (48%) injury incidents missing BODY_PART |
-| GL-15 | How many incidents have very short narratives (<100 chars) with no entities extracted? | Global | ✅ | 327 short-narrative incidents with 0 entity extraction (5 test records) |
-| GL-16 | How many incidents contain non-English narratives with reduced entity extraction? | Global | ✅ | 5,392 non-English incidents, 630 with zero entity extraction |
-| GL-17 | Find the 10 incidents most similar to incident #29857 (dropped pry bar) using hybrid embedding similarity. | Global | ✅ | Top 10 similar to #29857, 60% equipment overlap |
-| GL-18 | Find the 10 incidents most similar to incident #569346 (ladder fall with broken teeth) using hybrid embedding similarity. | Global | ✅ | Top 10 similar to #569346, 80% equipment overlap |
-| GL-19 | Do the top-10 text-similar incidents for a forklift accident share the same equipment type? (structural hit rate) | Global | ✅ | 90% hit rate for forklift|flt retrieval |
-| GL-20 | Do the top-10 text-similar incidents for a crane near-miss share the same equipment type? (structural hit rate) | Global | ✅ | 70% hit rate for crane retrieval |
-| GL-21 | How well do text embeddings and structural similarity agree on the top-10 most similar incidents? (method correlation) | Global | ✅ | Text vs Node2Vec mean overlap: 3.0% |
+| GL-08 | What are the top root causes by geographic region? | Global | ✅ | RCC breakdown for 7 regions |
+| GL-09 | How many incidents mention burns in narrative but have no burn injury type extracted? | Global | ✅ | 51 / 177 (29%) missing INJURY_TYPE |
+| GL-10 | How many incidents mention fractures in narrative but have no fracture injury type extracted? | Global | ✅ | 90 / 442 (20%) missing INJURY_TYPE |
+| GL-11 | How many incidents mention cranes in narrative but have no crane equipment extracted? | Global | ✅ | 4 / 1,877 (0%) missing EQUIPMENT |
+| GL-12 | How many incidents mention forklifts in narrative but have no forklift equipment extracted? | Global | ✅ | 5 / 1,075 (0%) missing EQUIPMENT |
+| GL-13 | How many high-severity incidents (>=4) have no injury type extracted? | Global | ✅ | 140 / 167 (84%) high-severity missing INJURY_TYPE |
+| GL-14 | How many injury-impact incidents have no body part extracted? | Global | ✅ | 5,533 / 11,736 (47%) injury incidents missing BODY_PART |
+| GL-15 | How many incidents have very short narratives (<100 chars) with no entities extracted? | Global | ✅ | 301 short-narrative incidents with 0 entity extraction (5 test records) |
+| GL-16 | How many incidents contain non-English narratives with reduced entity extraction? | Global | ✅ | 5,435 non-English incidents, 147 with zero entity extraction |
+| GL-17 | Find the 10 incidents most similar to incident #29857 (dropped pry bar) using hybrid embedding similarity. | Global | ✅ | Top 10 similar to #29857, 100% equipment overlap |
+| GL-18 | Find the 10 incidents most similar to incident #569346 (ladder fall with broken teeth) using hybrid embedding similarity. | Global | ✅ | Top 10 similar to #569346, 60% equipment overlap |
+| GL-19 | Do the top-10 text-similar incidents for a forklift accident share the same equipment type? (structural hit rate) | Global | ✅ | 100% hit rate for forklift|flt retrieval |
+| GL-20 | Do the top-10 text-similar incidents for a crane near-miss share the same equipment type? (structural hit rate) | Global | ✅ | 30% hit rate for crane retrieval |
+| GL-21 | How well do text embeddings and structural similarity agree on the top-10 most similar incidents? (method correlation) | Global | ✅ | Text vs Node2Vec mean overlap: 4.0% |
 | GL-22 | Find incidents semantically similar to 'worker fell from scaffold due to missing guardrail' using text embeddings. | Global | ✅ | Top match: #531820 (sim=0.709) |
 | GL-23 | Find incidents semantically similar to 'crane load dropped because sling failed under tension' using text embeddings. | Global | ✅ | Top match: #430 (sim=0.676) |
-| GL-24 | Which equipment types appear most often in the top-10 similar incidents for high-severity events? (embedding-based pattern) | Global | ✅ | Top equipment in high-sev neighborhoods: [('crane', 35), ('forklift', 34), ('equipment', 14)] |
-| IOGP-01 | What injuries result from incidents involving moving vehicles and mobile equipment? | Aggregation | ✅ | 2008 incidents, 122 injury_type values, top: injuries |
+| GL-24 | Which equipment types appear most often in the top-10 similar incidents for high-severity events? (embedding-based pattern) | Global | ✅ | Top equipment in high-sev neighborhoods: [('crane', 59), ('rigging', 41), ('another forklift', 38)] |
+| IOGP-01 | What injuries result from incidents involving moving vehicles and mobile equipment? | Aggregation | ✅ | 2857 incidents, 198 injury_type values, top: pain |
 | IOGP-02 | How do dropped object incidents break down by severity over time? | Aggregation | ✅ | Crosstab: 6 severity_bin values x 10 year values |
 | IOGP-03 | How many incidents involve stored energy or snap-back hazards? | Single-hop | ✅ | 114 incidents |
-| IOGP-04 | How many pressurized system incidents resulted in containment loss? | Multi-hop | ✅ | 192 incidents |
+| IOGP-04 | How many pressurized system incidents resulted in containment loss? | Multi-hop | ✅ | 675 incidents |
 | IOGP-05 | Which electrical incidents had lockout/tagout failures? | Conjunctive | ✅ | 142 incidents; 9 FAILED_CONTROL edges |
-| IOGP-06 | What body parts are affected in working-at-height incidents with fall protection gaps? | Multi-hop | ✅ | 246 incidents, 76 body_part values, top: left hand |
-| IOGP-07 | What injuries result from mechanical lifting incidents with rigging failures? | Multi-hop | ✅ | 2001 incidents, 152 injury_type values, top: injuries |
-| IOGP-08 | How many machinery and tool incidents resulted in hand or finger injuries? | Multi-hop | ✅ | 200 incidents |
-| IOGP-09 | What are the top injury types from moving vehicle and mobile equipment incidents? | Aggregation | ✅ | 2008 incidents, 122 injury_type values, top: injuries |
+| IOGP-06 | What body parts are affected in working-at-height incidents with fall protection gaps? | Multi-hop | ✅ | 560 incidents, 145 body_part values, top: hand |
+| IOGP-07 | What injuries result from mechanical lifting incidents with rigging failures? | Multi-hop | ✅ | 2872 incidents, 224 injury_type values, top: personal injury |
+| IOGP-08 | How many machinery and tool incidents resulted in hand or finger injuries? | Multi-hop | ✅ | 278 incidents |
+| IOGP-09 | What are the top injury types from moving vehicle and mobile equipment incidents? | Aggregation | ✅ | 2857 incidents, 198 injury_type values, top: pain |
 | IOGP-10 | How many vehicle incidents resulted in high-severity outcomes? | Multi-hop | ✅ | 33 incidents |
-| IOGP-11 | What body parts are most affected in vehicle/mobile equipment incidents? | Aggregation | ✅ | 842 incidents, 153 body_part values, top: BUMPER |
-| IOGP-12 | Which countries have the most mechanical lifting/hoisting incidents? | Aggregation | ✅ | 2001 incidents, 61 location values, top: UK |
-| IOGP-13 | What are the top root causes of mechanical lifting incidents? | Aggregation | ✅ | 2001 incidents, 48 root_cause_category values, top: Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects) |
-| IOGP-14 | How many working-at-height incidents involved harnesses or lanyards? | Single-hop | ✅ | 74 incidents |
-| IOGP-15 | What injury types result from fall-to-lower-level incidents? | Aggregation | ✅ | 1695 incidents, 310 injury_type values, top: contusion |
-| IOGP-16 | How do dropped object incidents break down by body part affected? | Aggregation | ✅ | 1160 incidents, 149 body_part values, top: left foot |
+| IOGP-11 | What body parts are most affected in vehicle/mobile equipment incidents? | Aggregation | ✅ | 842 incidents, 82 body_part values, top: driver side |
+| IOGP-12 | Which countries have the most mechanical lifting/hoisting incidents? | Aggregation | ✅ | 2872 incidents, 49 location values, top: UK |
+| IOGP-13 | What are the top root causes of mechanical lifting incidents? | Aggregation | ✅ | 2872 incidents, 52 root_cause_category values, top: Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects) |
+| IOGP-14 | How many working-at-height incidents involved harnesses or lanyards? | Single-hop | ✅ | 196 incidents |
+| IOGP-15 | What injury types result from fall-to-lower-level incidents? | Aggregation | ✅ | 1695 incidents, 330 injury_type values, top: pain |
+| IOGP-16 | How do dropped object incidents break down by body part affected? | Aggregation | ✅ | 1160 incidents, 147 body_part values, top: hand |
 | IOGP-17 | How many tensioned line or snap-back incidents occurred? | Single-hop | ✅ | 109 incidents |
-| IOGP-18 | What equipment is involved in stored energy (pressure/tension) incidents? | Aggregation | ✅ | 725 incidents, 1024 equipment values, top: crane |
+| IOGP-18 | What equipment is involved in stored energy (pressure/tension) incidents? | Aggregation | ✅ | 725 incidents, 1950 equipment values, top: hose |
 | IOGP-19 | How many pressurized system incidents mention zero energy verification? | Multi-hop | ✅ | 23 incidents |
-| IOGP-20 | What injuries result from compressed gas or pressure vessel incidents? | Multi-hop | ✅ | 298 incidents, 59 injury_type values, top: injuries |
+| IOGP-20 | What injuries result from compressed gas or pressure vessel incidents? | Multi-hop | ✅ | 559 incidents, 100 injury_type values, top: contusion |
 | IOGP-21 | How many machinery/tool incidents involved entrapment or caught-between hazards? | Single-hop | ✅ | 775 incidents |
-| IOGP-22 | What body parts are most affected in grinder and power tool incidents? | Multi-hop | ✅ | 312 incidents, 96 body_part values, top: left hand |
+| IOGP-22 | What body parts are most affected in grinder and power tool incidents? | Multi-hop | ✅ | 471 incidents, 157 body_part values, top: left hand |
 | IOGP-23 | How many electrical incidents mention arc flash or electrocution? | Single-hop | ✅ | 88 incidents |
-| IOGP-24 | What equipment is involved in electrical incidents with LOTO failures? | Multi-hop | ✅ | 19 incidents, 37 equipment values, top: ROV UHD 58 |
+| IOGP-24 | What equipment is involved in electrical incidents with LOTO failures? | Multi-hop | ✅ | 19 incidents, 84 equipment values, top: LOTO |
 | IOGP-25 | How many incidents involve projectiles or flying debris? | Single-hop | ✅ | 29 incidents |
-| IOGP-26 | What are the top root causes of explosion or fire incidents? | Aggregation | ✅ | 322 incidents, 352 equipment values, top: fire extinguisher |
+| IOGP-26 | What are the top root causes of explosion or fire incidents? | Aggregation | ✅ | 322 incidents, 677 equipment values, top: fire extinguisher |
 | IOGP-27 | How many incidents mention extreme weather or natural events? | Single-hop | ✅ | 903 incidents |
 | IOGP-28 | What are the year-over-year trends for vehicle incidents? | Aggregation | ✅ | 842 incidents across 89 months |
-| MH-01 | Find all equipment types involved in containment loss events leading to injuries at offshore locations. | Multi-hop | ✅ | 1 incidents, 2 equipment types |
-| MH-02 | What injury types are associated with equipment failures during maintenance operations? | Multi-hop | ✅ | 29 incidents, 19 pairs |
-| MH-03 | Which clients have experienced vessel-related incidents resulting in back injuries? | Multi-hop | ✅ | 47 incidents, 93 organization values, top: OCM |
+| MH-01 | Find all equipment types involved in containment loss events leading to injuries at offshore locations. | Multi-hop | ✅ | 3 incidents, 20 equipment types |
+| MH-02 | What injury types are associated with equipment failures during maintenance operations? | Multi-hop | ✅ | 29 incidents, 92 pairs |
+| MH-03 | Which clients have experienced vessel-related incidents resulting in back injuries? | Multi-hop | ✅ | 62 incidents, 111 organization values, top: PETROBRAS |
 | MH-04 | What are the most common injury types for each of the top 5 equipment categories? | Multi-hop | ✅ | Injury breakdown for top 5 equipment |
-| MH-05 | Find incidents where hand injuries occurred during work involving pipes at locations in Asia Pacific. | Multi-hop | ✅ | 6 incidents |
+| MH-05 | Find incidents where hand injuries occurred during work involving pipes at locations in Asia Pacific. | Multi-hop | ✅ | 21 incidents |
 | MH-06 | What is the severity distribution of incidents involving trucks compared to those involving cranes? | Multi-hop | ✅ | Truck vs crane severity comparison |
-| MH-07 | Which locations have the highest concentration of near-miss incidents involving scaffolding? | Multi-hop | ✅ | 121 incidents, 33 location values, top: Sabetta |
-| MH-08 | Trace the relationship path between a specific piece of equipment (e.g., hydraulic valve) and all recorded injury outcomes across all incidents. | Multi-hop | ⚠️ | 1 incidents, 0 injury_type values |
-| MH-09 | What eye injuries result from grinder incidents? | Multi-hop | ✅ | 16 incidents |
-| MH-10 | What injuries occur in ladder incidents at construction sites? | Multi-hop | ✅ | 77 incidents, 26 injury_type values, top: injuries |
-| MH-11 | What equipment is involved in finger or thumb injuries? | Multi-hop | ✅ | 1352 incidents, 1569 equipment values, top: gloves |
-| MH-12 | Which countries have the most crane-related incidents? | Multi-hop | ✅ | 1444 incidents, 59 location values, top: UK |
-| MH-13 | What incidents involve forklifts with foot or leg injuries? | Multi-hop | ✅ | 26 incidents |
-| MH-14 | What equipment is involved in fracture injuries? | Multi-hop | ✅ | 228 incidents, 296 equipment values, top: PPE |
-| MH-15 | Which body parts are affected in hammer-related incidents? | Multi-hop | ✅ | 146 incidents, 67 body_part values, top: left hand |
-| MH-16 | What burn injuries are associated with welding operations? | Multi-hop | ✅ | 16 incidents |
-| MH-17 | What incidents involve ROVs in Norway? | Multi-hop | ✅ | 26 incidents |
-| MH-18 | What crane incidents occurred in Brazil? | Multi-hop | ✅ | 71 incidents |
-| MH-19 | What forklift incidents occurred in the UK? | Multi-hop | ✅ | 102 incidents |
-| MH-20 | What scaffold incidents occurred in India? | Multi-hop | ✅ | 44 incidents |
-| MH-21 | What injury types result from high-severity crane incidents? | Multi-hop | ✅ | 27 incidents, 4 injury_type values, top: amputation |
-| MH-22 | What equipment is involved in incidents at Aberdeen? | Multi-hop | ✅ | 2501 incidents, 3183 equipment values, top: crane |
-| MH-23 | What sling incidents involved hand or finger injuries? | Multi-hop | ✅ | 14 incidents |
-| MH-24 | What are the injury types from construction incidents resulting in fractures? | Multi-hop | ✅ | 135 incidents |
-| MH-25 | What finger or thumb injuries involve fractures? | Multi-hop | ✅ | 61 incidents |
-| MH-26 | What back injuries are associated with manual handling root causes? | Multi-hop | ✅ | 97 incidents |
-| MH-27 | What crane incidents occurred during 2019? | Multi-hop | ✅ | 166 incidents |
-| MH-28 | What forklift incidents occurred during 2023? | Multi-hop | ✅ | 99 incidents |
-| MH-29 | What scaffold incidents occurred during 2020? | Multi-hop | ✅ | 40 incidents |
-| MH-30 | What ROV incidents occurred during 2017? | Multi-hop | ✅ | 82 incidents |
-| MH-31 | What injuries result from fall/slip RCC incidents with fractures? | Multi-hop | ✅ | 68 incidents |
-| MH-32 | What equipment is involved in incidents at Houston? | Multi-hop | ✅ | 1361 incidents, 1244 equipment values, top: forklift |
-| MH-33 | What body parts are affected in incidents reported by YAMAL LNG? | Multi-hop | ✅ | 1302 incidents, 302 body_part values, top: left hand |
-| MH-34 | What injuries result from incidents at Rio de Janeiro? | Multi-hop | ✅ | 905 incidents, 97 injury_type values, top: cut |
-| MH-35 | What incidents involve grinders with hand or finger injuries? | Multi-hop | ✅ | 45 incidents |
-| MH-36 | What equipment is involved in incidents reported by PETROBRAS? | Multi-hop | ✅ | 676 incidents, 764 equipment values, top: ROV |
-| MH-37 | What are the top injury types in incidents at Le Trait? | Multi-hop | ✅ | 1163 incidents, 116 injury_type values, top: pain |
-| MH-38 | What equipment is involved in near-miss incidents at offshore locations? | Multi-hop | ✅ | 141 incidents, 205 equipment values, top: crane |
+| MH-07 | Which locations have the highest concentration of near-miss incidents involving scaffolding? | Multi-hop | ✅ | 302 incidents, 46 location values, top: Sabetta |
+| MH-08 | Trace the relationship path between a specific piece of equipment (e.g., hydraulic valve) and all recorded injury outcomes across all incidents. | Multi-hop | ✅ | 1 incidents, 2 injury_type+injury+event values, top: oil spray |
+| MH-09 | What eye injuries result from grinder incidents? | Multi-hop | ✅ | 20 incidents |
+| MH-10 | What injuries occur in ladder incidents at construction sites? | Multi-hop | ✅ | 145 incidents, 44 injury_type values, top: fracture |
+| MH-11 | What equipment is involved in finger or thumb injuries? | Multi-hop | ✅ | 1455 incidents, 2475 equipment values, top: PPE |
+| MH-12 | Which countries have the most crane-related incidents? | Multi-hop | ✅ | 1891 incidents, 47 location values, top: UK |
+| MH-13 | What incidents involve forklifts with foot or leg injuries? | Multi-hop | ✅ | 29 incidents |
+| MH-14 | What equipment is involved in fracture injuries? | Multi-hop | ✅ | 352 incidents, 748 equipment values, top: x-raying |
+| MH-15 | Which body parts are affected in hammer-related incidents? | Multi-hop | ✅ | 221 incidents, 111 body_part values, top: finger |
+| MH-16 | What burn injuries are associated with welding operations? | Multi-hop | ✅ | 23 incidents |
+| MH-17 | What incidents involve ROVs in Norway? | Multi-hop | ✅ | 32 incidents |
+| MH-18 | What crane incidents occurred in Brazil? | Multi-hop | ✅ | 95 incidents |
+| MH-19 | What forklift incidents occurred in the UK? | Multi-hop | ✅ | 145 incidents |
+| MH-20 | What scaffold incidents occurred in India? | Multi-hop | ✅ | 74 incidents |
+| MH-21 | What injury types result from high-severity crane incidents? | Multi-hop | ✅ | 32 incidents, 4 injury_type values, top: potential shoulder injury |
+| MH-22 | What equipment is involved in incidents at Aberdeen? | Multi-hop | ✅ | 2499 incidents, 6828 equipment values, top: ROV |
+| MH-23 | What sling incidents involved hand or finger injuries? | Multi-hop | ✅ | 37 incidents |
+| MH-24 | What are the injury types from construction incidents resulting in fractures? | Multi-hop | ✅ | 218 incidents |
+| MH-25 | What finger or thumb injuries involve fractures? | Multi-hop | ✅ | 114 incidents |
+| MH-26 | What back injuries are associated with manual handling root causes? | Multi-hop | ✅ | 96 incidents |
+| MH-27 | What crane incidents occurred during 2019? | Multi-hop | ✅ | 208 incidents |
+| MH-28 | What forklift incidents occurred during 2023? | Multi-hop | ✅ | 119 incidents |
+| MH-29 | What scaffold incidents occurred during 2020? | Multi-hop | ✅ | 78 incidents |
+| MH-30 | What ROV incidents occurred during 2017? | Multi-hop | ✅ | 126 incidents |
+| MH-31 | What injuries result from fall/slip RCC incidents with fractures? | Multi-hop | ✅ | 110 incidents |
+| MH-32 | What equipment is involved in incidents at Houston? | Multi-hop | ✅ | 1358 incidents, 1827 equipment values, top: another forklift |
+| MH-33 | What body parts are affected in incidents reported by YAMAL LNG? | Multi-hop | ✅ | 1302 incidents, 304 body_part values, top: right hand |
+| MH-34 | What injuries result from incidents at Rio de Janeiro? | Multi-hop | ✅ | 897 incidents, 82 injury_type values, top: cut |
+| MH-35 | What incidents involve grinders with hand or finger injuries? | Multi-hop | ✅ | 63 incidents |
+| MH-36 | What equipment is involved in incidents reported by PETROBRAS? | Multi-hop | ✅ | 676 incidents, 1420 equipment values, top: ROV |
+| MH-37 | What are the top injury types in incidents at Le Trait? | Multi-hop | ✅ | 1135 incidents, 79 injury_type values, top: pain |
+| MH-38 | What equipment is involved in near-miss incidents at offshore locations? | Multi-hop | ✅ | 141 incidents, 478 equipment values, top: rigging |
 | MH-39 | What are the root causes of incidents in Russia? | Multi-hop | ✅ | 962 incidents, 43 root_cause_category values, top: Falls, slips and trips on same level (without potential to fall to lower level) |
-| MH-40 | What body parts are affected in excavator-related incidents? | Multi-hop | ✅ | 201 incidents, 37 body_part values, top: ankle |
-| MH-41 | What injury types result from incidents involving pallets? | Multi-hop | ✅ | 340 incidents, 60 injury_type values, top: injuries |
-| MH-42 | What injuries result from incidents involving pipes at offshore locations? | Multi-hop | ⚠️ | 8 incidents, 2 injury_type values, top: danos leves |
-| MH-43 | What equipment is involved in red-risk incidents? | Multi-hop | ✅ | 52 incidents, 81 equipment values, top: crane |
+| MH-40 | What body parts are affected in excavator-related incidents? | Multi-hop | ✅ | 209 incidents, 52 body_part values, top: left leg |
+| MH-41 | What injury types result from incidents involving pallets? | Multi-hop | ✅ | 579 incidents, 80 injury_type values, top: pain |
+| MH-42 | What injuries result from incidents involving pipes at offshore locations? | Multi-hop | ✅ | 19 incidents, 7 injury_type values, top: pain |
+| MH-43 | What equipment is involved in red-risk incidents? | Multi-hop | ✅ | 52 incidents, 174 equipment values, top: flange |
 | MH-44 | What are the root causes of incidents at Sabetta (Yamal LNG site)? | Multi-hop | ✅ | 880 incidents, 41 root_cause_category values, top: Falls, slips and trips on same level (without potential to fall to lower level) |
-| MH-45 | What injury types are connected to crane equipment via graph traversal? | Multi-hop | ✅ | 113 endpoints, 113 distinct INJURY_TYPE |
-| MH-46 | What equipment is connected to fracture injuries via graph traversal? | Multi-hop | ✅ | 296 endpoints, 296 distinct EQUIPMENT |
-| MH-47 | What body parts are connected to forklift equipment via graph traversal? | Multi-hop | ✅ | 137 endpoints, 137 distinct BODY_PART |
-| MH-48 | What root causes are connected to hand injuries via graph traversal? | Multi-hop | ✅ | 46 endpoints, 46 distinct ROOT_CAUSE_CATEGORY |
-| MH-49 | What locations have crane equipment via 2-hop graph traversal? | Multi-hop | ✅ | 1495 endpoints, 1466 distinct LOCATION |
-| SC-01 | In incident #623703, what equipment was involved? | Single-hop | ⚠️ | 1 items: ['forklift'] |
-| SC-02 | In incident #570187, what equipment was involved? | Single-hop | ✅ | 3 items: ['Connector link', 'feeder box', 'feeder breaker'] |
-| SC-03 | In incident #602346, what equipment was involved? | Single-hop | ✅ | 2 items: ['PGB', 'forklift'] |
-| SC-04 | In incident #14338, what equipment was involved? | Single-hop | ✅ | 1 items: ['press'] |
+| MH-45 | What injury types are connected to crane equipment via graph traversal? | Multi-hop | ✅ | 141 endpoints, 141 distinct INJURY_TYPE |
+| MH-46 | What equipment is connected to fracture injuries via graph traversal? | Multi-hop | ✅ | 748 endpoints, 748 distinct EQUIPMENT |
+| MH-47 | What body parts are connected to forklift equipment via graph traversal? | Multi-hop | ✅ | 109 endpoints, 109 distinct BODY_PART |
+| MH-48 | What root causes are connected to hand injuries via graph traversal? | Multi-hop | ✅ | 50 endpoints, 50 distinct ROOT_CAUSE_CATEGORY |
+| MH-49 | What locations have crane equipment via 2-hop graph traversal? | Multi-hop | ✅ | 2039 endpoints, 1987 distinct LOCATION |
+| SC-01 | In incident #623703, what equipment was involved? | Single-hop | ✅ | 3 items: ['another forklift', 'manifold', 'mirror'] |
+| SC-02 | In incident #570187, what equipment was involved? | Single-hop | ✅ | 4 items: ['Connector link', 'EPMCC panel', 'electric heater feeder breaker', 'within feeder box'] |
+| SC-03 | In incident #602346, what equipment was involved? | Single-hop | ✅ | 2 items: ['PGB', 'another forklift'] |
+| SC-04 | In incident #14338, what equipment was involved? | Single-hop | ✅ | 3 items: ['large mold', 'mold', 'press'] |
 | SC-04b | In incident #14338, which body parts were affected? | Single-hop | ✅ | 1 items: ['lower back'] |
-| SC-05 | In incident #500389, what equipment was involved? | Single-hop | ✅ | 4 items: ['chain', 'football float', 'marker buoys', 'odom weight'] |
-| SC-06 | In incident #8712, what equipment was involved? | Single-hop | ✅ | 1 items: ['CEU 25 barrier'] |
+| SC-05 | In incident #500389, what equipment was involved? | Single-hop | ✅ | 8 items: ['ROV', 'TMS’s', 'football float', 'marker buoys', 'odom weight', 'odom weight with chain', 'polyrope', 'vessel'] |
+| SC-06 | In incident #8712, what equipment was involved? | Single-hop | ✅ | 1 items: ['barrier'] |
 | SC-06b | In incident #8712, which body parts were affected? | Single-hop | ✅ | 3 items: ['face', 'forehead', 'head'] |
-| SC-07 | In incident #511771, what equipment was involved? | Single-hop | ✅ | 2 items: ['crane hook', 'wire rope sling'] |
+| SC-07 | In incident #511771, what equipment was involved? | Single-hop | ✅ | 3 items: ['The Main Crane Hook', 'helmet', 'wire rope sling'] |
 | SC-07b | In incident #511771, which body parts were affected? | Single-hop | ✅ | 1 items: ['lower lip'] |
-| SC-08 | In incident #324, what equipment was involved? | Single-hop | ✅ | 1 items: ['20T Forklift'] |
-| SC-09 | In incident #18312, what equipment was involved? | Single-hop | ✅ | 2 items: ['crane', 'plastic sun visor'] |
-| SC-09b | In incident #18312, which body parts were affected? | Single-hop | ✅ | 1 items: ['head'] |
-| SC-10 | In incident #644762, what equipment was involved? | Single-hop | ✅ | 6 items: ['STB chute', 'crane', 'deck winch', 'main lift shackle', 'reel', 'tri-plate'] |
-| SC-11 | In incident #505133, what equipment was involved? | Single-hop | ✅ | 6 items: ['Billy Pugh personnel transfer basket', 'G1200 Helideck', 'helicopter', 'ladder', 'splint', 'stretcher'] |
-| SC-12 | In incident #645871, what body parts were affected? | Single-hop | ✅ | 2 items: ['arm', 'eye'] |
+| SC-08 | In incident #324, what equipment was involved? | Single-hop | ✅ | 2 items: ['20T Forklift', 'another forklift'] |
+| SC-09 | In incident #18312, what equipment was involved? | Single-hop | ✅ | 1 items: ['crane'] |
+| SC-09b | In incident #18312, which body parts were affected? | Single-hop | ✅ | 2 items: ['head', 'top of his head'] |
+| SC-10 | In incident #644762, what equipment was involved? | Single-hop | ✅ | 10 items: ['19 reels', 'Helicopter', 'PPE', 'ancillary pipelay equipment', 'crane', 'deck winch', 'his steel toe cap boots', 'main lift shackle', 'rigging', 'tri-plate'] |
+| SC-11 | In incident #505133, what equipment was involved? | Single-hop | ✅ | 13 items: ['Billy Pugh', 'Deck F', 'G1200', 'G1200 AB', 'Helicopter', 'Surfer Landing Platform', 'Surfer S 226', 'engine', 'ladder', 'platform', 'rope', 'splint', 'stretcher'] |
+| SC-12 | In incident #645871, what body parts were affected? | Single-hop | ✅ | 3 items: ['arm', 'back', 'eye'] |
 | SC-13 | In incident #609327, what injury types resulted? | Single-hop | ✅ | 2 items: ['fracture', 'trauma'] |
-| SC-14 | In incident #569346, what equipment was involved? | Single-hop | ✅ | 4 items: ['Negative side string', 'Sideboom', 'Superior CPX-94', 'ladder'] |
-| SC-15 | In incident #569346, what body parts were affected? | Single-hop | ✅ | 4 items: ['chin', 'jaw', 'lip', 'lower lip'] |
-| SC-16 | In incident #569346, what injury types resulted? | Single-hop | ✅ | 2 items: ['laceration', 'three broken teeth'] |
-| SC-17 | In incident #685931, what equipment was involved? | Single-hop | ✅ | 7 items: ['bulker bags', 'ice compression pack', 'locking bar', 'safety helmet', 'splint and bandage', 'steel rack', 'waste rack lid'] |
-| SC-18 | In incident #632796, what equipment was involved? | Single-hop | ✅ | 4 items: ['HDA2006 224tn Hydraulic Jack', 'hydraulic hose', 'hydraulic jack', 'water guard'] |
-| SC-19 | In incident #632796, what body parts were affected? | Single-hop | ✅ | 5 items: ['back', 'left', 'lower back', 'lower back area', 'lower left side of his back'] |
-| SC-20 | In incident #611828, what equipment was involved? | Single-hop | ✅ | 7 items: ['Sideboom', 'glasses', 'moving block part', 'safety helmet', 'sideboom_x000D_', 'sling', 'top hook block'] |
-| SC-21 | In incident #563945, what equipment was involved? | Single-hop | ✅ | 4 items: ['davit', 'emergency lowering arm', 'ice pack', 'lifeboats'] |
-| SC-22 | In incident #564230, what injury types resulted? | Single-hop | ✅ | 7 items: ['bruising on the brain', 'contusion', 'dizziness', 'headache', 'nausea', 'neck pain', 'whiplash'] |
-| SC-23 | In incident #696119, what injury types resulted? | Single-hop | ✅ | 5 items: ['Cerebral Hematoma', 'Crack left pelvis', 'Dislocate left shoulder', 'dislocate left shoulder_x000D_', 'hematoma'] |
+| SC-14 | In incident #569346, what equipment was involved? | Single-hop | ✅ | 6 items: ['Load. Moment Indicator', 'Superior CPX-94', 'boom block wire rope', 'cable', 'ladder', 'sideboom'] |
+| SC-15 | In incident #569346, what body parts were affected? | Single-hop | ✅ | 5 items: ['chin', 'jaw', 'knee', 'lip', 'lower lip'] |
+| SC-16 | In incident #569346, what injury types resulted? | Single-hop | ✅ | 1 items: ['laceration'] |
+| SC-17 | In incident #685931, what equipment was involved? | Single-hop | ✅ | 12 items: ['A steel Rack', 'The waste rack lid', 'bulker bags', 'ice compression pack', 'impact protection gloves', 'lid', 'locking bar', 'new bulker bag', 'safety helmet', 'securing arm', 'splint and bandage', 'steel lid'] |
+| SC-18 | In incident #632796, what equipment was involved? | Single-hop | ✅ | 8 items: ['AQA Wellhead platform', 'Deck Workshop', 'HDA2006 224tn Hydraulic Jack', 'crew boat', 'hose', 'hydraulic jack', 'telephone', 'water guard'] |
+| SC-19 | In incident #632796, what body parts were affected? | Single-hop | ✅ | 3 items: ['back', 'lower back area', 'lower side'] |
+| SC-20 | In incident #611828, what equipment was involved? | Single-hop | ✅ | 10 items: ['EN388', 'PPE', 'block', 'glasses', 'rigging', 'safety helmet', 'sheeve', 'sideboom', 'slinger', 'the moving block part'] |
+| SC-21 | In incident #563945, what equipment was involved? | Single-hop | ✅ | 10 items: ['Ice pack', 'PWT', 'davit', 'emergency lowering arm', 'harness', 'main deck', 'platform', 'vessel hospital', 'vessel lifeboats', 'welding workshop'] |
+| SC-22 | In incident #564230, what injury types resulted? | Single-hop | ✅ | 6 items: ['bruising on the brain', 'contusion', 'headache', 'nausea', 'neck pain', 'whiplash'] |
+| SC-23 | In incident #696119, what injury types resulted? | Single-hop | ✅ | 3 items: ['Cerebral Hematoma', 'Right eye wound', 'hematoma'] |
 | SC-24 | In incident #560111, what injury types resulted? | Single-hop | ✅ | 5 items: ['Eyes injury', 'Left-eye cornea injury', 'Multiple facial graze-wound', 'Open right-eye cornea injury', 'Periorbital hematoma'] |
-| SC-25 | In incident #702644, what injury types resulted? | Single-hop | ✅ | 4 items: ['breaks/fractures', 'bruising', 'skin abrasion', 'soft tissue damage'] |
-| SC-26 | In incident #16468, what locations were recorded? | Single-hop | ✅ | 14 items: ['Aberdeen', 'Deep Orient', 'Duty Mess', 'Europe', 'Larnaca base', 'Limassol', 'Limassol base', 'Mediterranean hospital', 'Mez deck', 'UK', 'deck level', 'hospital', 'main deck', 'quayside'] |
-| SC-27 | In incident #546948, what locations were recorded? | Single-hop | ✅ | 13 items: ['4th floor', 'Doha', 'Doha Service Base', 'Middle East', 'PQ1-Q', 'PS1', 'PS1-A', 'PS1-C', 'PS1-G', 'PS1-Q', 'PS1G', 'PS1Q', 'Qatar'] |
-| SC-28 | In incident #555852, what organizations were recorded? | Single-hop | ✅ | 16 items: ['Client', 'ERTL', 'KVA', 'Operasjonsleder Haugesund Police', 'Police Security Service', 'Project', 'Project management', 'Regional Police', 'STATOIL ASA', 'Stakeholders', 'TECHNIPFMC', 'TPFMC Control', 'TechnipFMC ERTL', 'TechnipFMC QHSE Management', 'TechnipFMC management', 'local police'] |
+| SC-25 | In incident #702644, what injury types resulted? | Single-hop | ✅ | 4 items: ['bruising', 'fracture', 'superficial skin abrasion', 'swelling'] |
+| SC-26 | In incident #16468, what locations were recorded? | Single-hop | ✅ | 18 items: ['1st level platforms', 'Aberdeen', 'Bridge', 'DEEP ORIENT', 'De -watering spread', 'Deep Orient', 'Duty Mess', 'Europe', 'Karish North', 'Larnaca base', 'Limassol', 'Limassol base', 'Mediterranean hospital', 'North Quay', 'UK', 'mess room', 'quayside', 'work site'] |
+| SC-27 | In incident #546948, what locations were recorded? | Single-hop | ✅ | 15 items: ['Doha', 'Doha Service Base', 'Middle East', 'PQ1-Q accommodation', 'PS1-A', 'PS1-C', 'PS1-G', 'PS1-G control room', 'PS1-Q', 'PS1G', 'PS1Q', 'Qatar', 'accommodation', 'control room', 'medical facilities'] |
+| SC-28 | In incident #555852, what organizations were recorded? | Single-hop | ✅ | 16 items: ['Communications and project', 'ERTL', 'KVA', 'Operasjonsleder Haugesund Police', 'Police Security Service (PST)', 'Project management', 'QHSE Management', 'Regional Police', 'STATOIL ASA', 'Stakeholders', 'TECHNIPFMC', 'TPFMC Control', 'TechnipFMC ERTL', 'TechnipFMC Management', 'TechnipFMC Norway', 'local police'] |
 | SC-29 | In incident #594002, what equipment was involved? | Single-hop | ✅ | 3 items: ['Punch tool', 'Stamping Punch Tool', 'V-Jaw tong'] |
 | SC-30 | In incident #706581, what injury types resulted? | Single-hop | ✅ | 4 items: ['cut wound', 'femoral fracture', 'pulmonary contusion', 'rib fracture'] |
-| SC-31 | In incident #563298, what equipment was involved? | Single-hop | ✅ | 3 items: ['light 4x4 truck', 'skid', 'truck platform'] |
-| SC-32 | In incident #507347, what body parts were affected? | Single-hop | ✅ | 4 items: ['Dislocated R Knee', 'Dislocated knee cap', 'Knee', 'left leg'] |
-| SC-33 | In incident #507347, what equipment was involved? | Single-hop | ✅ | 4 items: ['Full Leg Vacuum splint', 'ROV XLX94', 'Yokohama fenders', 'crutches'] |
-| SC-34 | In incident #19018, what equipment was involved? | Single-hop | ✅ | 11 items: ['CCTV', 'DVC', 'MCV-U', 'MVC', 'ROV', 'SDU', 'SDU-3', 'UEH', 'VCM', 'crane', 'u-VCM'] |
-| SC-35 | In incident #664483, what injury types resulted? | Single-hop | ✅ | 2 items: ['confirmed fracture', 'dislocation'] |
-| SH-01 | What incidents involved forklifts in 2022? | Single-hop | ✅ | 71 incidents |
-| SH-02 | What equipment was involved in incident #29857? | Single-hop | ⚠️ | 3 items: ['ROV', 'lanyard', 'pry bar'] |
-| SH-03 | What body parts were affected in crane-related incidents? | Single-hop | ✅ | 1444 incidents, 192 body_part values, top: finger |
-| SH-04 | Which locations reported valve-related incidents? | Single-hop | ✅ | 387 incidents, 36 location values, top: USA |
-| SH-05 | What types of injuries resulted from incidents at offshore installations? | Single-hop | ✅ | 1120 incidents, 124 injury_type values, top: cut |
+| SC-31 | In incident #563298, what equipment was involved? | Single-hop | ✅ | 9 items: ['PPE', 'Steri strips', 'Truck', 'bandage', 'light 4x4 truck', 'rigging', 'skid', 'truck platform', 'x-raying'] |
+| SC-32 | In incident #507347, what body parts were affected? | Single-hop | ✅ | 3 items: ['knee', 'leg', 'right knee'] |
+| SC-33 | In incident #507347, what equipment was involved? | Single-hop | ✅ | 14 items: ['Full Leg Vacuum splint', 'Hi level flood lighting', 'ROV', 'ROV XLX 85 & TMS', 'ROV XLX94', 'ROV hanger', 'TMS’s', 'Yokohama type fenders', 'bollard', 'crutches', 'medical ambulance', 'pallet', 'rigging', 'vessel'] |
+| SC-34 | In incident #19018, what equipment was involved? | Single-hop | ✅ | 14 items: ['CCTV', 'HUB', 'MCV', 'MCV-U', 'ROV', 'Spare SA blind stab', 'Umbilical 9F UEH SDU-3', 'VCM', 'camera', 'crane', 'slinger', 'u-VCM', 'umbilical', 'wet Christmas tree'] |
+| SC-35 | In incident #664483, what injury types resulted? | Single-hop | ✅ | 3 items: ['dislocated', 'dislocation and fracture', 'fracture'] |
+| SH-01 | What incidents involved forklifts in 2022? | Single-hop | ✅ | 85 incidents |
+| SH-02 | What equipment was involved in incident #29857? | Single-hop | ✅ | 4 items: ['Pry Bar', 'ROV', 'TMS’s', 'lanyard'] |
+| SH-03 | What body parts were affected in crane-related incidents? | Single-hop | ✅ | 1891 incidents, 255 body_part values, top: finger |
+| SH-04 | Which locations reported valve-related incidents? | Single-hop | ✅ | 1149 incidents, 45 location values, top: USA |
+| SH-05 | What types of injuries resulted from incidents at offshore installations? | Single-hop | ✅ | 1120 incidents, 175 injury_type values, top: personal injury |
 | SH-06 | What incidents were reported by client SHELL OFFSHORE INC.? | Single-hop | ✅ | 60 incidents |
-| SH-07 | What incidents involved ladders? | Single-hop | ✅ | 157 incidents |
-| SH-08 | What incidents involved grinders? | Single-hop | ✅ | 175 incidents |
-| SH-09 | What incidents involved hoses? | Single-hop | ✅ | 429 incidents |
-| SH-10 | What incidents involved pumps? | Single-hop | ✅ | 314 incidents |
-| SH-11 | What incidents involved ROVs? | Single-hop | ✅ | 562 incidents |
-| SH-12 | What incidents involved excavators? | Single-hop | ✅ | 201 incidents |
-| SH-13 | What incidents involved PPE (helmets/gloves/safety glasses)? | Single-hop | ✅ | 684 incidents |
-| SH-14 | What incidents involved slings? | Single-hop | ✅ | 265 incidents |
-| SH-15 | What incidents involved compressors? | Single-hop | ✅ | 209 incidents |
-| SH-16 | What incidents involved winches? | Single-hop | ✅ | 278 incidents |
-| SH-17 | What body parts were affected in hose-related incidents? | Single-hop | ✅ | 429 incidents, 93 body_part values, top: eye |
-| SH-18 | What injury types resulted from pump-related incidents? | Single-hop | ✅ | 314 incidents, 29 injury_type values, top: laceration |
-| SH-19 | Which organizations reported excavator-related incidents? | Single-hop | ✅ | 201 incidents, 284 organization values, top: TRANS ADRIATIC PIPELINE AG |
-| SH-20 | What incidents involved welding equipment? | Single-hop | ✅ | 261 incidents |
-| SH-21 | What incidents involved pallets? | Single-hop | ✅ | 340 incidents |
-| SH-22 | What incidents involved fire extinguishers? | Single-hop | ✅ | 148 incidents |
-| SH-23 | What incidents involved reels? | Single-hop | ✅ | 241 incidents |
-| SH-24 | What incidents involved umbilicals? | Single-hop | ✅ | 115 incidents |
-| SH-25 | What incidents affected the left hand? | Single-hop | ✅ | 1015 incidents |
-| SH-26 | What incidents affected the thumb? | Single-hop | ✅ | 253 incidents |
-| SH-27 | What incidents resulted in contusions or bruises? | Single-hop | ✅ | 360 incidents |
-| SH-28 | What incidents resulted in sprains or strains? | Single-hop | ✅ | 156 incidents |
+| SH-07 | What incidents involved ladders? | Single-hop | ✅ | 306 incidents |
+| SH-08 | What incidents involved grinders? | Single-hop | ✅ | 233 incidents |
+| SH-09 | What incidents involved hoses? | Single-hop | ✅ | 1122 incidents |
+| SH-10 | What incidents involved pumps? | Single-hop | ✅ | 418 incidents |
+| SH-11 | What incidents involved ROVs? | Single-hop | ✅ | 849 incidents |
+| SH-12 | What incidents involved excavators? | Single-hop | ✅ | 209 incidents |
+| SH-13 | What incidents involved PPE (helmets/gloves/safety glasses)? | Single-hop | ✅ | 1148 incidents |
+| SH-14 | What incidents involved slings? | Single-hop | ✅ | 555 incidents |
+| SH-15 | What incidents involved compressors? | Single-hop | ✅ | 379 incidents |
+| SH-16 | What incidents involved winches? | Single-hop | ✅ | 415 incidents |
+| SH-17 | What body parts were affected in hose-related incidents? | Single-hop | ✅ | 1122 incidents, 166 body_part values, top: face |
+| SH-18 | What injury types resulted from pump-related incidents? | Single-hop | ✅ | 418 incidents, 42 injury_type values, top: cut |
+| SH-19 | Which organizations reported excavator-related incidents? | Single-hop | ✅ | 209 incidents, 308 organization values, top: TRANS ADRIATIC PIPELINE AG |
+| SH-20 | What incidents involved welding equipment? | Single-hop | ✅ | 339 incidents |
+| SH-21 | What incidents involved pallets? | Single-hop | ✅ | 579 incidents |
+| SH-22 | What incidents involved fire extinguishers? | Single-hop | ✅ | 243 incidents |
+| SH-23 | What incidents involved reels? | Single-hop | ✅ | 435 incidents |
+| SH-24 | What incidents involved umbilicals? | Single-hop | ✅ | 177 incidents |
+| SH-25 | What incidents affected the left hand? | Single-hop | ✅ | 503 incidents |
+| SH-26 | What incidents affected the thumb? | Single-hop | ✅ | 273 incidents |
+| SH-27 | What incidents resulted in contusions or bruises? | Single-hop | ✅ | 510 incidents |
+| SH-28 | What incidents resulted in sprains or strains? | Single-hop | ✅ | 212 incidents |
 | SH-29 | How many incidents involve confined spaces? | Single-hop | ✅ | 75 incidents |
 | SH-30 | How many incidents involve hot work? | Single-hop | ✅ | 152 incidents |
 | SH-31 | How many incidents mention chemical exposure? | Single-hop | ✅ | 177 incidents |
 | SH-32 | How many incidents involve electrical hazards? | Single-hop | ✅ | 891 incidents |
 | SH-33 | How many incidents mention gas leaks? | Single-hop | ✅ | 42 incidents |
-| SH-34 | How many incidents describe man overboard situations? | Single-hop | ✅ | 897 incidents |
+| SH-34 | How many incidents describe man overboard situations? | Single-hop | ✅ | 114 incidents |
 | SH-35 | How many incidents mention fatigue as a factor? | Single-hop | ✅ | 35 incidents |
 | SH-36 | How many incidents involve H2S or hydrogen sulfide? | Single-hop | ✅ | 32 incidents |
 | SH-37 | How many incidents mention fire (not line of fire)? | Single-hop | ✅ | 1500 incidents |
@@ -253,22 +253,22 @@
 | SH-42 | How many incidents mention line-of-fire hazards? | Single-hop | ✅ | 461 incidents |
 | SH-43 | How many incidents mention scaffolding falls? | Single-hop | ✅ | 398 incidents |
 | SH-44 | How many incidents reference JSA or toolbox talks? | Single-hop | ✅ | 268 incidents |
-| SH-45 | What incidents involved helicopters? | Single-hop | ✅ | 8 incidents |
+| SH-45 | What incidents involved helicopters? | Single-hop | ✅ | 51 incidents |
 | SH-46 | What incidents were reported by PETROBRAS? | Single-hop | ✅ | 676 incidents |
-| SH-47 | What incidents were reported by EQUINOR? | Single-hop | ✅ | 401 incidents |
+| SH-47 | What incidents were reported by EQUINOR? | Single-hop | ✅ | 402 incidents |
 | SH-48 | What incidents occurred at Sabetta? | Single-hop | ✅ | 880 incidents |
-| SH-49 | What incidents occurred at Le Trait? | Single-hop | ✅ | 1163 incidents |
-| SH-50 | What incidents resulted in abrasions or scratches? | Single-hop | ✅ | 223 incidents |
+| SH-49 | What incidents occurred at Le Trait? | Single-hop | ✅ | 1135 incidents |
+| SH-50 | What incidents resulted in abrasions or scratches? | Single-hop | ✅ | 329 incidents |
 | SH-51 | What incidents occurred in 2024? | Single-hop | ✅ | 1461 incidents |
 | SH-52 | What incidents have severity level 5 (most severe)? | Single-hop | ✅ | 23 incidents |
 | SH-53 | What incidents are classified as occupational illness? | Single-hop | ✅ | 160 incidents |
 | SH-54 | What incidents have red risk classification? | Single-hop | ✅ | 52 incidents |
-| SH-55 | What incidents involved robots or drones? | Single-hop | ✅ | 8 incidents |
+| SH-55 | What incidents involved robots or drones? | Single-hop | ✅ | 13 incidents |
 | SH-56 | What incidents occurred before 2016? | Single-hop | ✅ | 0 incidents |
 | SH-57 | What incidents occurred in Antarctica? | Single-hop | ✅ | 0 incidents |
-| SH-58 | What incidents involved tanks? | Single-hop | ✅ | 67 incidents |
+| SH-58 | What incidents involved tanks? | Single-hop | ✅ | 261 incidents |
 
-**Overall:** 254 ✅ passing / 4 ⚠️ failing out of 258 queries
+**Overall:** 258 ✅ passing / 0 ⚠️ non-passing out of 258 queries
 
 ## 2. Per-Query Details
 
@@ -302,11 +302,11 @@ Top 10:
   UK: 34
   Brazil: 30
   Norway: 21
-  India: 6
   France: 6
-  Australia: 3
+  India: 6
   Malaysia: 3
   Canada: 3
+  Australia: 3
   Angola: 3
 ```
 
@@ -314,29 +314,29 @@ Top 10:
 **Type:** Aggregation | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 19851
-Distinct EQUIPMENT values: 13446
+Matching incidents: 19849
+Distinct EQUIPMENT values: 22286
 Top 20:
-  forklift: 771
-  crane: 622
-  ROV: 290
-  pallet: 186
-  PPE: 145
-  excavator: 141
-  equipment: 131
-  compressor: 121
-  forks: 117
-  overhead crane: 110
-  fire extinguisher: 100
-  reel: 98
-  manlift: 98
-  gloves: 96
-  sling: 94
-  machine: 93
-  safety glasses: 93
-  pump: 82
-  winch: 81
-  truck: 81
+  crane: 1069
+  another forklift: 937
+  ROV: 847
+  rigging: 678
+  hose: 678
+  valve: 624
+  deck: 486
+  pallet: 405
+  barrier: 404
+  PPE: 399
+  slinger: 363
+  vessel: 343
+  main deck: 339
+  pipe: 323
+  flange: 301
+  air compressor: 298
+  Truck: 286
+  scaffolder: 279
+  reel: 270
+  Scaffolding: 267
 ```
 
 ### AG-04: How do incidents break down by type (accident vs. near miss) across business units?
@@ -354,7 +354,7 @@ business_unit null rate: 14007/19820 (70.7%)
 ```
 
 ### AG-05: What is the monthly trend of fall/slip incidents over the past 3 years?
-**Type:** Aggregation | **Status:** ✅ | **Time:** 0.0s
+**Type:** Aggregation | **Status:** ✅ | **Time:** 0.3s
 
 ```
 Total incidents: 1695
@@ -396,91 +396,91 @@ impact_type null rate: 217/19820 (1.1%)
 **Type:** Aggregation | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 19851
-Distinct BODY_PART values: 1980
+Matching incidents: 19849
+Distinct BODY_PART values: 1753
 Top 20:
-  left hand: 942
-  finger: 723
-  left foot: 419
-  eye: 417
-  Knee: 318
-  left leg: 317
-  ankle: 297
-  arm: 258
-  shoulder: 255
-  thumb: 212
-  back: 206
-  head: 181
-  wrist: 153
-  face: 138
-  forearm: 122
-  lower back: 114
-  elbow: 113
-  neck: 100
-  forehead: 91
-  left side: 69
+  finger: 648
+  left hand: 435
+  right hand: 407
+  hand: 393
+  head: 268
+  eye: 262
+  back: 249
+  foot: 216
+  knee: 176
+  face: 168
+  ankle: 163
+  right foot: 161
+  leg: 160
+  left foot: 154
+  arm: 140
+  shoulder: 137
+  thumb: 132
+  right eye: 122
+  lower back: 110
+  left leg: 108
 ```
 
 ### AG-08: What are the most common injury types across all incidents?
 **Type:** Aggregation | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 19851
-Distinct INJURY_TYPE values: 1324
+Matching incidents: 19849
+Distinct INJURY_TYPE values: 1179
 Top 20:
-  injuries: 319
-  cut: 281
-  laceration: 207
-  pain: 145
-  contusion: 130
-  injury: 125
-  abrasion: 96
-  fracture: 86
-  bruise: 86
-  wounds: 75
-  minor scratch: 75
-  minor burn: 68
-  personal injury: 64
-  sprain: 50
-  bruising: 47
-  closed fracture: 45
-  minor damage: 44
-  no injuries: 41
-  swelling: 38
-  personnel injury: 37
+  cut: 501
+  pain: 489
+  laceration: 265
+  contusion: 188
+  fracture: 172
+  discomfort: 160
+  bruise: 157
+  personal injury: 152
+  scratch: 141
+  abrasion: 119
+  swelling: 104
+  burn: 89
+  irritation: 83
+  foreign body: 74
+  closed fracture: 68
+  sprain: 68
+  bruising: 62
+  personnel injury: 58
+  injured: 53
+  back pain: 52
 ```
 
 ### AG-09: Which organizations report the most incidents?
 **Type:** Aggregation | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 19851
-Distinct ORGANIZATION values: 8447
+Matching incidents: 19849
+Distinct ORGANIZATION values: 8830
 Top 20:
-  TECHNIPFMC: 4688
+  TECHNIPFMC: 4707
   JSC YAMAL LNG: 1302
   FLEXI FRANCE: 1017
-  IP: 875
   N/A - No Vendor: 820
-  HSE: 695
+  HSE: 577
   TRANS ADRIATIC PIPELINE AG: 571
-  PETROBRAS: 522
+  PETROBRAS: 520
+  Shell: 478
   TECHNIPFMC UMBILICALS LTD: 428
-  Shell: 411
   SASOL NORTH AMERICA, INC.: 332
-  OCM: 332
   TECHNIP MARINE OPERATION SERVICES: 306
   ARCTIC LNG 2: 293
-  Client: 272
+  HSEA: 268
+  OCM: 266
   WOODSIDE ENERGY LTD.: 258
-  HSEA: 247
+  BP: 229
   THE BAHRAIN PETROLEUM COMPANY BSC: 224
   EQUINOR ENERGY AS: 221
-  BP: 221
+  FMC TECHNOLOGIES SURFACE INTEGRATED SERVICES, INC.: 220
+  EXXONMOBIL: 209
 ```
 
 ### AG-10: What is the annual trend of manual handling incidents?
-**Type:** Aggregation | **Status:** ✅ | **Time:** 0.0s
+**Type:** Aggregation | **Status:** ✅ | **Time:** 0.1s
 
 ```
 Total incidents: 760
@@ -514,11 +514,11 @@ Top 10:
   Planning and coordination of works: 6
   Flammable solids, liquids and gases: 5
   Standard Operating Procedures, Procedures & Work instructions: 4
-  Electrical: 3
+  Motor Vehicle Worksite Accident: 3
 ```
 
 ### AG-12: How do incidents break down by impact type over the years?
-**Type:** Aggregation | **Status:** ✅ | **Time:** 0.4s
+**Type:** Aggregation | **Status:** ✅ | **Time:** 3.3s
 
 ```
 | year | Damage | Damage - Financial impact | Environment | Financial Impact | Fire/Explosion | Injury | Injury/Illness | Occupational Illness | Reputation | Unknown | Total |
@@ -550,14 +550,14 @@ Yearly breakdown:
 **Type:** Aggregation | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 19851
+Matching incidents: 19849
 Distinct LOCATION values: 230
 Top 20:
   Aberdeen: 2493
   Houston: 1349
   Le Trait: 1110
   Rio de Janeiro: 892
-  Sabetta: 880
+  Sabetta: 872
   Dunfermline: 504
   Odessa: 423
   Stephenville: 412
@@ -579,7 +579,7 @@ Top 20:
 **Type:** Aggregation | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 19851
+Matching incidents: 19849
 Distinct ROOT_CAUSE_CATEGORY values: 65
 Top 20:
   Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects): 1471
@@ -605,22 +605,22 @@ Top 20:
 ```
 
 ### AG-16: What is the year-over-year trend of eye injuries?
-**Type:** Aggregation | **Status:** ✅ | **Time:** 0.0s
+**Type:** Aggregation | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Total incidents: 492
-Months with data: 103
+Total incidents: 500
+Months with data: 105
 Yearly breakdown:
-  2016: 52
-  2017: 67
-  2018: 68
-  2019: 67
-  2020: 51
-  2021: 70
-  2022: 27
-  2023: 33
-  2024: 32
-  2025: 25
+  2016: 50
+  2017: 69
+  2018: 70
+  2019: 70
+  2020: 47
+  2021: 74
+  2022: 22
+  2023: 35
+  2024: 34
+  2025: 29
 ```
 
 ### AG-17: What are the most common injury types at construction sites?
@@ -628,18 +628,18 @@ Yearly breakdown:
 
 ```
 Matching incidents: 5357
-Distinct INJURY_TYPE values: 583
+Distinct INJURY_TYPE values: 556
 Top 10:
-  injuries: 139
-  contusion: 99
-  laceration: 86
-  cut: 51
-  closed fracture: 43
-  bruise: 42
-  abrasion: 34
-  personal injury: 33
-  injury: 28
-  sprain: 27
+  contusion: 153
+  laceration: 112
+  pain: 98
+  cut: 92
+  bruise: 84
+  personal injury: 79
+  fracture: 78
+  discomfort: 68
+  closed fracture: 63
+  scratch: 54
 ```
 
 ### AG-18: Which clients report the most high-severity incidents?
@@ -647,60 +647,60 @@ Top 10:
 
 ```
 Matching incidents: 167
-Distinct ORGANIZATION values: 247
+Distinct ORGANIZATION values: 234
 Top 10:
-  TECHNIPFMC: 54
+  TECHNIPFMC: 58
   N/A - No Vendor: 14
   PETROBRAS: 10
-  EQUINOR ENERGY AS: 8
   HSE: 8
-  IP: 6
+  EQUINOR ENERGY AS: 8
   WOODSIDE ENERGY LTD.: 5
+  SIF: 4
   FMC KONGSBERG SUBSEA AS: 4
-  Client: 3
-  SHELL OFFSHORE INC.: 3
+  HSEA: 4
+  CHEVRON USA INC: 3
 ```
 
 ### AG-19: What is the year-over-year trend of fracture injuries?
-**Type:** Aggregation | **Status:** ✅ | **Time:** 0.0s
+**Type:** Aggregation | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Total incidents: 228
-Months with data: 78
+Total incidents: 352
+Months with data: 89
 Yearly breakdown:
-  2016: 29
-  2017: 65
-  2018: 47
-  2019: 19
-  2020: 10
-  2021: 25
-  2022: 4
-  2023: 13
-  2024: 10
-  2025: 6
+  2016: 38
+  2017: 108
+  2018: 70
+  2019: 27
+  2020: 18
+  2021: 46
+  2022: 8
+  2023: 16
+  2024: 11
+  2025: 10
 ```
 
 ### AG-20: What equipment is most common in incidents at Aberdeen?
 **Type:** Aggregation | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 2501
-Distinct EQUIPMENT values: 3183
+Matching incidents: 2499
+Distinct EQUIPMENT values: 6828
 Top 10:
-  crane: 171
-  ROV: 164
-  rigging: 34
-  PPE: 31
-  winch: 31
-  reel: 28
-  SOPEP equipment: 28
-  ROV XLX94: 27
-  kenz crane: 26
-  hydraulic hose: 21
+  ROV: 532
+  crane: 360
+  rigging: 349
+  deck: 323
+  vessel: 241
+  main deck: 223
+  hose: 208
+  barrier: 161
+  valve: 112
+  PPE: 94
 ```
 
 ### AG-21: How do incidents break down by work process and risk color?
-**Type:** Aggregation | **Status:** ✅ | **Time:** 0.1s
+**Type:** Aggregation | **Status:** ✅ | **Time:** 0.2s
 
 ```
 work_process null rate: 2722/19820 (13.7%)
@@ -764,7 +764,7 @@ business_unit null rate: 14007/19820 (70.7%)
 ```
 
 ### AG-24: How does severity distribution vary by year?
-**Type:** Aggregation | **Status:** ✅ | **Time:** 0.4s
+**Type:** Aggregation | **Status:** ✅ | **Time:** 3.2s
 
 ```
 | year | 1.0 | 2.0 | 3.0 | 4.0 | 5.0 | Unknown | Total |
@@ -782,22 +782,22 @@ business_unit null rate: 14007/19820 (70.7%)
 ```
 
 ### AG-25: What is the year-over-year trend of contusion/bruise injuries?
-**Type:** Aggregation | **Status:** ✅ | **Time:** 0.0s
+**Type:** Aggregation | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Total incidents: 360
-Months with data: 86
+Total incidents: 510
+Months with data: 99
 Yearly breakdown:
-  2016: 53
-  2017: 103
-  2018: 76
-  2019: 28
-  2020: 22
-  2021: 43
-  2022: 14
-  2023: 9
-  2024: 9
-  2025: 3
+  2016: 65
+  2017: 145
+  2018: 122
+  2019: 39
+  2020: 31
+  2021: 51
+  2022: 20
+  2023: 17
+  2024: 11
+  2025: 9
 ```
 
 ### AG-26: How do incident counts compare across the top 10 operating centers?
@@ -870,22 +870,22 @@ Matching incidents: 0
 ```
 
 ### CJ-04: Which equipment types have caused both injuries AND near-misses at the same location within the same year?
-**Type:** Conjunctive | **Status:** ✅ | **Time:** 0.4s
+**Type:** Conjunctive | **Status:** ✅ | **Time:** 6.1s
 
 ```
 Equipment nodes scanned: 3000
-Dual-risk (accident + near-miss at same location/year): 539 combos
+Dual-risk (accident + near-miss at same location/year): 1453 combos
 Top 10:
-  crane @ Aberdeen (2017): 10 accidents, 19 near-misses
-  ROV @ Aberdeen (2018): 22 accidents, 7 near-misses
-  compressor @ Sabetta (2018): 22 accidents, 7 near-misses
-  compressor @ Sabetta (2017): 14 accidents, 15 near-misses
-  forklift @ Houston (2018): 15 accidents, 10 near-misses
-  ROV @ Aberdeen (2017): 16 accidents, 8 near-misses
-  Train 1 @ Sabetta (2017): 9 accidents, 14 near-misses
-  crane @ Aberdeen (2024): 10 accidents, 12 near-misses
-  crane @ Aberdeen (2016): 16 accidents, 6 near-misses
-  forklift @ Houston (2023): 4 accidents, 13 near-misses
+  ROV @ Aberdeen (2017): 48 accidents, 33 near-misses
+  ROV @ Aberdeen (2024): 47 accidents, 16 near-misses
+  air compressor @ Sabetta (2018): 43 accidents, 20 near-misses
+  ROV @ Aberdeen (2018): 45 accidents, 15 near-misses
+  air compressor @ Sabetta (2017): 31 accidents, 29 near-misses
+  crane @ Aberdeen (2017): 26 accidents, 33 near-misses
+  ROV @ Aberdeen (2023): 40 accidents, 16 near-misses
+  ROV @ Aberdeen (2016): 43 accidents, 11 near-misses
+  rigging @ Aberdeen (2017): 25 accidents, 26 near-misses
+  ROV @ Aberdeen (2022): 37 accidents, 10 near-misses
 ```
 
 ### CJ-05: Find the causal chain pattern: procedural non-compliance -> dropped object -> head/hand injury. How many incidents match?
@@ -893,19 +893,22 @@ Top 10:
 
 ```
 Dropped-object incidents: 4,072
-  With head/hand injury: 324
-  With L2 causal edges: 212
-  Total causal edges: 607
+  With head/hand injury: 451
+  With L2 causal edges: 298
+  Total causal edges: 854
 
-Procedural causal edges: 12
+Procedural causal edges: 15
   Samples:
     [540653] pinched his right hand IV finger with the container door --CAUSAL--> immediately after the incident, he informed his supervisor and reported to the REGA JV clinic
     [575162] crane drive was instructed to come up with the hook --CAUSAL--> finger came loose
+    [590559] inadequate designated drop off/pick up location for the Pit-stop --CAUSAL--> multiple maneuvers for bus to turn
     [629667] deviation from procedure when an individual entered the table prior to the incident to adjust a winch block --CAUSAL--> slipping of the Chinese finger on the tail end of the test piece
     [644074] misunderstood in communication --CAUSAL--> raising the mastil tensing chains
     [687682] I/P felt dizzy --CAUSAL--> Shift Supervisor advised to call 111 for advice
     [703112] inadequate lighting over the bed to assess patients --CAUSAL--> the bed had to be moved
     [546828] second finger --CAUSAL--> HSE Supervisor brought him to the First Aid point for the control and treatment
+    [513348] welding wire head dropped into pipe spool --CAUSAL--> welder entered pipe spool without Confined Space Work to Permit
+    [513348] welder entered pipe spool without Confined Space Work to Permit --FAILED_CONTROL--> Confined Space Work to Permit
     [556525] pinching IP’s left thumb --CAUSAL--> notifying supervisor
     [556525] notifying supervisor --CAUSAL--> sent to REGA clinic
     [534066] assistant supervisor removed the stone with his right hand --CAUSAL--> tailgate fully close
@@ -913,24 +916,24 @@ Procedural causal edges: 12
     [571609] increase in the pain in his finger --CAUSAL--> Op contacted the Shift Supervisor on Tuesday evening
 
 Top causal factors for dropped → head/hand:
-  Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects): 10
+  Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects): 12
   fall with his leg between two steel structure: 3
+  dropped metal plate (20 cm x 9 cm x 4mm, 250 g weight): 3
   left hand: 3
+  small fire: 3
   Rt middle finger pain: 3
   slip: 3
   banging head on shelf lip: 3
   fall from chair: 3
   laceration: 3
-  pinched his right hand IV finger with the container door: 2
-  wind gust: 2
 ```
 
 ### CJ-06: Which incidents involve the co-occurrence of slip/fall events AND vehicle/transportation equipment at construction sites?
 **Type:** Conjunctive | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 16
-Sample: ['INCIDENT::11732', 'INCIDENT::24216', 'INCIDENT::520161', 'INCIDENT::527205', 'INCIDENT::543663']
+Matching incidents: 29
+Sample: ['INCIDENT::11732', 'INCIDENT::16450', 'INCIDENT::24216', 'INCIDENT::516771', 'INCIDENT::520161']
 ```
 
 ### CJ-07: What are the primary effects of corrosion on equipment and incidents in the dataset?
@@ -955,17 +958,18 @@ Effects by category:
 ```
 
 ### CJ-08: Find crane incidents in the UK resulting in fractures.
-**Type:** Conjunctive | **Status:** ✅ | **Time:** 0.0s
+**Type:** Conjunctive | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 0
+Matching incidents: 1
+Sample: ['INCIDENT::644762']
 ```
 
 ### CJ-09: Find forklift incidents at construction sites with severity >= 3.
 **Type:** Conjunctive | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 13
+Matching incidents: 16
 Sample: ['INCIDENT::15134', 'INCIDENT::15148', 'INCIDENT::15794', 'INCIDENT::16414', 'INCIDENT::17286']
 ```
 
@@ -981,8 +985,8 @@ Sample: ['INCIDENT::13085', 'INCIDENT::21932', 'INCIDENT::23454', 'INCIDENT::270
 **Type:** Conjunctive | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 13
-Sample: ['INCIDENT::11564', 'INCIDENT::15728', 'INCIDENT::17999', 'INCIDENT::22980', 'INCIDENT::23563']
+Matching incidents: 31
+Sample: ['INCIDENT::11564', 'INCIDENT::15728', 'INCIDENT::17664', 'INCIDENT::17726', 'INCIDENT::17999']
 ```
 
 ### CJ-12: Find incidents involving chemical exposure resulting in environmental impact.
@@ -997,32 +1001,32 @@ Sample: ['INCIDENT::13470', 'INCIDENT::172', 'INCIDENT::17238', 'INCIDENT::18105
 **Type:** Conjunctive | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 60
-Sample: ['INCIDENT::14321', 'INCIDENT::24555', 'INCIDENT::500940', 'INCIDENT::501641', 'INCIDENT::501648']
+Matching incidents: 148
+Sample: ['INCIDENT::11913', 'INCIDENT::13554', 'INCIDENT::13702', 'INCIDENT::14321', 'INCIDENT::17879']
 ```
 
 ### CJ-14: Find crane incidents in Houston during 2018.
-**Type:** Conjunctive | **Status:** ✅ | **Time:** 0.3s
+**Type:** Conjunctive | **Status:** ✅ | **Time:** 3.4s
 
 ```
-Matching incidents: 17
-Sample: ['INCIDENT::569963', 'INCIDENT::570340', 'INCIDENT::574246', 'INCIDENT::574985', 'INCIDENT::581728']
+Matching incidents: 21
+Sample: ['INCIDENT::569963', 'INCIDENT::570340', 'INCIDENT::572265', 'INCIDENT::574246', 'INCIDENT::574985']
 ```
 
 ### CJ-15: Find stored-energy incidents with head injuries.
 **Type:** Conjunctive | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 22
-Sample: ['INCIDENT::10105', 'INCIDENT::10882', 'INCIDENT::11124', 'INCIDENT::13221', 'INCIDENT::14077']
+Matching incidents: 37
+Sample: ['INCIDENT::10105', 'INCIDENT::10882', 'INCIDENT::10960', 'INCIDENT::10961', 'INCIDENT::11124']
 ```
 
 ### CJ-16: Find marine incidents involving ROVs with equipment failures.
 **Type:** Conjunctive | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 7
-Sample: ['INCIDENT::10944', 'INCIDENT::1314', 'INCIDENT::514184', 'INCIDENT::518912', 'INCIDENT::548364']
+Matching incidents: 8
+Sample: ['INCIDENT::10944', 'INCIDENT::1314', 'INCIDENT::514184', 'INCIDENT::518912', 'INCIDENT::531362']
 ```
 
 ### CJ-17: Find vehicle road accidents at construction sites with injuries.
@@ -1037,23 +1041,23 @@ Sample: ['INCIDENT::13085', 'INCIDENT::15417', 'INCIDENT::16688', 'INCIDENT::180
 **Type:** Conjunctive | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 19
-Sample: ['INCIDENT::13444', 'INCIDENT::15186', 'INCIDENT::29185', 'INCIDENT::507532', 'INCIDENT::509296']
+Matching incidents: 36
+Sample: ['INCIDENT::1408', 'INCIDENT::15186', 'INCIDENT::19918', 'INCIDENT::21307', 'INCIDENT::25077']
 ```
 
 ### CJ-19: Find stored-energy dropped-object incidents with lacerations.
 **Type:** Conjunctive | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 12
-Sample: ['INCIDENT::20597', 'INCIDENT::504859', 'INCIDENT::520167', 'INCIDENT::553088', 'INCIDENT::562819']
+Matching incidents: 16
+Sample: ['INCIDENT::11124', 'INCIDENT::13221', 'INCIDENT::20597', 'INCIDENT::504859', 'INCIDENT::520167']
 ```
 
 ### CJ-20: Find near-miss incidents involving forklifts in 2023.
-**Type:** Conjunctive | **Status:** ✅ | **Time:** 0.3s
+**Type:** Conjunctive | **Status:** ✅ | **Time:** 3.2s
 
 ```
-Matching incidents: 53
+Matching incidents: 63
 Sample: ['INCIDENT::12422', 'INCIDENT::12535', 'INCIDENT::12642', 'INCIDENT::12794', 'INCIDENT::12820']
 ```
 
@@ -1064,27 +1068,27 @@ Sample: ['INCIDENT::12422', 'INCIDENT::12535', 'INCIDENT::12642', 'INCIDENT::127
 Total MITIGATED_BY edges: 849
 Unique incidents: 721
 
-Top successful controls/mitigations (676 distinct):
+Top successful controls/mitigations (675 distinct):
   injury: 20
   injuries: 19
-  safety glasses: 10
+  Ordinary safety glasses: 10
   PPE: 10
   fire: 8
   spill: 8
   fire extinguisher: 7
   SOPEP equipment: 6
-  Medic: 6
+  medic: 6
+  hand gloves: 6
   Spill kit: 6
-  First aid: 5
+  first aid: 5
   harm to personnel: 5
   no injuries: 5
-  gloves: 5
-  SOPEP kit: 4
+  Kit SOPEP: 4
   extinguisher: 4
   barricaded area: 4
   First Aider: 4
   eye wash station: 3
-  Absorbent pads: 3
+  Absorbency pads: 3
 
 Top harms mitigated:
   fire: 21
@@ -1092,14 +1096,14 @@ Top harms mitigated:
   spill: 5
   minor fire: 5
   hose failure: 5
-  hydraulic oil leak: 4
+  Hydraulic Oil leak: 4
   laceration: 4
   oil leak: 4
   oil spill: 4
   irritation to her skin on her face and eyes: 4
 
 Sample edges (harm → control that worked):
-  [1093] small cut to form on his head → First aid
+  [1093] small cut to form on his head → first aid
   [11035] injury → Axiom Medical
   [11746] cotton T Shirt under his long sleeve → melted to his skin
   [12933] bolt dropped → no personnel were in the DROPS area at the time of incident
@@ -1116,18 +1120,18 @@ Sample edges (harm → control that worked):
 Total FAILED_CONTROL edges: 828
 Unique incidents: 764
 
-Top failed barriers (738 distinct):
+Top failed barriers (737 distinct):
   fire: 14
   injuries: 10
   injury: 5
+  hand gloves: 5
   hard hat: 4
-  gloves: 4
   IP fell 4m from a ladder: 4
   helmet: 3
-  safety glasses: 3
+  Ordinary safety glasses: 3
   fire extinguisher: 3
   SOPEP equipment: 3
-  Barriers: 3
+  barriers: 3
   Polyurethane foam in valve box caught on fire: 3
   Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects): 3
   leak: 3
@@ -1141,8 +1145,8 @@ Top failed barriers (738 distinct):
 Top hazards with barrier failures:
   Use of personal protective equipment: 6
   fire: 4
-  safety glasses: 4
-  hydraulic oil leak: 3
+  Ordinary safety glasses: 4
+  Hydraulic Oil leak: 3
   hydraulic hose failure: 3
   transfer hose rupture: 3
   slipped and fell: 3
@@ -1216,10 +1220,10 @@ Top causal factors for dropped objects:
   high winds: 8
   unexpected movement of the gantry crane: 7
   unsecured equipment on pallet: 7
+  vessel movement: 6
   helmet dropped approximately 6m from the platform down to the quayside: 6
   Information tag missing from the trolley: 5
   bow shackle falling off at the bottom of the Cycle: 5
-  vendaval: 5
 ```
 
 ### CJ-25: What are the top causal factors in vehicle-related incidents?
@@ -1233,7 +1237,7 @@ Total CAUSAL edges: 1,663
 Top causal factors for vehicle incidents:
   Motor Vehicle Road Accident: 44
   collision: 9
-  IMPACT: 4
+  impact: 4
   medium snowfall: 4
   shock: 4
   forklift mast striking the MQC plate on one of YT manifolds: 4
@@ -1247,29 +1251,29 @@ Top causal factors for vehicle incidents:
 **Type:** Conjunctive | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Fracture incidents (via INJURY_TYPE): 228
-With CAUSAL edges: 176
-Total CAUSAL edges: 472
+Fracture incidents (via INJURY_TYPE): 352
+With CAUSAL edges: 268
+Total CAUSAL edges: 746
 
 Top causal factors leading to fractures:
-  manual handling: 6
+  Manual Handling: 6
+  bruised and painful tibia: 5
   fracture: 5
   slipped: 5
+  slipped and fell down: 4
+  lost his balance: 4
+  Falls, slips and trips on same level (without potential to fall to lower level): 4
   PTJ scaffolder fall down: 4
+  swelling in his wrist: 3
   slipping and falling: 3
-  lost his balance: 3
-  slipped and fell: 3
-  angle hit two workers: 3
-  upper chain jack hook hit the IP in the nose: 3
-  part of the frame landed on the IP’s foot: 3
 ```
 
 ### CJ-27: Find crane incidents in Norway resulting in injuries.
 **Type:** Conjunctive | **Status:** ✅ | **Time:** 0.2s
 
 ```
-Matching incidents: 57
-Sample: ['INCIDENT::10929', 'INCIDENT::12016', 'INCIDENT::12595', 'INCIDENT::12655', 'INCIDENT::13512']
+Matching incidents: 68
+Sample: ['INCIDENT::10929', 'INCIDENT::11439', 'INCIDENT::12016', 'INCIDENT::12595', 'INCIDENT::12655']
 ```
 
 ### CJ-28: Find incidents with both equipment failure and manual handling root causes.
@@ -1283,16 +1287,16 @@ Matching incidents: 0
 **Type:** Conjunctive | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 2
-Sample: ['INCIDENT::129', 'INCIDENT::16468']
+Matching incidents: 7
+Sample: ['INCIDENT::129', 'INCIDENT::16468', 'INCIDENT::24559', 'INCIDENT::24560', 'INCIDENT::24562']
 ```
 
 ### CJ-30: Find incidents involving hoses with environmental impact at offshore locations.
 **Type:** Conjunctive | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 4
-Sample: ['INCIDENT::12909', 'INCIDENT::21202', 'INCIDENT::29647', 'INCIDENT::8407']
+Matching incidents: 25
+Sample: ['INCIDENT::12463', 'INCIDENT::12909', 'INCIDENT::14002', 'INCIDENT::14527', 'INCIDENT::14607']
 ```
 
 ### CJ-31: Find severity 5 incidents involving cranes with injury impact.
@@ -1307,22 +1311,22 @@ Sample: ['INCIDENT::13746', 'INCIDENT::21939', 'INCIDENT::9106']
 **Type:** Conjunctive | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Start: 15217 EQUIPMENT nodes matching '.*'
-  --CAUSAL--> EVENT: 1254 nodes
-  --CAUSAL--> INJURY: 105 nodes
-  Final: 105 INJURY nodes, 105 distinct values
+Start: 24103 EQUIPMENT nodes matching '.*'
+  --CAUSAL--> EVENT: 1320 nodes
+  --CAUSAL--> INJURY_TYPE: 160 nodes
+  Final: 160 INJURY_TYPE nodes, 160 distinct values
 
 Top 10:
+  2nd degree burn/blisters: 1
+  puncture in the tire on the drivers side rear of the loader: 1
   technician nearly struck in the head: 1
+  injury: 1
+  a couple of Project personnel got wet: 1
+  hurt right wrist: 1
   minor damaged to the dock concrete barrier: 1
-  no technicians were harmed: 1
-  minor abrasion and contusion injury: 1
-  employee not injured: 1
-  paint damage on the handrail nearby the fire: 1
-  superficial injury on right hand middle finger: 1
-  painful wrist (without fracture): 1
-  blister from a new pair of work boots: 1
-  injured his left thigh: 1
+  no damage to any property's and injuries to personal: 1
+  no injuries to any personnel: 1
+  No harn to people: 1
 ```
 
 ### CJ-33: What events are caused by corrosion conditions (L2 traversal)?
@@ -1330,229 +1334,221 @@ Top 10:
 
 ```
 Start: 28 CONDITION nodes matching 'corros'
-  --CAUSAL--> EVENT: 18 nodes
-  Final: 18 EVENT nodes, 18 distinct values
+  --CAUSAL--> EVENT: 17 nodes
+  Final: 17 EVENT nodes, 17 distinct values
 
 Top 10:
-  corrosion pinhole: 1
-  hydraulic oil return tube was stolen: 1
-  small leak coming from a hydraulic hose located on the TTS crane boom: 1
-  drop of the lamp: 1
   upper hinge broke loose: 1
-  rupture of the safety steel cable: 1
-  broken strands on the umbilical wraps below the damaged section: 1
-  bollard sheared: 1
+  small leak coming from a hydraulic hose located on the TTS crane boom: 1
   dropped object: 1
-  pad separating from the base plate: 1
+  outer strands broke: 1
+  corrosion pinhole: 1
+  birdcage in the Winch Level wind assembly: 1
+  hydraulic oil return tube was stolen: 1
+  securing rivets failed: 1
+  hydraulic fluid sitting on top of the quench water: 1
+  bollard sheared: 1
 ```
 
 ### CJ-34: What injuries result from failed controls (L2 traversal)?
 **Type:** Conjunctive | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Start: 8944 CONDITION nodes matching '.*'
-  --FAILED_CONTROL--> EVENT: 118 nodes
-  --CAUSAL--> INJURY: 11 nodes
-  Final: 11 INJURY nodes, 11 distinct values
+Start: 8921 CONDITION nodes matching '.*'
+  --FAILED_CONTROL--> EVENT: 119 nodes
+  --CAUSAL--> INJURY_TYPE: 23 nodes
+  Final: 23 INJURY_TYPE nodes, 23 distinct values
 
 Top 10:
-  technician getting a lot of oil on their hair, face, and clothes: 1
-  Potential for harm from contact as the item rebounded to deck: 1
   pinched left thumb: 1
-  tarp damage: 1
-  Third Party Contractor sprayed by oil: 1
-  cut wound of the left hand: 1
+  wounds or damage to the structure: 1
   landed on scaffolding platform then bounced up and touched the nearby workers' lower leg: 1
-  minor laceration on his finger: 1
+  scraped right hand: 1
+  fractured pelvis: 1
   Closed fracture of the lateral malleolus on the right: 1
-  helper got hydraulic oil on clothes, hair and face: 1
+  cut wound of the left hand: 1
+  technician getting a lot of oil on their hair, face, and clothes: 1
+  wounds: 1
+  Potential for harm from contact as the item rebounded to deck: 1
 ```
 
 ### GL-01: What are the most significant safety risk clusters across TechnipFMC global operations?
-**Type:** Global | **Status:** ✅ | **Time:** 8.4s
+**Type:** Global | **Status:** ✅ | **Time:** 10.0s
 
 ```
-Total communities: 11125
+Total communities: 11149
 Top 10 by size:
 
-  Community 1 (size=10602):
-    INCIDENT: 3177 (e.g. ["ACCIDENT 27482 - FAT - IP's left knee came into contact with part of a crane fixed ladder structure", 'INCIDENT 703891 - NM - Saxi Batuque - Le Trait / Deep Explorer vessel - 15/01/21 - OSLT night shift Supervisor Stumbled on a TR45 rail gusset during mobilization operations on deck', 'INCIDENT 715503 - Near Miss - 031428C002 - Equinor IMR 2021 - North Sea Giant - Loss of rigging for guide post'])
-    EQUIPMENT: 3017 (e.g. ['padlock', 'dive system', 'HD 82'])
-    LOCATION: 1991 (e.g. ['Infield', 'Limassol bay', 'Mekjarvik Quay 1'])
-    ORGANIZATION: 1643 (e.g. ['Barge supervisor', 'Jurong Port', 'Hydromar'])
-    BODY_PART: 259 (e.g. ['Hub body', 'extremidade inferior', 'LH little finger tip'])
-    EVENT: 250 (e.g. ['slip of the left foot', 'line fell the previous day', 'small piece of hand rails (approx. 500g) fallen on ground (south side)'])
-    INJURY_TYPE: 105 (e.g. ['muscular discomfort', 'Work-related injury', '10mm contusion'])
-    CONDITION: 61 (e.g. ['ground where the activity was carried out is flat', 'nail protruding from a wooden board', 'restrictive work duties'])
-    INJURY: 40 (e.g. ['Injury: upper torso', 'ankle bent', 'Fingertip had a minor crush injury'])
-    ACTION: 35 (e.g. ['rigging failed', 'Cook had retrieved an item (baked goods) from the Oven', 'clean on time by using spill kit'])
-    MATERIAL: 10 (e.g. ['piece of wood weighing approximately 1.55 kg', 'hot iron chip', 'damaged rollers'])
-    PERSON: 7 (e.g. ['people in the radius of the load', 'Rigging Supervisor being in charge of reel rotation', 'Leader and first aider'])
-    ROOT_CAUSE_CATEGORY: 7 (e.g. ['Hazardous liquids (exposure to / spill / loss of containment /pollution)', 'Hyperbaric work environment', 'Electrical'])
+  Community 1 (size=13708):
+    EQUIPMENT: 6156 (e.g. ['SCM Running tool', '2 x wooden chocks', 'lithium fire blanket'])
+    INCIDENT: 2766 (e.g. ['INCIDENT 727768 - Deep Arctic Environmental Incident Report - Lost (25kg uplift) lift bag on the surface during recovery of the large workbasket to deck. Enquest Mallard Power Cable Project 081431C001 - 05/09/2021', 'INCIDENT 712320 - Equipment Damage - 200072C001 - Enquest Norther Producer - North Sea - Deep Discoverer - 11.April.2021 - Damage to winch pipework termination', 'INCIDENT 710192 - Damage  - 000298A001 - Transit to Rotterdam – Deep Blue – 23 Mar 2021 - Damage to Vessel hull during berthing'])
+    LOCATION: 2256 (e.g. ['Block 32 offshore Angola', 'Halten East', 'convés do navio'])
+    ORGANIZATION: 1717 (e.g. ['Ithaca Energy (UK)Ltd', 'Offshore HSE advisor', 'pipelay crew'])
+    BODY_PART: 289 (e.g. ['inside of the eyelid', 'skin area', 'left hand weak link'])
+    EVENT: 221 (e.g. ['fingers getting caught between the mushroom vent and the frame', 'falling on the barge (27mt)', 'HPU activation'])
+    INJURY_TYPE: 188 (e.g. ['slight ache', 'Conjunctival redness', 'inch laceration'])
+    CONDITION: 65 (e.g. ['failing to secure the fitting', 'non-tie-off or non-usage of tool box', 'no work-at height had been identified'])
+    ACTION: 30 (e.g. ['suspended activities', 'repair', 'welder raising face shield without signaling'])
+    MATERIAL: 11 (e.g. ['welding rod (24" in length and weighing about 2oz)', 'leaked acetylene gas', 'small piece of material'])
+    ROOT_CAUSE_CATEGORY: 6 (e.g. ['Stored energy (dropped objects)', 'Weather Condition', 'Psycho social - Alcohol and drugs abuse'])
+    PERSON: 3 (e.g. ['operator driving the under roller', 'Bosun and ABs', 'Rigging Supervisor being in charge of reel rotation'])
 
-  Community 2 (size=9993):
-    INCIDENT: 3952 (e.g. ['ACCIDENT 519739 - Property Damage - LCCP - 2016 - 11 - 29 (Stanchion Bracket Damage)', 'ACCIDENT 25877 - Motor Vehicle Accident - Company Vehicle LD5537 Struck A Deer', 'INCIDENT 668493 - Recordable  - Odessa- 1/26/2020 - Employee  struck left index finger with hammer'])
-    EQUIPMENT: 2374 (e.g. ['pipe bolster', 'componay truck', 'connex box'])
-    LOCATION: 1622 (e.g. ['stopping point', 'Thermal insulation plant', 'S05 indoor storage area'])
-    ORGANIZATION: 1060 (e.g. ['Core HSE', 'Office Depot', 'shipping department'])
-    BODY_PART: 337 (e.g. ['right metatarsal', 'front left side of his torso', 'lower right side'])
-    EVENT: 299 (e.g. ['portion of the crate', 'Employee fell over from her bicycle', 'disassembling a goat head setup without strap to support 5" 10K valve'])
-    INJURY_TYPE: 142 (e.g. ['COSMETIC DAMAGE', 'wireline issue', 'low level burn'])
-    CONDITION: 80 (e.g. ['metal buckling', 'small volume', 'seal on the swivel failed'])
-    ACTION: 59 (e.g. ['Contained test pit prevented any operators from being in the line of fire', 'removed this equipment from the work area', 'maneuvering around the part'])
-    INJURY: 41 (e.g. ['nauseas', 'minor puncture wound to his right wrist', 'damage to the rear drivers bumper and taillight'])
-    ROOT_CAUSE_CATEGORY: 12 (e.g. ['Standard Operating Procedures, Procedures & Work instructions', 'Planning and coordination of works', 'Unprotected/unguarded moving machine parts (struck by/caught by)'])
-    MATERIAL: 10 (e.g. ['material damage to the vehicle on the front', 'thick gear oil (AtomOil Gear EP)', 'pressurized water'])
-    PERSON: 5 (e.g. ['Goods Inwards Inspector', 'Driver', 'trained First Aider'])
+  Community 2 (size=10291):
+    INCIDENT: 3817 (e.g. ['ACCIDENT 599001 - Test Pressure Incident--Large Test Cell--7/23/18', 'ACCIDENT 572924 - Non TFMC owned - MTI - APC Constellation - Spitzer (subcontractor) - 12 Feb, 2018 - Knee laceration', 'ACCIDENT 21583 - 002 - S05 - SIT - Property Damage - A tubing hanger was dropped from the horizontal stands while in process of removing the VAM plug.'])
+    EQUIPMENT: 3021 (e.g. ['red 35k capacity forklift', 'hammer wrench', '4-Port pod'])
+    LOCATION: 1548 (e.g. ['Gremp Campus', 'row of barricades', 'wooded area'])
+    ORGANIZATION: 978 (e.g. ['CSE W-INDUSTRIES, LLC', 'ULM', 'Oncor Electrical utility service'])
+    EVENT: 324 (e.g. ['wasp on the desk', 'uncontrolled movement of the crane boom', 'driver lost control turning sideways'])
+    BODY_PART: 255 (e.g. ['safety toe portion', 'IPs arm', "palm of the employee's hand"])
+    INJURY_TYPE: 188 (e.g. ['mild left ankle sprain', 'stiffness and pain', 'Diagnosis: closed Ulnar styloid fracture'])
+    CONDITION: 67 (e.g. ['false floor', 'Lube-A-Boom Grease becoming tacky', 'ESD not functioning'])
+    ACTION: 63 (e.g. ['adjusting riser', 'diapers had been laid down to soak up the fluid', 'hammering pegs into the ground'])
+    MATERIAL: 12 (e.g. ['thick gear oil (AtomOil Gear EP)', 'combination of regular lithium-purpose grease and Lube-A-Boom Grease', 'residual Oceanic HW 443 (Glycol/Antifreeze) fluid'])
+    ROOT_CAUSE_CATEGORY: 11 (e.g. ['Over-consumption of energy, natural resources (water, etc.)', 'Planning and coordination of works', 'Standard Operating Procedures, Procedures & Work instructions'])
+    PERSON: 7 (e.g. ['HSE manager on site and the facilities tech', 'employee', 'SUV that was waiting to enter and go N. on 1604'])
 
-  Community 3 (size=5416):
-    INCIDENT: 1877 (e.g. ['ACCIDENT 14299 - [MERO 2] LTI - Incidente?durante?limpeza de tubos FBE?- Shawcor (N?o apropriado)', 'INCIDENT 709512 - Near Miss - 033316A001 - Maintenance Period - Amsterdam, Damen Shipyard - Skandi Vitoria - 16 March 2021 - COVID Breach - Vessel contractor entered the bridge without authorization', 'NEAR MISS 510407 - NM - Flexibras A?u - Desprendimento de componente do Guia Cabo da Ponte Rolante'])
-    EQUIPMENT: 1227 (e.g. ['Uranus rebooter', 'anti-weight', 'pressure uniti equipment'])
-    LOCATION: 1001 (e.g. ['2nd shelf', 'mezzanine stairs', 'street D'])
-    ORGANIZATION: 706 (e.g. ['OOGTK LIBRA PRODUCAO DE PETROLEO LTDA', 'Brava', 'Curvelo team'])
-    BODY_PART: 235 (e.g. ['feet', 'mid-left', '7 fun'])
-    EVENT: 158 (e.g. ['bee stung', 'CVB block dropped inside the skid', 'positioning loss'])
-    INJURY_TYPE: 110 (e.g. ['small leso', 'surface cut', 'unable to hold on'])
-    CONDITION: 33 (e.g. ['no damage noted', 'potential height of the fall is 25m (height of the hull) to 45 m (height of the module)', 'area was clear'])
-    INJURY: 33 (e.g. ['dust in the right eye', 'hematoma under the nail', 'two fingers printed between the equipment and the pneumatic cylinder activator'])
-    ACTION: 17 (e.g. ['pressing the right finger between the bubble and the side of the shelter', 'Book in/out system not being followed', 'misjudged his next step'])
-    ROOT_CAUSE_CATEGORY: 13 (e.g. ['Information perceptiveness (amount / mode) & Information reception (extend / range)', '3. 3rd Party NCR (received or managed by TechnipFMC or Partners)', 'Tool condition'])
-    MATERIAL: 4 (e.g. ['concrete portion of the roof', 'nylon parts (3 on main deck, one on the barge)', 'concrete pieces'])
-    PERSON: 2 (e.g. ['operator in the face', 'people in the environment'])
+  Community 3 (size=6487):
+    INCIDENT: 1962 (e.g. ['NEAR MISS 524433 - Incidente Ambiental - P76 Project - Brasil Pontal do Paraná - 16/01/2017 - Oleo hidráulico de um guindaste_x000D_', 'NEAR MISS 7864 - 703672 - Tampa da caixa d’água se desprendeu e caiu', 'INCIDENT 705247 - Quase-Acidente - A?u Spoolbase: Vazamento de óleo na tomada de for?a que movimenta a bomba de caminh?o abastecedor.'])
+    EQUIPMENT: 1863 (e.g. ['Starboard Adjuster', 'banco', 'lingada ajustável'])
+    LOCATION: 1264 (e.g. ['A?uSpoolbase', 'Cais DOME', 'marinho'])
+    ORGANIZATION: 789 (e.g. ['OCEANIC HW', 'Ecopolo', 'Public Hospital of Macaé'])
+    EVENT: 230 (e.g. ['hanger leaving its position', 'deslizamento longitudinal da sobra', 'striking of I-beam and handrails'])
+    BODY_PART: 175 (e.g. ['perna esquerda', 'corpo', 'no ombro'])
+    INJURY_TYPE: 106 (e.g. ['pain or discomfort', 'minor injury', 'slight shoulder injury'])
+    CONDITION: 45 (e.g. ['unexpected gust of wind', 'difficulties with this model of glasses', 'broken monitor was not in the healthy state'])
+    ACTION: 29 (e.g. ['pressing the right finger between the bubble and the side of the shelter', 'slipping on the edge of the work platform step', "IP inspected the surface but didn't see any objects"])
+    ROOT_CAUSE_CATEGORY: 13 (e.g. ['Hot/cold surfaces or media', 'Information perceptiveness (amount / mode) & Information reception (extend / range)', '3. 3rd Party NCR (received or managed by TechnipFMC or Partners)'])
+    MATERIAL: 6 (e.g. ['cutting rubber', 'waterized MUD', 'waste of the same ended up falling in the ch.o'])
+    PERSON: 5 (e.g. ['people in the environment', 'operator in the face', 'Leader and first aider'])
 
-  Community 4 (size=4178):
-    INCIDENT: 1313 (e.g. ['INCIDENT 717840 - MTC – MIDOR Refinery Expansion Project – Egypt – Alexandria -31-05-2021– Cut wound during unpacking of Electrical Panel wooden box', 'ACCIDENT 520705 - MTC - 034693C009 - YAMAL LNG - Sabetta - 23.12.2016 - hitting of the hand by a door', 'ACCIDENT 583518 - MTC - Yamal LNG Project - Sabetta - 22.04.2018 - inhalation poisoning by N2'])
-    LOCATION: 743 (e.g. ['Jetty shop territory', 'place of works', 'Pugnax'])
-    EQUIPMENT: 639 (e.g. ['valve_x000D_ support', 'GIGA electric cable hoist', 'pneumatic tools'])
-    ORGANIZATION: 574 (e.g. ['Painting team', 'IZOFER” LLC Company', 'LLC_x000D_'])
-    INJURY_TYPE: 241 (e.g. ['chest bruise', 'Open right-eye cornea injury', 'compound fracture'])
-    BODY_PART: 237 (e.g. ['right side of the ribcage', 'left shoulder and thorax', 'nasal region'])
-    EVENT: 187 (e.g. ['stumbled while running to a bus stop', 'overturned from the platform to the ground', 'sutures to close the wound'])
-    INJURY: 100 (e.g. ['closed fracture of proximal phalanx of the second finger of the left hand', 'severe pain in pelvis', 'contusion (blood blister)'])
-    CONDITION: 65 (e.g. ['Smoke of cigarette (without gloves)', 'genetic predisposition of the IP toward this genetic illness', 'trapped in between the gin wheel and rope'])
-    ACTION: 61 (e.g. ['descending from a 1 meter high metal beam', 'jumped over a beam that was located 1 meter above the ground level', 'linger with his foot behind a strained cordstrap'])
-    MATERIAL: 10 (e.g. ['unsecured wooden edging strip (500g)', 'small foreign body (most likely dust or a similar small particle)', 'dropped metal plate (20 cm x 9 cm x 4mm, 250 g weight)'])
-    ROOT_CAUSE_CATEGORY: 5 (e.g. ['Fall to lower level / fall to water / loose materials (e.g. silos with granulate)', 'Traffic Management / Routes / Pedestrian path', 'Explosives / potential explosives'])
-    PERSON: 3 (e.g. ["IP's face", 'SNEMA wireman walking backwards', 'REGA slinger'])
+  Community 4 (size=4247):
+    INCIDENT: 1485 (e.g. ["NEAR MISS 18637 - NM - 15/12/2023 - Glissement du collier d'armage en cours de montage", "NEAR MISS 623395 - SD-Riblonneuse-29/01/2019-Chute d'outil au sol", 'NEAR MISS 24257 - NM-15/10/2024- Entre BSP15 et SP10 - Légère torsion de cheville en marchant sur un rebord de chappe'])
+    EQUIPMENT: 948 (e.g. ['trimble', 'monocuve', 'airbags of the vehicle'])
+    LOCATION: 719 (e.g. ['spiral reception 4', 'pedestrian passage', 'OUTILAGE'])
+    ORGANIZATION: 461 (e.g. ['the Adria', 'Ponticelli SONILS', 'MET'])
+    EVENT: 232 (e.g. ['second motorcycle entering the lane', 'hydrolysis reaction generating hydrogen / oxygen production', 'helmet fell off his head while falling'])
+    INJURY_TYPE: 151 (e.g. ['pain behind the neck', 'strong arm pain', 'left leg injury'])
+    BODY_PART: 130 (e.g. ["Operator's arm", 'feet', 'bichenille arm'])
+    CONDITION: 53 (e.g. ['no physical consequences', 'static electricity', 'weight of the assembly (Raccord/Vanne/Tuyaux) in false door'])
+    ACTION: 52 (e.g. ['medic treatment', 'work performed the previous day', 'manipulating a forest'])
+    ROOT_CAUSE_CATEGORY: 9 (e.g. ['Psycho social - Stress', 'Psycho social - Workload (Overload/Underload)', 'Repetitive/one sided physical demand'])
+    PERSON: 4 (e.g. ['decoration workers on the 13F', 'First Responder', 'person opening the door fast from another side without seeing me'])
+    MATERIAL: 3 (e.g. ['particle of weld bark', 'spilled lubricant', 'amount of water (1-3 m3)'])
 
-  Community 5 (size=3839):
-    INCIDENT: 1477 (e.g. ['NEAR MISS 554035 - NM-BatimentR-29/09/2017-absorption-de-détartrant', 'ACCIDENT 581333 - NWR-draps bat H-11/04/2018-contracture musculaire en tassant le zéta.', 'NEAR MISS 641313 - SD-29/06/19-Pollution accidentelle-chantier gros diamêtre'])
-    EQUIPMENT: 756 (e.g. ['Immo', 'drip tray beneath the leaking hose', 'araldite machine'])
-    LOCATION: 520 (e.g. ['FMSU zone', 'M4 building station', 'hopitak'])
-    ORGANIZATION: 418 (e.g. ['SGS', 'Payara project', 'French emergency'])
-    BODY_PART: 176 (e.g. ['neck', 'goutcher', 'basket side wing'])
-    EVENT: 175 (e.g. ['small oil spill', 'transfer to Vessel Hospital', 'operator hoisted up'])
-    INJURY_TYPE: 117 (e.g. ['The wounded', 'zeta cut', 'risk of turning'])
-    INJURY: 77 (e.g. ['swelling around his right eye', 'diagnosed as muscle shock', 'trigger thumb'])
-    ACTION: 57 (e.g. ['climbing through the frame and over the pipework', 'disassembly and assembly of 3" lines for replacing the seals of the hammer joints', 'put one side of the bolt cutters handle against a concrete column and held the other handle with both hands'])
-    CONDITION: 47 (e.g. ['back pain history', 'lack of Tool Box Talk or Dynamic Risk Assessment', 'water leak on the roof of the A nef C'])
-    ROOT_CAUSE_CATEGORY: 9 (e.g. ['Vibrations (hand arm / whole body)', 'Posture (constraint or restricted environment)', 'Psycho social - Workload (Overload/Underload)'])
-    PERSON: 5 (e.g. ['informed to the HSE department and labor medicine', 'employee', 'First Responder'])
-    MATERIAL: 5 (e.g. ['the edge of the lid', 'particle of weld bark', 'waterized MUD'])
+  Community 5 (size=3920):
+    INCIDENT: 1056 (e.g. ['INCIDENT 740023 - LTI-Arctic LNG 2-NMP-26 December 2021-Employee lost balance and fall from hydraulic pallet mover', 'ACCIDENT 592091 - FAC - Yamal LNG Project - Sabetta - 12.06.2018 - left ankle sprain', 'NEAR MISS 579815 - NM - Yamal LNG Project - 034693C009 - Sabetta - 27.03.2018 -  tearing of textile slings'])
+    EQUIPMENT: 885 (e.g. ['man lift “HYUNDAY”', 'insulation strapping tool', 'concrete slabs'])
+    LOCATION: 796 (e.g. ['main office', 'dornite', 'BPTH #17 CVB'])
+    ORGANIZATION: 483 (e.g. ['OMC management', 'Teplovent LLC', 'Tadano'])
+    INJURY_TYPE: 243 (e.g. ['Periorbital hematoma', 'metacarpal bone injury', 'pain at the latter metapes of the hand'])
+    BODY_PART: 205 (e.g. ['left ankle-joint ligaments', 'left forearm', 'II metacarpal'])
+    EVENT: 147 (e.g. ['self-ignition of the charger which is switched on in the electric network', 'slipped and fell down on his left hand', 'Event("fall on the ground")'])
+    ACTION: 51 (e.g. ['the other one activated the fire alarm system', 'stepping on one stone on the ground', 'turning around and moving out of the working area'])
+    CONDITION: 45 (e.g. ['sharp edge of the purlin', 'observed the swallowed the feeling', 'fuel did not pass through the fuel injector of the heat generator, as it was clogged with industrial dust in diesel fuel'])
+    ROOT_CAUSE_CATEGORY: 4 (e.g. ['Manual handling', 'Explosives / potential explosives', 'Falls, slips and trips on same level (without potential to fall to lower level)'])
+    MATERIAL: 3 (e.g. ['hot porrige', '3 palettes containing in all 14 leaf crowns', 'dropped metal plate (20 cm x 9 cm x 4mm, 250 g weight)'])
+    PERSON: 2 (e.g. ["IP's face", 'REGA slinger'])
 
-  Community 6 (size=3146):
-    INCIDENT: 898 (e.g. ['INCIDENT 704341 - Minor Fir Aid Injury', 'ACCIDENT 518161 - First aid Case_033390X001 - Dahej Manufacturing Facility Capex_10/18/2016_minor Cut injury on hand', 'ACCIDENT 30139 - Non - Work Related, First Aid Incident'])
-    EQUIPMENT: 614 (e.g. ['winch hook', 'sign holder', 'beveling machine'])
-    LOCATION: 563 (e.g. ['hidden place', 'above ground pipeline', 'concrete structure'])
-    ORGANIZATION: 330 (e.g. ['hired', 'TECHNIP BENELUX B.V.', 'NHT Prime-G'])
-    EVENT: 287 (e.g. ['bolt slipped from the fitters hand', 'bolt fell from an elevation of 18mtr', 'right hand index finger got pinched between the tie rod and pipe support material'])
-    BODY_PART: 125 (e.g. ['palm side', 'skin', 'his leg'])
-    CONDITION: 112 (e.g. ['heat shrink on the end of the cable', 'the correct type of gloves are not available', 'force applied'])
-    INJURY_TYPE: 75 (e.g. ['multiple scratches and bruises', 'No one got injured', 'mosquito bite'])
-    ACTION: 63 (e.g. ['torqueing of M20 Bolt', 'sanitized and band aid placed', 'fitter tried to fixed (install) this unsafe grating position'])
-    INJURY: 59 (e.g. ['stick on his fingers', 'minor damaged to the dock concrete barrier', 'mild prick injury on his left foot'])
-    MATERIAL: 12 (e.g. ['protruding strand of steel wire', 'scaffold clamps that had recently been removed', 'absorbents'])
-    PERSON: 5 (e.g. ['Person: Samsaliev Sakish of REGA JV', 'employee not stopping to check on employee', 'person handling tremie pipe'])
-    ROOT_CAUSE_CATEGORY: 3 (e.g. ['Use of personal protective equipment', 'Accumulation / Presence of explosive atmosphere', 'Manual handling'])
+  Community 6 (size=3518):
+    EQUIPMENT: 872 (e.g. ['Duster', 'cotton net/gauze', 'four-axle loaded dump truck'])
+    LOCATION: 847 (e.g. ['nearby channel', 'river side', 'KP 26+800'])
+    INCIDENT: 672 (e.g. ['ACCIDENT 597661 - NON-Technip Owned - BNJ-FAC 36 - 2529 TAP Project - Greece/KP 399- 12/07/2018 - minor laceration on forearm with grinder', 'NEAR MISS 564199 - NON Technip Owned - RNT-NM 05 - 2529 TAP - Albania/ACS03 - 16/12/2017 - Potential fall from height', 'ACCIDENT 524274 - NON-Technip Owned - SCA-DA (RTA) 07 - 2529 TAP - Greece/MMY Alexandropoulos - 14/12/2016 - Mobile canteen exhaust stack damaged by truck'])
+    ORGANIZATION: 627 (e.g. ['archaeology department', 'DRA', 'HSS department'])
+    EVENT: 199 (e.g. ['IP struggling with the heat and sweating profusely', 'pipe spool slipped from trailer bed', 'grinder kicked back'])
+    INJURY_TYPE: 113 (e.g. ['lingering acute pain', 'Injury: I-II degree frostbite', 'second fracture'])
+    CONDITION: 67 (e.g. ['sudden change in CG (Eccentric load)', 'Side-boom transmission problem', 'hot water located inside'])
+    BODY_PART: 56 (e.g. ['right-side', 'right above the ankle', 'L1 vertebra'])
+    ACTION: 55 (e.g. ['spontaneous move to remove the bee', 'lost the grip of the tool', 'the welder did not handle properly the Stanley knife'])
+    ROOT_CAUSE_CATEGORY: 5 (e.g. ['Psycho social - Inappropriate behaviour / horseplay / Aggression / violence (Fights/Riots etc. ...)', 'Illumination / sight / visibility', 'Inadequate Supervision'])
+    MATERIAL: 3 (e.g. ['hot iron chip', 'empty food container and empty IBC', 'poly plank previously fitted slipped around the bundle'])
+    PERSON: 2 (e.g. ['Person', 'the crew consisted of 1 supervisor, 2 excavator operators, 2 side boom operators'])
 
-  Community 7 (size=3069):
-    INCIDENT: 1035 (e.g. ['NEAR MISS 978 - B16 DO FORKL Pallet dropped from shelf during lift with forklift', 'ACCIDENT 11066 - Low back pain due to awkward positions', 'INCIDENT 719657 - Droped Object. When slowly lifting the HTRT off the VX fell out of HTRT and landed on EVDT roof.'])
-    EQUIPMENT: 770 (e.g. ['subsea equipment', 'Safety Head', 'paring knife'])
-    LOCATION: 492 (e.g. ['port of Larvik', 'hall 7', 'external medical unit'])
-    ORGANIZATION: 425 (e.g. ['RUH', 'Drilling', 'MQC'])
-    BODY_PART: 111 (e.g. ['venstre pekefinger', 'h?yde', 'nose region'])
-    EVENT: 95 (e.g. ['fainting incident', 'impact on IP safety glasses', 'lifting cap fell over'])
-    INJURY_TYPE: 45 (e.g. ['heel of both feet', 'Photokeratitis', 'skade'])
-    CONDITION: 37 (e.g. ['HP and LP supply within parameters required by step 1 of the test procedure at 1035 bar and 345 bar respectively', 'swelling of the 3rd finger', 'communication failure between the individuals working together'])
-    INJURY: 28 (e.g. ['Little finger got stacked and broken', 'no trauma caused on hand or fingers', 'red mark on the forehead'])
-    ACTION: 21 (e.g. ['use of finger instead of measuring stick', 'All stop was called', 'jerking action to try and crack the bolt off'])
-    MATERIAL: 4 (e.g. ['aluminum', 'steel chip', 'no material damage was inflicted'])
-    ROOT_CAUSE_CATEGORY: 3 (e.g. ['Radiation (ionising / non ionising)', 'Difficult/Hindered operability of tools and equipment', '1. Internal NCR (issued by TechnipFMC or Partners)'])
-    PERSON: 3 (e.g. ['emergency team on yard', 'deck rigging crew', 'person opening the door fast from another side without seeing me'])
+  Community 7 (size=3483):
+    EQUIPMENT: 1045 (e.g. ['haskel pump', 'oxy acetylene hose', 'perforated plate'])
+    INCIDENT: 994 (e.g. ['NEAR MISS 505691 - Scaffolder lost balance, fell and stopped his fall', 'ACCIDENT 509696 - LTI-MTC-MWP10B-SMOE-Batam-Indonesia-16 Sept 16-Over pressurization of Actuator resulting in a sudden burst. 1 LTI - 2 MTC injuries recorded', 'NEAR MISS 522901 - Near Miss, Yamal LNG MWP1, China Qingdao COOEC,17th Jan 2017,Insulation material was caught on fire while cutting kick plate on module 213-PAU-001'])
+    LOCATION: 614 (e.g. ['B234/235', 'Matak Island', '4A bay Block Assembly Workshop'])
+    ORGANIZATION: 523 (e.g. ['Ziquan', 'TechnipFMC China', 'Mechanical & Electrical Workshop'])
+    EVENT: 119 (e.g. ["man lift didn't stop in time", 'squeezed the fingers on his left hand between the other part of the door and the container', 'crushes his work pants on the leaf'])
+    INJURY_TYPE: 66 (e.g. ['scratch', 'pop in the right knee', 'little cut'])
+    CONDITION: 40 (e.g. ['slippery surface of form work ply wood', 'sauce that no improved the problem', 'corrosion where the pad adheres to the bolted base plate'])
+    BODY_PART: 39 (e.g. ['both hands and face', 'left side back area', 'lower eyelid'])
+    ACTION: 30 (e.g. ['blaster stopped his activities', 'tetanus injection', 'dismantling the scaffold without permission'])
+    ROOT_CAUSE_CATEGORY: 6 (e.g. ['Use of personal protective equipment', 'Flammable solids, liquids and gases', 'Workplace layout / congestion'])
+    PERSON: 5 (e.g. ['SIEMENS EHS Manager', 'Person: Samsaliev Sakish of REGA JV', 'HSE Scaffold'])
+    MATERIAL: 2 (e.g. ['iron filings in the groove of the grinding face shield', 'rusty iron wire'])
 
-  Community 8 (size=2845):
-    LOCATION: 668 (e.g. ['GBV 9, 10 and 11', 'KP 35 + 500', 'Castoro 6 deck'])
-    INCIDENT: 659 (e.g. ['ACCIDENT 569350 - NON-Technip Owned - BNJ-FAC 22 - 2529 TAP Project - Greece/KP 475 - 10/01/2018 - Worker fell into the excavation trench', 'INCIDENT 643188 - NON-Technip Owned - RNT-NM 05 - 2529 TAP - Italy/PRT Melendugno - 08/07/2019 - WHA violation', 'INCIDENT 651769 - NON-Technip Owned - BNJ-FAC 49 - 2529 TAP Project - Greece/PY 17- 19/09/2019 - Wasp sting for an excavator operator'])
-    ORGANIZATION: 577 (e.g. ['Bonatti millwright', 'hospital medical crew', 'HSS Coordinator'])
-    EQUIPMENT: 495 (e.g. ['transport truck', 'Liebherr 932 Litronic', 'SLS system'])
-    EVENT: 174 (e.g. ['released for light duty', 'tube from the bundle sprung free', 'BC22 was connected to a horizontal tree, the horizontal tree shifted during the command inputs'])
-    CONDITION: 76 (e.g. ['not wearing protective gloves', 'filter not inserted in filler cup', 'lack of formal communication to the Supervisors about the inspection regime and the tag proving the prior inspection'])
-    BODY_PART: 52 (e.g. ['front side of his calf', 'dorsal base', 'her head'])
-    INJURY_TYPE: 46 (e.g. ['light strained ankle', 'triple fracture', 'tendon cut'])
-    INJURY: 44 (e.g. ['discomfort in his eye', 'minor laceration on the dorsal base of the general worker’s (IP) left thumb', 'minor abrasion to the stomach'])
-    ACTION: 40 (e.g. ['cooled hand in lukewarm water', 'TFMC panel operator moved to the spot of the noise and checked the occurrence, operating the stop stop of the pull', 'disconnected the hose assembly at the chocolate and hot water mixer end on a coffee machine'])
-    MATERIAL: 8 (e.g. ['grease from overhead conveyor chain', 'small particle of dust/grit', 'loose items'])
-    ROOT_CAUSE_CATEGORY: 4 (e.g. ['Unfamiliar personnel', 'Illumination / sight / visibility', 'Psycho social - Inappropriate behaviour / horseplay / Aggression / violence (Fights/Riots etc. ...)'])
-    PERSON: 2 (e.g. ['Nikita Chirko', 'the crew consisted of 1 supervisor, 2 excavator operators, 2 side boom operators'])
+  Community 8 (size=3328):
+    INCIDENT: 1037 (e.g. ['INCIDENT 697616 - NM - APSB - Maintenance Office - 13/11/2020 - Ceiling dropped', 'NEAR MISS 18117 - Hanger Slipped from Moveable V-Roller Stand', 'ACCIDENT 21154 - Left Index Finger Caught Between Tool and Flange'])
+    EQUIPMENT: 936 (e.g. ['fire engine', 'pinion shaft', 'MIG 13'])
+    LOCATION: 652 (e.g. ['warehouse charging station', 'sloppy face', 'Switchboard No.1'])
+    ORGANIZATION: 423 (e.g. ['GENESIS OIL & GAS CONSULTANTS MALAYSIA SDN. BHD.', 'Operation (Maintenance) Dept', 'Trident Offshore'])
+    EVENT: 102 (e.g. ['I-beam slipped off a forklift', '0.5L of hydraulic oil released', 'tilted and broke due to the heavy impact of the collision'])
+    BODY_PART: 73 (e.g. ['right hand/thumb', 'left side of the front wheel', 'tibia/tibula'])
+    INJURY_TYPE: 61 (e.g. ['possible trauma', 'nail puncture wound', 'pinched and injured'])
+    CONDITION: 20 (e.g. ['not flowing into the domestic drain', 'motorized power jack was out of service', 'minor dent sustained by under-roller guard'])
+    ACTION: 17 (e.g. ['handbrake application', 'maneuvering the truck closer to the wall', 'crew and contractor stop the job'])
+    MATERIAL: 4 (e.g. ['hydraulic fluid on the ground', 'absorbents', 'water and fluid mix'])
+    ROOT_CAUSE_CATEGORY: 2 (e.g. ['Equipment condition', 'Electrical current / electrocution / ESD / electromagnetic Fields'])
+    PERSON: 1 (e.g. ['IP standing behind the cradle'])
 
-  Community 9 (size=1971):
-    INCIDENT: 624 (e.g. ['NEAR MISS 520628 - Near Miss - Rapid UIO - Pengerang - 5 Sept 2016 - The earth filling and earth bund has caused some degree of disruption to the sediment pond capability', 'ACCIDENT 428 - TIG Machine Fronius no.10 power supply cable cause spark and caught fire', 'ACCIDENT 547259 - PD - OUI JV Rapid - Pengerang, Johor - 9 July 2017  - The arm of a Gadang excavator knocked the structural steel beam'])
-    EQUIPMENT: 444 (e.g. ['gas cooker', 'over drum', 'cylinder rack'])
-    LOCATION: 426 (e.g. ['3" Raw Water Line', 'SP18', 'MTP storage area'])
-    ORGANIZATION: 285 (e.g. ['Central Directorate', 'KPJ Pasir Gudang hospital', 'Crest Odyssey'])
-    EVENT: 64 (e.g. ['hydraulic oil spurts & spill', 'Fenja Trial respool stood down overnight', 'smoke and small fire'])
-    BODY_PART: 55 (e.g. ['front offside', 'head area', 'inside body'])
-    INJURY_TYPE: 30 (e.g. ['75mm graze', '5-7 mm laceration', 'overload'])
-    CONDITION: 18 (e.g. ['extension did have a pat test sticker applied but has become faded and is not easily read', 'unsecured ladder', 'out-barrier damaged'])
-    INJURY: 10 (e.g. ['suffering pain in his right knee', 'bitten on the leg', 'minor laceration to the tip of his finger'])
-    ACTION: 10 (e.g. ['area secured', 'crew and contractor stop the job', 'Team Leader want to switch-on high-baylight'])
-    ROOT_CAUSE_CATEGORY: 3 (e.g. ['Weather Condition', 'Psycho social - Alcohol and drugs abuse', 'Electrical current / electrocution / ESD / electromagnetic Fields'])
-    PERSON: 1 (e.g. ['stray dog'])
-    MATERIAL: 1 (e.g. ['wooden packing block'])
+  Community 9 (size=3110):
+    EQUIPMENT: 992 (e.g. ['3.2T crane', 'El rack', 'XT reel'])
+    INCIDENT: 903 (e.g. ['ACCIDENT 22031 - First aid-cut in face when hit traffic sign', 'NEAR MISS 25209 - In connection with the lifting operation of the XT from the truck to the boat, the crane operator started the lifting operation without receiving a signal from the flagman on the ground. This led to a collision between the lifting cap and the XT.', 'NEAR MISS 13205 - forklift slipped on an oily floor'])
+    LOCATION: 459 (e.g. ['moonpool hatch', 'mafi flatbed', 'building 14C WH'])
+    ORGANIZATION: 406 (e.g. ['PIG', 'CCB portvakt', 'Martin Linge'])
+    EVENT: 107 (e.g. ['structure launched up out of its seat', 'cut tube gave 6.32 cps when cut', 'areas where the object hit'])
+    INJURY_TYPE: 83 (e.g. ['personnel-injury', 'unconscious', 'discomfort in his eye'])
+    BODY_PART: 69 (e.g. ['last finger', 'thigh', 'starboard leg'])
+    CONDITION: 58 (e.g. ['refueling at the time of the incident', 'lifting area delimitation and clearance of the hazardous zone', 'absorbed water'])
+    ACTION: 19 (e.g. ['IP flushed his eye out', 'Shawcor index operator stopped the job', 'reversing in the parking area near the compressor'])
+    MATERIAL: 7 (e.g. ['barbed wire made of elastic and cutting material', 'use of standard cleaning product', 'tree trunk'])
+    PERSON: 4 (e.g. ['IP on his hard hat', 'Nikita Chirko', 'emergency team on yard'])
+    ROOT_CAUSE_CATEGORY: 3 (e.g. ['Radiation (ionising / non ionising)', 'Lifting ops error', '1. Internal NCR (issued by TechnipFMC or Partners)'])
 
-  Community 10 (size=1921):
-    INCIDENT: 643 (e.g. ['INCIDENT 713445 - FAC - TUL - 22.04.21 - Slip caused thigh strain', 'INCIDENT 674042 - FAC - TUL - 13.03.2020 - Doorway head impact', 'NEAR MISS 616751 - NM-TU INC-18.11.28-9" grinder kickback during removing tubing from reel'])
-    EQUIPMENT: 532 (e.g. ['FLT lifting point', 'Guillotine saw', 'straightener'])
-    LOCATION: 288 (e.g. ['S/Z back wall', 'LS #5', 'SPS'])
-    ORGANIZATION: 241 (e.g. ['UT inspectIon', 'Applications dept.', 'Shepherd Offshore Services'])
-    EVENT: 79 (e.g. ['slipping off falling down between the guards and the cat pads', 'drum contact with foot', 'contamination of paved floor'])
-    INJURY_TYPE: 43 (e.g. ['strained abdominal muscle', 'jarring', 'chest pain'])
-    BODY_PART: 38 (e.g. ['S Head', 'back side of the employees hand', 'index and pinky finger'])
-    CONDITION: 32 (e.g. ['short of breath', 'standing on the box section frame of the tensioner (10" square box section) this is approximately 11" above the normal working platform', 'shallow angle of the gangway'])
-    ACTION: 15 (e.g. ['valve not secured to the stand', 'Norskan riggers moving Yokohamas fluters without TechnipFMC staff assistance', 'manual pushing of the tipping skip'])
-    INJURY: 9 (e.g. ['finger trapped between the door and the frame', 'foreign object in eye', 'Employee was not injured'])
-    PERSON: 1 (e.g. ['gangway watchman was in place'])
+  Community 10 (size=2553):
+    EQUIPMENT: 775 (e.g. ['Poclain', '1.6 mm thick cutting disc', 'painting bed'])
+    INCIDENT: 768 (e.g. ['NEAR MISS 571144 - Near Miss_XXXX_2/5/2018_Intermediate Tube Sheet slipped from its bracket', 'NEAR MISS 27716 - Near Miss - Striking against ROV grab bar', 'NEAR MISS 632742 - NM_HURL-Sindri_077625_Shuttering plates slipped from the trailer bed'])
+    LOCATION: 442 (e.g. ['W area', 'south side of CCR', '90-C-02'])
+    ORGANIZATION: 292 (e.g. ['GETs', 'Neo', 'M/s Sai Engineering team'])
+    EVENT: 87 (e.g. ['harness got stuck on a structural bracing situated below 6 meter', 'tilted', 'wooden bar slipping during leveraging'])
+    BODY_PART: 83 (e.g. ['thumb finger', 'fore finger', 'lower ankle joint'])
+    INJURY_TYPE: 70 (e.g. ['minor prick injury', 'external injuries', 'bone crack'])
+    CONDITION: 23 (e.g. ['unsafe condition of grating', 'inherent weakness in his right ankle', 'lashing belt stuck in-between'])
+    ACTION: 10 (e.g. ['fitter tried to fixed (install) this unsafe grating position', 'trip on the door frame lip of the drill shack', 'awkward position using his left shoulder to hold and balance the panel'])
+    ROOT_CAUSE_CATEGORY: 1 (e.g. ['Accumulation / Presence of explosive atmosphere'])
+    MATERIAL: 1 (e.g. ['protruding strand of steel wire'])
+    PERSON: 1 (e.g. ['person handling tremie pipe'])
 ```
 
 ### GL-02: Are there systemic patterns where the same type of equipment failure recurs across different geographic regions?
-**Type:** Global | **Status:** ✅ | **Time:** 0.2s
+**Type:** Global | **Status:** ✅ | **Time:** 0.5s
 
 ```
-Equipment appearing in 5+ regions: 144
-  fire extinguisher: 8 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'Republic of. Please update lookup table.', 'South America']
-  Scaffold: 8 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'Republic of. Please update lookup table.', 'South America']
-  forklift: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
-  compressor: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
-  PPE: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
-  manlift: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
-  grinder: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
-  truck: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
-  crane: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
-  helmet: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'Middle East', 'North America', 'Republic of. Please update lookup table.', 'South America']
-  trailer: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
-  welding machine: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
-  gloves: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
-  scaffolding: 7 regions -> ['Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'Republic of. Please update lookup table.', 'South America']
-  machine: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
-  spool: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+Equipment appearing in 5+ regions: 266
+  ROV: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  column: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  another forklift: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  x-raying: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  vehicle: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  pallet: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
   air compressor: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
-  basket: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'Middle East', 'North America', 'Republic of. Please update lookup table.', 'South America']
-  ladder: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
-  ice pack: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  crane: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  valve: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  rigging: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  flange: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  hose: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  vessel: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  PPE: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  barrier: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  Truck: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  trailer: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  pipe: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  deck: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
+  manlift: 7 regions -> ['Africa', 'Asia Pacific', 'Europe', 'India', 'Middle East', 'North America', 'South America']
 ```
 
 ### GL-03: How has the overall safety incident profile changed over the dataset time range? Are certain incident types increasing or decreasing?
-**Type:** Global | **Status:** ✅ | **Time:** 0.4s
+**Type:** Global | **Status:** ✅ | **Time:** 3.4s
 
 ```
 | year | Accident | Near Miss | Unknown | Total |
@@ -1570,12 +1566,12 @@ Equipment appearing in 5+ regions: 144
 ```
 
 ### GL-04: What entities serve as the most connected hubs in the knowledge graph, and what does their centrality reveal about systemic risk?
-**Type:** Global | **Status:** ✅ | **Time:** 0.5s
+**Type:** Global | **Status:** ✅ | **Time:** 0.7s
 
 ```
 Top 20 non-incident nodes by degree:
   LOCATION::Europe -- degree 7433
-  ORGANIZATION::TECHNIPFMC -- degree 4688
+  ORGANIZATION::TECHNIPFMC -- degree 4709
   LOCATION::North America -- degree 4681
   LOCATION::USA -- degree 4322
   LOCATION::UK -- degree 3746
@@ -1591,59 +1587,59 @@ Top 20 non-incident nodes by degree:
   ROOT_CAUSE_CATEGORY::Equipment condition -- degree 1260
   ROOT_CAUSE_CATEGORY::Falls, slips and trips on same level (without potential to fall to lower level) -- degree 1204
   ROOT_CAUSE_CATEGORY::Stored energy (dropped objects) -- degree 1183
-  LOCATION::Le Trait -- degree 1113
+  LOCATION::Le Trait -- degree 1115
   ROOT_CAUSE_CATEGORY::Hazardous liquids (exposure to / spill / loss of containment /pollution) -- degree 1092
-  LOCATION::Norway -- degree 1064
+  EQUIPMENT::crane -- degree 1070
 
 Top 20 non-incident nodes by PageRank:
-  LOCATION::Europe -- PR 0.012404
-  LOCATION::North America -- PR 0.008548
-  LOCATION::USA -- PR 0.007244
-  LOCATION::UK -- PR 0.005515
-  LOCATION::Asia Pacific -- PR 0.005191
-  LOCATION::South America -- PR 0.003919
-  LOCATION::Brazil -- PR 0.002947
-  LOCATION::France -- PR 0.002630
-  ORGANIZATION::TECHNIPFMC -- PR 0.002580
-  LOCATION::Aberdeen -- PR 0.002106
-  LOCATION::Norway -- PR 0.001819
-  LOCATION::India -- PR 0.001494
-  LOCATION::Africa -- PR 0.001369
-  LOCATION::Russia -- PR 0.001351
-  LOCATION::Houston -- PR 0.001335
-  INJURY_TYPE::fire -- PR 0.001308
-  LOCATION::Le Trait -- PR 0.001245
-  LOCATION::India -- PR 0.001062
-  LOCATION::Middle East -- PR 0.001054
-  LOCATION::Malaysia -- PR 0.001002
+  LOCATION::Europe -- PR 0.010182
+  LOCATION::North America -- PR 0.007471
+  LOCATION::USA -- PR 0.006346
+  LOCATION::Asia Pacific -- PR 0.004410
+  LOCATION::UK -- PR 0.004197
+  LOCATION::South America -- PR 0.003347
+  LOCATION::Brazil -- PR 0.002520
+  LOCATION::France -- PR 0.002345
+  ORGANIZATION::TECHNIPFMC -- PR 0.002270
+  LOCATION::Norway -- PR 0.001617
+  LOCATION::Aberdeen -- PR 0.001537
+  LOCATION::India -- PR 0.001309
+  EVENT::fire -- PR 0.001278
+  LOCATION::Houston -- PR 0.001183
+  LOCATION::Africa -- PR 0.001144
+  LOCATION::Le Trait -- PR 0.001125
+  LOCATION::Russia -- PR 0.001115
+  LOCATION::India -- PR 0.000950
+  LOCATION::Middle East -- PR 0.000913
+  LOCATION::Malaysia -- PR 0.000894
 ```
 
 ### GL-05: What are the most common equipment-body part co-occurrences across all incidents?
 **Type:** Global | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Total distinct (equipment, body_part) pairs: 13045
+Total distinct (equipment, body_part) pairs: 26250
 Top 20:
-  safety glasses + eye: 51 incidents
-  PPE + eye: 39 incidents
-  gloves + finger: 36 incidents
-  gloves + left hand: 30 incidents
-  face shield + eye: 17 incidents
-  hammer + left hand: 16 incidents
-  crane + finger: 16 incidents
-  PPE + left hand: 15 incidents
-  pallet + finger: 14 incidents
-  PPE + finger: 14 incidents
-  pallet + left foot: 13 incidents
-  hammer + finger: 11 incidents
-  swab + eye: 11 incidents
-  forklift + left hand: 11 incidents
-  compressor + left hand: 11 incidents
-  forklift + left foot: 11 incidents
-  pallet + left hand: 10 incidents
-  safety glasses + face: 10 incidents
-  pipe + finger: 10 incidents
-  forklift + finger: 10 incidents
+  Ordinary safety glasses + eye: 68 incidents
+  PPE + eye: 54 incidents
+  Ordinary safety glasses + face: 35 incidents
+  Ordinary safety glasses + left eye: 34 incidents
+  hand gloves + finger: 33 incidents
+  PPE + finger: 32 incidents
+  Ordinary safety glasses + right eye: 31 incidents
+  PPE + left hand: 30 incidents
+  PPE + right eye: 29 incidents
+  PPE + face: 26 incidents
+  hard hat + head: 25 incidents
+  pipe + finger: 24 incidents
+  rigging + finger: 23 incidents
+  PPE + left eye: 22 incidents
+  PPE + right hand: 21 incidents
+  hand gloves + hand: 20 incidents
+  PPE + hand: 19 incidents
+  hand gloves + left hand: 18 incidents
+  crane + finger: 18 incidents
+  flange + finger: 17 incidents
 ```
 
 ### GL-06: How do safety profiles compare across the top 5 clients by incident volume?
@@ -1652,34 +1648,34 @@ Top 20:
 ```
 Top 5 clients by incident count:
 
-  TECHNIPFMC (4688 incidents):
-    Types: {'Near Miss': 1469, 'Accident': 1729}
-    Severity dist: {1: 598, 2: 637, 3: 286, 4: 44, 5: 10}
+  TECHNIPFMC (4707 incidents):
+    Types: {'Near Miss': 1477, 'Accident': 1739}
+    Severity dist: {1: 598, 2: 642, 3: 288, 4: 48, 5: 10}
     Mean severity: 1.88
 
   JSC YAMAL LNG (1302 incidents):
-    Types: {'Accident': 884, 'Near Miss': 418}
+    Types: {'Near Miss': 418, 'Accident': 884}
     Severity dist: {}
     Mean severity: 0.00
 
   FLEXI FRANCE (1017 incidents):
-    Types: {'Near Miss': 404, 'Accident': 338}
+    Types: {'Accident': 338, 'Near Miss': 404}
     Severity dist: {1: 290, 2: 54, 3: 27, 4: 3}
     Mean severity: 1.31
 
-  IP (875 incidents):
-    Types: {'Accident': 582, 'Near Miss': 31}
-    Severity dist: {1: 92, 2: 81, 3: 45, 4: 5, 5: 1}
-    Mean severity: 1.85
-
   N/A - No Vendor (820 incidents):
-    Types: {'Near Miss': 362, 'Accident': 458}
+    Types: {'Accident': 458, 'Near Miss': 362}
     Severity dist: {1: 314, 2: 367, 3: 125, 4: 12, 5: 2}
     Mean severity: 1.81
+
+  HSE (577 incidents):
+    Types: {'Accident': 269, 'Near Miss': 157}
+    Severity dist: {1: 143, 2: 67, 3: 27, 4: 7, 5: 1}
+    Mean severity: 1.60
 ```
 
 ### GL-07: Are there seasonal (monthly) patterns in incident frequency?
-**Type:** Global | **Status:** ✅ | **Time:** 0.5s
+**Type:** Global | **Status:** ✅ | **Time:** 3.6s
 
 ```
 Monthly incident totals (all years combined):
@@ -1704,7 +1700,7 @@ Trough months (>15% below avg): none
 **Type:** Global | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Regions with RCC data: 10
+Regions with RCC data: 7
 
   Europe (6682 categorised incidents):
     Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects): 613
@@ -1740,17 +1736,6 @@ Regions with RCC data: 10
     Inadequate Supervision: 69
     Motor Vehicle Road Accident: 52
     Hazard Identification & Risk Assessment: 51
-
-  Republic of. Please update lookup table. (14 categorised incidents):
-    Stored energy (pressure, tension): 4
-    Stored energy (dropped objects): 3
-    Unprotected/unguarded moving machine parts (struck by/caught by ): 2
-
-  Republic of the - Pointe-Noire. Please update lookup table. (1 categorised incidents):
-    Biological - Animals, Bacteria, Viruses and Funguses: 1
-
-  Valves and Trees - Nusajaya Campus 1 Manufacturing - Welding and Location: Malaysia - Nusajaya. Please update lookup table. (1 categorised incidents):
-    Workplace layout / congestion: 1
 ```
 
 ### GL-09: How many incidents mention burns in narrative but have no burn injury type extracted?
@@ -1758,16 +1743,16 @@ Regions with RCC data: 10
 
 ```
 Narrative mentions 'burn': 177
-  With INJURY_TYPE extracted: 108
-  WITHOUT INJURY_TYPE extracted (gap): 69
-  Gap rate: 39.0%
+  With INJURY_TYPE extracted: 126
+  WITHOUT INJURY_TYPE extracted (gap): 51
+  Gap rate: 28.8%
 
 Sample gap incidents:
-  #12111: "Employee was TIG welding a clamped piece of material on a welding table. While welding he inadvertently dropped the weld..."
-  #1288: "Environmental condition: The Deep Blue is in the Mero 1 field   Events leading up to the incident/Incident: Employee in ..."
   #14461: "Around 15:00 local time (8 am HOU time) today, during start-up activities with the WOCS container, our WOCS operator Mag..."
-  #14668: "A contractor was injured and received first aid when he was grinding and a hot ember went into his glove causing a minor..."
   #19666: "One of the welder after welding trial sample tube, he allowed to cool down to some extent and then kept on welding machi..."
+  #20681: "Derived to voltage variations in the site 2 (stock area offices) a UPS was overheated which caused the current adapter t..."
+  #21872: "The operator cuts the production end ribs to the lapidary, he carries his protective sheet, the bright projections burn ..."
+  #26370: "Tarpaulin, which was protecting some structures (Sealine Protection Frames) of the project, started to burn (see photo),..."
 ```
 
 ### GL-10: How many incidents mention fractures in narrative but have no fracture injury type extracted?
@@ -1775,33 +1760,32 @@ Sample gap incidents:
 
 ```
 Narrative mentions 'fracture': 442
-  With INJURY_TYPE extracted: 227
-  WITHOUT INJURY_TYPE extracted (gap): 215
-  Gap rate: 48.6%
+  With INJURY_TYPE extracted: 352
+  WITHOUT INJURY_TYPE extracted (gap): 90
+  Gap rate: 20.4%
 
 Sample gap incidents:
-  #10005: "On 31 Aug 3:20 Pm, IP was tasked to configure the release sleeve on the penetrator. IP was assigned by leader to do this..."
   #10689: "Employee (ID# 30800964) was taking his lunch break, and carrying his lunch.  Employee walked behind a pedestal fan that ..."
   #10759: "Employee (ID#  , contract employee) was stapling a plastic covering to a wooden pallet with a hammer tacker.  The plasti..."
-  #13256: "When leaving work, IP biked towards and up the ramp with an electrical bicycle. Heave El-Bikes often use this entrance. ..."
-  #14068: "Hall C  A technician caught his thumb between an impact wrench and a steel structure. The bolt had to be screwed back a ..."
+  #1594: "Crews were in the process of manually rolling pipe in the ready rack to eliminate open gaps in the pipe advancement area..."
+  #16201: "After the fracture operations when the Shell PAD 20 pools were completed, it is observed that the turks and bulbs had fa..."
+  #16202: "After the fracture operations when the Shell PAD 20 pools were completed, it is observed that the turks and bulbs had fa..."
 ```
 
 ### GL-11: How many incidents mention cranes in narrative but have no crane equipment extracted?
 **Type:** Global | **Status:** ✅ | **Time:** 0.4s
 
 ```
-Narrative mentions 'crane': 1,873
-  With EQUIPMENT extracted: 1,435
-  WITHOUT EQUIPMENT extracted (gap): 438
-  Gap rate: 23.4%
+Narrative mentions 'crane': 1,877
+  With EQUIPMENT extracted: 1,873
+  WITHOUT EQUIPMENT extracted (gap): 4
+  Gap rate: 0.2%
 
 Sample gap incidents:
-  #10173: "Environmental conditions: The Deep Blue is at Theodore spoolbase, weather dry and sunny.  Wind was 8 knots from the west..."
-  #10232: "Description/summary of Incident:  The operation ongoing was the deployment of a buoyancy module for 1st end fitting DVC ..."
-  #10239: "The North Sea Atlantic (NSA) was operational on DP in the Karish Field on co-ordinates 33°10,6’ N, 034°17,5’ E having co..."
-  #10240: "The North Sea Atlantic (NSA) was operational on DP in the Karish Field on co-ordinates 33°10,6’ N, 034°17,5’ E having co..."
-  #10349: "Environmental Conditions: The vessel was operational on DP in the Karish Field on co-ordinates 33°13,55’ N, 034°17,38’ E..."
+  #12582: "Hall G Crane  Halvportalkran ble kj?rt inn i Traverskran, det skjedde med lav fart kranen ble stoppet med én gang. Ingen..."
+  #13022: "B14  crane  Da 10 tonns kran var i bruk, ble krankroken kj?rt ned samtidig som l?ypekatten ble kj?rt til h?yre og kranen..."
+  #524433: "Durante opera??o do guindaste T160458 (ZOOMLION - 260 ton) na desmontagem do Guindaste da MAMMOET, ocorreu o rompimento ..."
+  #632767: "Environmental Conditions  The incident occurred at approx. 11:30 on the 17th April 2019. The vessel was moored at Orkang..."
 ```
 
 ### GL-12: How many incidents mention forklifts in narrative but have no forklift equipment extracted?
@@ -1809,30 +1793,30 @@ Sample gap incidents:
 
 ```
 Narrative mentions 'forklift': 1,075
-  With EQUIPMENT extracted: 914
-  WITHOUT EQUIPMENT extracted (gap): 161
-  Gap rate: 15.0%
+  With EQUIPMENT extracted: 1,070
+  WITHOUT EQUIPMENT extracted (gap): 5
+  Gap rate: 0.5%
 
 Sample gap incidents:
-  #10233: "A third party 7"10k gate valve with a wireline cap was bolted onto a 36" and 14" spool standing up on the shop floor (va..."
-  #10760: "At 2:00 pm the forklift operator was attempting to load two hangers on the truck for shipment. The operator loaded the f..."
-  #12484: "Forklift operator was unloading a frac valve off of SAIA and was not paying attention, resulting in running into buildin..."
-  #12749: "Employee driving the forklift pulled up to the bay door and waited for the sensor to open the door. When the door starte..."
-  #13372: "NM 75 - IP entered forklift electrolyte spill area and was slightly affected by fumes..."
+  #14592: "Yard CCB Agotnes DO - Skid fell of forklift forks during transport. Splog mistet skid ved rubbhall mellom flakparkering ..."
+  #516354: "Port: Durante basculamento do suporte para descarte de fios da desarmagem em uma ca?amba de resíduos localizada na emiss..."
+  #568625: "Technician was on his way out to the WIP lane to bring in an upper tree frame using Big Red Forklift, when he  made a wi..."
+  #582302: "EMPLOYEE HIT DOOR JAM WITH TOP OF FORKLIFT..."
+  #692361: "At 1.45 am on 28/9/2020, an under roller power damaged by forklift tires during reversing after delivered raw material t..."
 ```
 
 ### GL-13: How many high-severity incidents (>=4) have no injury type extracted?
-**Type:** Global | **Status:** ✅ | **Time:** 1.9s
+**Type:** Global | **Status:** ✅ | **Time:** 2.8s
 
 ```
 Incidents with severity >= 4: 167
-  With INJURY_TYPE extracted: 34
-  WITHOUT INJURY_TYPE (gap): 133
-  Gap rate: 79.6%
+  With INJURY_TYPE extracted: 27
+  WITHOUT INJURY_TYPE (gap): 140
+  Gap rate: 83.8%
 
 Severity breakdown of gap incidents:
-  Severity 4: 117
-  Severity 5: 16
+  Severity 4: 120
+  Severity 5: 20
 
 Sample gap incidents:
   #7557 (sev=4.0): "A technician started the process of opening the Test Cell doors. During the process the door became ..."
@@ -1843,46 +1827,46 @@ Sample gap incidents:
 ```
 
 ### GL-14: How many injury-impact incidents have no body part extracted?
-**Type:** Global | **Status:** ✅ | **Time:** 0.1s
+**Type:** Global | **Status:** ✅ | **Time:** 0.2s
 
 ```
 Incidents with impact_type=Injury: 11,736
-  With BODY_PART extracted: 6,132
-  WITHOUT BODY_PART (gap): 5,604
-  Gap rate: 47.8%
+  With BODY_PART extracted: 6,203
+  WITHOUT BODY_PART (gap): 5,533
+  Gap rate: 47.1%
 ```
 
 ### GL-15: How many incidents have very short narratives (<100 chars) with no entities extracted?
 **Type:** Global | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Incidents with narrative < 100 chars: 972
-  With entity extraction: 645
-  Without any entity extraction: 327
+Incidents with narrative < 100 chars: 978
+  With entity extraction: 677
+  Without any entity extraction: 301
   Likely test/placeholder records: 5
-  Genuine short narratives (no entities): 322
+  Genuine short narratives (no entities): 296
 
 Sample short-narrative gaps:
-  #7383: "by climbing the operator to slide and raped his back on the structure"
   #24420: "COMPANY VEHICLE LD5571 STRUCK A DEER"
   #159: "Employee slipped on ice when stepping briefly onto the lawn before entering the building."
+  #16649: "COMPANY TRUCK LD3882 WAS DISCOVERED TO HAVE 3 SLASHED TIRES IN MANCAMP PARKING LOT"
   #27422: "Kranservice. Old open case. No explanation. Closing."
-  #21332: "Car was in a stop position where other car hit it from the side."
+  #22971: "Drop of Huron container"
 ```
 
 ### GL-16: How many incidents contain non-English narratives with reduced entity extraction?
 **Type:** Global | **Status:** ✅ | **Time:** 0.2s
 
 ```
-Overall mean entity extraction per incident: 2.14
+Overall mean entity extraction per incident: 3.76
 
-Portuguese: 410 incidents, mean entities=2.95 (vs 2.14 overall), 50 with zero extraction
-French: 4,591 incidents, mean entities=2.65 (vs 2.14 overall), 534 with zero extraction
-Spanish: 384 incidents, mean entities=2.92 (vs 2.14 overall), 46 with zero extraction
-Russian: 7 incidents, mean entities=2.71 (vs 2.14 overall), 0 with zero extraction
+Portuguese: 410 incidents, mean entities=5.60 (vs 3.76 overall), 15 with zero extraction
+French: 4,634 incidents, mean entities=5.88 (vs 3.76 overall), 119 with zero extraction
+Spanish: 384 incidents, mean entities=5.68 (vs 3.76 overall), 13 with zero extraction
+Russian: 7 incidents, mean entities=4.86 (vs 3.76 overall), 0 with zero extraction
 
-Total non-English incidents: 5,392
-Total with zero extraction: 630
+Total non-English incidents: 5,435
+Total with zero extraction: 147
 ```
 
 ### GL-17: Find the 10 incidents most similar to incident #29857 (dropped pry bar) using hybrid embedding similarity.
@@ -1892,41 +1876,41 @@ Total with zero extraction: 630
 Seed incident: #29857
 
 Top 10 most similar incidents (text embedding cosine):
-  #24829 (sim=0.645) type=Near Miss sev=2.0 eq=['ROV', 'pry bar']
-  #503254 (sim=0.583) type=Accident sev=? eq=['ROV', 'ROV cutter']
-  #24785 (sim=0.574) type=Near Miss sev=2.0 eq=['ROV', 'Flange Spreader', 'ROV Hook']
-  #20278 (sim=0.565) type=Accident sev=1.0 eq=['hydraulic shackle']
-  #25648 (sim=0.561) type=Near Miss sev=2.0 eq=['ROV']
-  #14126 (sim=0.552) type=Near Miss sev=1.0 eq=[]
+  #24829 (sim=0.645) type=Near Miss sev=2.0 eq=['ROV', 'Pry Bar', 'Flange spreaders']
+  #503254 (sim=0.583) type=Accident sev=? eq=['ROV', 'lanyard', 'rigging']
+  #24785 (sim=0.574) type=Near Miss sev=2.0 eq=['ROV', 'Flange spreaders', 'lanyard']
+  #20278 (sim=0.565) type=Accident sev=1.0 eq=['ROV UHD 58', 'Judy Platform', 'ROV hydraulic shackle']
+  #25648 (sim=0.561) type=Near Miss sev=2.0 eq=['ROV', 'cage', 'tether']
+  #14126 (sim=0.552) type=Near Miss sev=1.0 eq=['ROV system', 'ROV’s', 'ROV']
   #683770 (sim=0.552) type=? sev=? eq=['ROV']
-  #548733 (sim=0.540) type=Accident sev=? eq=['ROV Mil 208', 'latch beam', 'TMS main winch wire']
-  #693551 (sim=0.540) type=? sev=? eq=['FMC Smart pack', 'Hydraulic Level Sensor']
-  #639111 (sim=0.538) type=Accident sev=? eq=['water pump', '420 Dynaset Pump', 'ROV']
+  #548733 (sim=0.540) type=Accident sev=? eq=['ROV Mil 208', 'TMS’s', 'latch beam']
+  #693551 (sim=0.540) type=? sev=? eq=['ROV', 'ROV 1', 'FMC Smart pack']
+  #639111 (sim=0.538) type=Accident sev=? eq=['ROV', 'TMS’s', 'water pump']
 
-Seed equipment: ['ROV', 'lanyard', 'pry bar']
-Equipment overlap (hit rate): 6/10 (60%)
+Seed equipment: ['Pry Bar', 'ROV', 'TMS’s', 'lanyard']
+Equipment overlap (hit rate): 10/10 (100%)
 ```
 
 ### GL-18: Find the 10 incidents most similar to incident #569346 (ladder fall with broken teeth) using hybrid embedding similarity.
-**Type:** Global | **Status:** ✅ | **Time:** 0.0s
+**Type:** Global | **Status:** ✅ | **Time:** 0.1s
 
 ```
 Seed incident: #569346
 
 Top 10 most similar incidents (text embedding cosine):
-  #573223 (sim=0.791) type=Near Miss sev=? eq=['Sideboom']
-  #633596 (sim=0.790) type=Near Miss sev=? eq=['Sideboom', 'boom', 'boom winch']
-  #591511 (sim=0.759) type=Accident sev=? eq=['pipe section', 'excavator', 'belt']
-  #585953 (sim=0.752) type=Near Miss sev=? eq=['CAT 594 Sideboom', 'two-joint pipe section', 'Sideboom']
-  #522123 (sim=0.737) type=Near Miss sev=? eq=['Sideboom', 'boom']
-  #545428 (sim=0.736) type=Near Miss sev=? eq=['Sideboom', 'lowering-in strap']
-  #605490 (sim=0.736) type=Near Miss sev=? eq=['Sideboom']
-  #539318 (sim=0.733) type=Near Miss sev=? eq=['Sideboom', 'excavator']
-  #602722 (sim=0.723) type=Near Miss sev=? eq=['bending machine', 'lifting accessories']
-  #514069 (sim=0.718) type=Accident sev=? eq=['Sideboom', 'side-boom 44.1404', 'side-boom No. 44.1404']
+  #573223 (sim=0.791) type=Near Miss sev=? eq=['mobile pipe section', 'sideboom', 'mobile section']
+  #633596 (sim=0.790) type=Near Miss sev=? eq=['EPE PL95 SN 0042', 'boom', 'pipe']
+  #591511 (sim=0.759) type=Accident sev=? eq=['excavator', 'clamper', 'pipe']
+  #585953 (sim=0.752) type=Near Miss sev=? eq=['CAT 594 Sideboom', 'mobile section', 'sideboom']
+  #522123 (sim=0.737) type=Near Miss sev=? eq=['pipeline mobile section', 'overhead 20 KV mid-voltage cable', 'sideboom']
+  #545428 (sim=0.736) type=Near Miss sev=? eq=['four-pipe section', 'four side-booms', 'the machine']
+  #605490 (sim=0.736) type=Near Miss sev=? eq=['pipe string', 'section of the pipe', 'sideboom']
+  #539318 (sim=0.733) type=Near Miss sev=? eq=['sideboom', 'excavator']
+  #602722 (sim=0.723) type=Near Miss sev=? eq=['heavy bending machine', 'winch drum', 'JSA']
+  #514069 (sim=0.718) type=Accident sev=? eq=['sideboom', 'Plant number 44.1404', 'counterweight']
 
-Seed equipment: ['Negative side string', 'Sideboom', 'Superior CPX-94', 'ladder']
-Equipment overlap (hit rate): 8/10 (80%)
+Seed equipment: ['Load. Moment Indicator', 'Superior CPX-94', 'boom block wire rope', 'cable', 'ladder', 'sideboom']
+Equipment overlap (hit rate): 6/10 (60%)
 ```
 
 ### GL-19: Do the top-10 text-similar incidents for a forklift accident share the same equipment type? (structural hit rate)
@@ -1935,38 +1919,38 @@ Equipment overlap (hit rate): 8/10 (80%)
 ```
 Seed: #324 (equipment=forklift|flt)
 
-  ✓ #663852 (sim=0.701) eq=['5 Ton forklift']
-  ✗ #18838 (sim=0.683) eq=['truck']
-  ✓ #8142 (sim=0.656) eq=['forklift']
-  ✓ #721112 (sim=0.655) eq=['forklift boom']
-  ✓ #676741 (sim=0.654) eq=['forklift']
-  ✓ #517760 (sim=0.652) eq=['forklift', 'forks']
-  ✓ #18589 (sim=0.650) eq=['pallet', 'forklift']
-  ✓ #631498 (sim=0.648) eq=['forklift', 'hotwork equipment', 'truck']
-  ✓ #530325 (sim=0.645) eq=['forklift']
-  ✓ #8289 (sim=0.644) eq=['forklift']
+  ✓ #663852 (sim=0.701) eq=['5 ton forklift', 'barrier']
+  ✓ #18838 (sim=0.683) eq=['loading frame on truck', 'loading frame', 'another forklift']
+  ✓ #8142 (sim=0.656) eq=['another forklift', 'WAREHOUSE FLOOR']
+  ✓ #721112 (sim=0.655) eq=['cargo box', 'another forklift', 'boom']
+  ✓ #676741 (sim=0.654) eq=['another forklift', 'Truck', 'front right wheel']
+  ✓ #517760 (sim=0.652) eq=['another forklift', 'Truck']
+  ✓ #18589 (sim=0.650) eq=['pallet', 'another forklift']
+  ✓ #631498 (sim=0.648) eq=['hotwork equipment', 'Truck', 'welding machine']
+  ✓ #530325 (sim=0.645) eq=['another forklift']
+  ✓ #8289 (sim=0.644) eq=['another forklift', 'pallet']
 
-Hit rate: 9/10 (90%)
+Hit rate: 10/10 (100%)
 ```
 
 ### GL-20: Do the top-10 text-similar incidents for a crane near-miss share the same equipment type? (structural hit rate)
 **Type:** Global | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Seed: #26866 (equipment=crane)
+Seed: #611920 (equipment=crane)
 
-  ✓ #9622 (sim=0.744) eq=['crane', 'SOPEP kit']
-  ✓ #18886 (sim=0.666) eq=['250T crane']
-  ✗ #536624 (sim=0.665) eq=['stationary front-end loader']
-  ✗ #667540 (sim=0.651) eq=[]
-  ✓ #641469 (sim=0.650) eq=['FRC crane']
-  ✓ #735720 (sim=0.647) eq=['15Te NOV crane']
-  ✗ #1667 (sim=0.645) eq=['slider', 'SOPEP kit']
-  ✓ #546946 (sim=0.640) eq=['vessel crane', '150T crane']
-  ✓ #567597 (sim=0.639) eq=['crane']
-  ✓ #22425 (sim=0.639) eq=['kenz crane']
+  ✗ #690238 (sim=0.759) eq=['doubler', 'doubler plate', 'main deck']
+  ✗ #578594 (sim=0.743) eq=['16 inch pipeline', 'starboard freeboard deck', 'adflow helmet']
+  ✗ #564142 (sim=0.734) eq=['Theodore Spool Base', 'another forklift', 'low boy trailer']
+  ✗ #741158 (sim=0.733) eq=['Vessel position', 'light', 'rubber end cap']
+  ✗ #582898 (sim=0.731) eq=['Rigid Deck Tensioner (RDT)', 'elevated walkway', 'RDT']
+  ✓ #518187 (sim=0.729) eq=['tower crane', 'main aligner vertical roller', 'deck']
+  ✓ #500105 (sim=0.729) eq=['main aligner top rollers', 'tower crane', 'brace']
+  ✓ #593614 (sim=0.725) eq=['boom crane', 'boom truck', 'Grapples']
+  ✗ #566838 (sim=0.724) eq=['extension cord', 'ballast tank 1204', 'ventilation fan']
+  ✗ #679278 (sim=0.723) eq=['reel', 'transportation trolley', 'deck']
 
-Hit rate: 7/10 (70%)
+Hit rate: 3/10 (30%)
 ```
 
 ### GL-21: How well do text embeddings and structural similarity agree on the top-10 most similar incidents? (method correlation)
@@ -1974,15 +1958,15 @@ Hit rate: 7/10 (70%)
 
 ```
 Compared text vs node2vec top-10 for 20 seed incidents
-Mean overlap (Jaccard@10): 3.00%
+Mean overlap (Jaccard@10): 4.00%
 
 Per-seed overlap:
   #10: 0%
   #100: 0%
   #10005: 0%
   #10016: 0%
-  #10019: 0%
-  #10021: 0%
+  #10019: 10%
+  #10021: 10%
   #1003: 10%
   #10044: 0%
   #1005: 0%
@@ -1990,22 +1974,22 @@ Per-seed overlap:
 ```
 
 ### GL-22: Find incidents semantically similar to 'worker fell from scaffold due to missing guardrail' using text embeddings.
-**Type:** Global | **Status:** ✅ | **Time:** 4.9s
+**Type:** Global | **Status:** ✅ | **Time:** 238.0s
 
 ```
 Query: "worker fell from scaffold due to missing guardrail"
 
 Top 10 semantically similar incidents:
-  #531820 (sim=0.709) Near Miss/sev=? eq=['Module 200-PAR-005', 'several guardrail', 'scaffolding'] inj=['risk of fall']
-  #709549 (sim=0.656) ?/sev=? eq=['GUARDRAIL', 'full body safety harness'] inj=[]
-  #24560 (sim=0.647) Accident/sev=3.0 eq=['PPE', 'fall protection', 'ambulance'] inj=[]
-  #24562 (sim=0.647) Accident/sev=3.0 eq=['PPE', 'fall protection', 'ambulance'] inj=[]
-  #24563 (sim=0.647) Accident/sev=3.0 eq=['PPE', 'fall protection', 'ambulance'] inj=[]
-  #24559 (sim=0.647) Accident/sev=3.0 eq=['PPE', 'fall protection', 'ambulance'] inj=[]
-  #709551 (sim=0.638) ?/sev=? eq=['1-TMP-003 module'] inj=[]
+  #531820 (sim=0.709) Near Miss/sev=? eq=['guardrail', 'Scaffolding'] inj=['risk of fall']
+  #709549 (sim=0.656) ?/sev=? eq=['Deck ‘C’', 'Deck ‘A’', 'Guard rails and toeboard'] inj=[]
+  #24560 (sim=0.647) Accident/sev=3.0 eq=['Scaffolding', 'scaffold board', 'PPE'] inj=[]
+  #24562 (sim=0.647) Accident/sev=3.0 eq=['Scaffolding', 'scaffold board', 'PPE'] inj=[]
+  #24563 (sim=0.647) Accident/sev=3.0 eq=['Scaffolding', 'scaffold board', 'PPE'] inj=[]
+  #24559 (sim=0.647) Accident/sev=3.0 eq=['Scaffolding', 'scaffold board', 'PPE'] inj=[]
+  #709551 (sim=0.638) ?/sev=? eq=['yellow guardrail', 'full scaffold platform'] inj=[]
   #735977 (sim=0.636) ?/sev=? eq=['grinder'] inj=[]
-  #518862 (sim=0.636) Near Miss/sev=? eq=['safety belt', 'hand rail'] inj=[]
-  #514067 (sim=0.631) Near Miss/sev=? eq=['Scaffold', 'helmet'] inj=[]
+  #518862 (sim=0.636) Near Miss/sev=? eq=['scaffolder', 'ladder steps', 'top handrail'] inj=[]
+  #514067 (sim=0.631) Near Miss/sev=? eq=['scaffolder', 'pipe rack 41', 'main deck'] inj=['First Aid Case']
 ```
 
 ### GL-23: Find incidents semantically similar to 'crane load dropped because sling failed under tension' using text embeddings.
@@ -2015,59 +1999,59 @@ Top 10 semantically similar incidents:
 Query: "crane load dropped because sling failed under tension"
 
 Top 10 semantically similar incidents:
-  #430 (sim=0.676) Accident/sev=2.0 eq=['single overhead crane CS86'] inj=[]
-  #552629 (sim=0.666) Near Miss/sev=? eq=['train 2', 'compressor', '214-PAU-012'] inj=[]
-  #697226 (sim=0.663) ?/sev=? eq=['four leg chain sling', '“O” round sling'] inj=[]
-  #703298 (sim=0.663) ?/sev=? eq=['four leg chain sling', '“O” round sling'] inj=[]
-  #725136 (sim=0.662) ?/sev=? eq=['transporting slings', 'tested hoisting devices'] inj=['No one was hurt']
-  #504414 (sim=0.656) Near Miss/sev=? eq=['crane'] inj=[]
-  #607608 (sim=0.646) Near Miss/sev=? eq=['gantry crane', 'trailer'] inj=['No any injury']
-  #579815 (sim=0.636) Near Miss/sev=? eq=['LIEBHERR LTM 1090-4.1'] inj=[]
-  #737511 (sim=0.635) ?/sev=? eq=['sling', 'truck platform'] inj=[]
-  #30460 (sim=0.630) Accident/sev=2.0 eq=['third-party mobile crane'] inj=['kink']
+  #430 (sim=0.676) Accident/sev=2.0 eq=['CS86', 'slinger', 'crane'] inj=[]
+  #552629 (sim=0.666) Near Miss/sev=? eq=['air compressor', 'Eye & eye round slings', 'main lift'] inj=[]
+  #697226 (sim=0.663) ?/sev=? eq=['four leg chain sling', 'The Main Crane Hook', 'metallic elongated “O” round sling'] inj=[]
+  #703298 (sim=0.663) ?/sev=? eq=['four leg chain sling', 'The Main Crane Hook', 'metallic elongated “O” round sling'] inj=[]
+  #725136 (sim=0.662) ?/sev=? eq=['crane', 'transporting slings', 'tested hoisting devices'] inj=[]
+  #504414 (sim=0.656) Near Miss/sev=? eq=['The Main Crane Hook'] inj=[]
+  #607608 (sim=0.646) Near Miss/sev=? eq=['04 Nos. of “I” Beams', 'OH Gantry Crane', 'trailer'] inj=[]
+  #579815 (sim=0.636) Near Miss/sev=? eq=['LIEBHERR LTM 1090-4.1', 'one of the slings', 'slinger'] inj=[]
+  #737511 (sim=0.635) ?/sev=? eq=['boom truck', 'slinger', 'truck platform'] inj=[]
+  #30460 (sim=0.630) Accident/sev=2.0 eq=['Involved Mobile Crane', 'guide arm', 'slinger'] inj=[]
 ```
 
 ### GL-24: Which equipment types appear most often in the top-10 similar incidents for high-severity events? (embedding-based pattern)
-**Type:** Global | **Status:** ✅ | **Time:** 1.2s
+**Type:** Global | **Status:** ✅ | **Time:** 1.0s
 
 ```
 High-severity incidents sampled: 50
 Total high-severity with embeddings: 167
 
 Most common equipment in similar-incident neighborhoods:
-  crane: 35
-  forklift: 34
-  equipment: 14
-  forks: 9
-  truck: 7
-  winch: 7
-  actuator: 6
-  ROV: 6
-  sling: 6
-  overhead crane: 6
+  crane: 59
+  rigging: 41
+  another forklift: 38
+  valve: 37
+  slinger: 32
+  Truck: 28
+  deck: 26
+  barrier: 25
+  hose: 23
+  ROV: 19
 ```
 
 ### IOGP-01: What injuries result from incidents involving moving vehicles and mobile equipment?
 **Type:** Aggregation | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 2008
-Distinct INJURY_TYPE values: 122
+Matching incidents: 2857
+Distinct INJURY_TYPE values: 198
 Top 10:
-  injuries: 64
-  cut: 16
-  injury: 14
-  minor damage: 11
-  contusion: 10
-  laceration: 10
-  pain: 9
-  abrasion: 8
-  No one was injured: 7
-  fracture: 7
+  pain: 39
+  cut: 19
+  fracture: 19
+  contusion: 18
+  personal injury: 16
+  laceration: 16
+  bruise: 15
+  discomfort: 11
+  abrasion: 10
+  scratch: 10
 ```
 
 ### IOGP-02: How do dropped object incidents break down by severity over time?
-**Type:** Aggregation | **Status:** ✅ | **Time:** 0.4s
+**Type:** Aggregation | **Status:** ✅ | **Time:** 3.3s
 
 ```
 severity_bin null rate: 14007/19820 (70.7%)
@@ -2091,11 +2075,11 @@ Sample: ['INCIDENT::10888', 'INCIDENT::12332', 'INCIDENT::12630', 'INCIDENT::127
 ```
 
 ### IOGP-04: How many pressurized system incidents resulted in containment loss?
-**Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
+**Type:** Multi-hop | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 192
-Sample: ['INCIDENT::10674', 'INCIDENT::10923', 'INCIDENT::10992', 'INCIDENT::11942', 'INCIDENT::12909']
+Matching incidents: 675
+Sample: ['INCIDENT::10229', 'INCIDENT::10355', 'INCIDENT::10507', 'INCIDENT::10661', 'INCIDENT::10674']
 ```
 
 ### IOGP-05: Which electrical incidents had lockout/tagout failures?
@@ -2111,7 +2095,7 @@ Top failed controls in LOTO incidents:
   LOTO system: 1
   breaker closed without permission: 1
   restricted area where personnel are not allowed to enter unless a LOTO is performed: 1
-  facilities: 1
+  Facilities: 1
   signs ("Under Commissioning" & "High Voltage Do Not Touch"): 1
   All Stop procedure: 1
   check valve 70-NRV-1012: 1
@@ -2122,7 +2106,7 @@ Sample edges (hazard --FAILED_CONTROL--> barrier):
   [16262] deforming the door’s floor latch and breaking the padlock hasp of the LOTO system --> LOTO system | "breaking the padlock hasp of the LOTO system"
   [719499] construction team finish the termination work than put the stick ”cannot close” on the break --> breaker closed without permission | "construction team finish the termination work than put the s"
   [676087] pipes positioned on the line horizontal --> restricted area where personnel are not allowed to enter unless a LOTO is performed | "The area where the pipe fell, was a restricted area where pe"
-  [23607] casing damage --> facilities | "Maintenance barriered the supply off"
+  [23607] casing damage --> Facilities | "Maintenance barriered the supply off"
   [636840] unlocked panel door (535-EVK-001) --> signs ("Under Commissioning" & "High Voltage Do Not Touch") | "the signs, although sufficient in number and clear in awaren"
   [681052] contact between pipe and manlift --> All Stop procedure | "The spotter called an All Stop as the pipe, but was not hear"
   [565034] wrong direction of installation of the check valve/non-return valve 070-NRV-1012 --> check valve 70-NRV-1012 | "The check valve 70-NRV-1012 wrong direction of installation "
@@ -2133,11 +2117,11 @@ Top failed controls across all incidents:
   fire: 14
   injuries: 10
   injury: 5
+  hand gloves: 5
   hard hat: 4
-  gloves: 4
   IP fell 4m from a ladder: 4
   helmet: 3
-  safety glasses: 3
+  Ordinary safety glasses: 3
   fire extinguisher: 3
   SOPEP equipment: 3
 ```
@@ -2146,65 +2130,65 @@ Top failed controls across all incidents:
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 246
-Distinct BODY_PART values: 76
+Matching incidents: 560
+Distinct BODY_PART values: 145
 Top 10:
-  left hand: 15
+  hand: 19
+  left hand: 16
+  right hand: 12
   shoulder: 10
-  left foot: 10
-  left leg: 8
-  eye: 4
-  ankle: 4
-  arm: 4
-  wrist: 3
-  lower leg: 3
-  Knee: 3
+  right leg: 9
+  left foot: 9
+  knee: 7
+  right foot: 7
+  foot: 7
+  leg: 6
 ```
 
 ### IOGP-07: What injuries result from mechanical lifting incidents with rigging failures?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 2001
-Distinct INJURY_TYPE values: 152
+Matching incidents: 2872
+Distinct INJURY_TYPE values: 224
 Top 10:
-  injuries: 51
-  laceration: 15
-  injury: 15
-  cut: 14
-  abrasion: 12
-  fracture: 12
-  personal injury: 12
-  contusion: 9
-  personnel injury: 6
-  personal injuries: 6
+  personal injury: 43
+  pain: 40
+  cut: 33
+  fracture: 33
+  laceration: 30
+  abrasion: 22
+  discomfort: 18
+  LTI: 17
+  contusion: 15
+  scratch: 15
 ```
 
 ### IOGP-08: How many machinery and tool incidents resulted in hand or finger injuries?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 200
-Sample: ['INCIDENT::10299', 'INCIDENT::10348', 'INCIDENT::10636', 'INCIDENT::10759', 'INCIDENT::10789']
+Matching incidents: 278
+Sample: ['INCIDENT::10299', 'INCIDENT::10348', 'INCIDENT::10502', 'INCIDENT::10636', 'INCIDENT::10759']
 ```
 
 ### IOGP-09: What are the top injury types from moving vehicle and mobile equipment incidents?
 **Type:** Aggregation | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 2008
-Distinct INJURY_TYPE values: 122
+Matching incidents: 2857
+Distinct INJURY_TYPE values: 198
 Top 10:
-  injuries: 64
-  cut: 16
-  injury: 14
-  minor damage: 11
-  contusion: 10
-  laceration: 10
-  pain: 9
-  abrasion: 8
-  No one was injured: 7
-  fracture: 7
+  pain: 39
+  cut: 19
+  fracture: 19
+  contusion: 18
+  personal injury: 16
+  laceration: 16
+  bruise: 15
+  discomfort: 11
+  abrasion: 10
+  scratch: 10
 ```
 
 ### IOGP-10: How many vehicle incidents resulted in high-severity outcomes?
@@ -2220,64 +2204,64 @@ Sample: ['INCIDENT::10171', 'INCIDENT::1184', 'INCIDENT::13358', 'INCIDENT::1360
 
 ```
 Matching incidents: 842
-Distinct BODY_PART values: 153
+Distinct BODY_PART values: 82
 Top 10:
-  BUMPER: 20
-  FRONT BUMPER: 12
-  passenger side: 8
-  left leg: 8
-  tailgate: 8
-  rear bumper: 7
-  shoulder: 6
-  driver side: 5
-  tail light: 5
-  rear quarter panel: 5
+  driver side: 24
+  passenger side: 13
+  side: 8
+  back: 7
+  left side: 7
+  leg: 4
+  head: 4
+  front side: 3
+  hand: 3
+  rear right side: 3
 ```
 
 ### IOGP-12: Which countries have the most mechanical lifting/hoisting incidents?
 **Type:** Aggregation | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 2001
-Distinct LOCATION values: 61
+Matching incidents: 2872
+Distinct LOCATION values: 49
 Top 10:
-  UK: 724
-  USA: 313
-  Norway: 103
-  Brazil: 100
-  Russia: 81
-  Malaysia: 79
-  India: 70
-  China: 47
-  Singapore: 32
-  France: 27
+  UK: 1114
+  USA: 433
+  Brazil: 156
+  Norway: 144
+  Russia: 105
+  Malaysia: 92
+  India: 85
+  China: 62
+  Angola: 46
+  France: 38
 ```
 
 ### IOGP-13: What are the top root causes of mechanical lifting incidents?
 **Type:** Aggregation | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 2001
-Distinct ROOT_CAUSE_CATEGORY values: 48
+Matching incidents: 2872
+Distinct ROOT_CAUSE_CATEGORY values: 52
 Top 10:
-  Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects): 293
-  Stored energy (dropped objects): 206
-  Equipment condition: 188
-  Hazard Identification & Risk Assessment: 139
-  Planning and coordination of works: 121
-  Standard Operating Procedures, Procedures & Work instructions: 118
-  Stored energy (pressure, tension): 103
-  Hazardous liquids (exposure to / spill / loss of containment /pollution): 93
-  Equipment Suitability: 75
-  Manual handling: 59
+  Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects): 409
+  Stored energy (dropped objects): 313
+  Equipment condition: 256
+  Hazard Identification & Risk Assessment: 206
+  Planning and coordination of works: 167
+  Standard Operating Procedures, Procedures & Work instructions: 157
+  Hazardous liquids (exposure to / spill / loss of containment /pollution): 152
+  Stored energy (pressure, tension): 143
+  Equipment Suitability: 105
+  Manual handling: 82
 ```
 
 ### IOGP-14: How many working-at-height incidents involved harnesses or lanyards?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 74
-Sample: ['INCIDENT::1193', 'INCIDENT::14083', 'INCIDENT::14519', 'INCIDENT::26102', 'INCIDENT::29857']
+Matching incidents: 196
+Sample: ['INCIDENT::10671', 'INCIDENT::10929', 'INCIDENT::1193', 'INCIDENT::12554', 'INCIDENT::12923']
 ```
 
 ### IOGP-15: What injury types result from fall-to-lower-level incidents?
@@ -2285,18 +2269,18 @@ Sample: ['INCIDENT::1193', 'INCIDENT::14083', 'INCIDENT::14519', 'INCIDENT::2610
 
 ```
 Matching incidents: 1695
-Distinct INJURY_TYPE values: 310
+Distinct INJURY_TYPE values: 330
 Top 10:
-  contusion: 39
-  sprain: 29
-  closed fracture: 26
-  fracture: 22
-  injuries: 18
-  laceration: 18
-  bruise: 18
-  pain: 18
-  abrasion: 15
-  cut: 14
+  pain: 88
+  contusion: 73
+  fracture: 45
+  closed fracture: 42
+  bruise: 40
+  sprain: 38
+  headache: 27
+  swelling: 27
+  cut: 26
+  laceration: 23
 ```
 
 ### IOGP-16: How do dropped object incidents break down by body part affected?
@@ -2304,18 +2288,18 @@ Top 10:
 
 ```
 Matching incidents: 1160
-Distinct BODY_PART values: 149
+Distinct BODY_PART values: 147
 Top 10:
-  left foot: 19
-  left hand: 15
-  shoulder: 15
-  head: 11
-  left leg: 9
-  finger: 6
-  body: 6
-  arm: 5
-  thumb: 4
-  forearm: 4
+  hand: 28
+  head: 22
+  foot: 15
+  shoulder: 8
+  finger: 8
+  left hand: 7
+  leg: 6
+  left foot: 5
+  right foot: 5
+  left leg: 4
 ```
 
 ### IOGP-17: How many tensioned line or snap-back incidents occurred?
@@ -2331,18 +2315,18 @@ Sample: ['INCIDENT::11392', 'INCIDENT::11394', 'INCIDENT::12332', 'INCIDENT::126
 
 ```
 Matching incidents: 725
-Distinct EQUIPMENT values: 1024
+Distinct EQUIPMENT values: 1950
 Top 10:
-  crane: 36
-  ROV: 12
-  pump: 11
-  winch: 11
-  compressor: 10
-  actuator: 9
-  HPU: 9
-  reel: 8
-  tubing hanger: 7
-  needle valve: 6
+  hose: 80
+  valve: 57
+  ROV: 54
+  crane: 52
+  HPU: 43
+  rigging: 32
+  deck: 32
+  barrier: 26
+  manifold: 24
+  slinger: 22
 ```
 
 ### IOGP-19: How many pressurized system incidents mention zero energy verification?
@@ -2357,19 +2341,19 @@ Sample: ['INCIDENT::14527', 'INCIDENT::24660', 'INCIDENT::26149', 'INCIDENT::545
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 298
-Distinct INJURY_TYPE values: 59
+Matching incidents: 559
+Distinct INJURY_TYPE values: 100
 Top 10:
-  injuries: 8
-  Chemical burn: 3
-  laceration: 3
-  pain: 2
-  injury: 2
-  personal injury: 2
-  abrasion: 2
-  personal injuries: 2
-  blunt injury: 2
-  cut: 2
+  contusion: 20
+  personal injury: 10
+  closed fracture: 9
+  laceration: 8
+  pain: 7
+  Chemical burn: 5
+  cut: 4
+  bruise: 4
+  sprain: 4
+  LTI: 4
 ```
 
 ### IOGP-21: How many machinery/tool incidents involved entrapment or caught-between hazards?
@@ -2384,19 +2368,19 @@ Sample: ['INCIDENT::10206', 'INCIDENT::10299', 'INCIDENT::10379', 'INCIDENT::105
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 312
-Distinct BODY_PART values: 96
+Matching incidents: 471
+Distinct BODY_PART values: 157
 Top 10:
-  left hand: 44
-  finger: 32
-  thumb: 25
-  eye: 21
+  left hand: 42
+  finger: 26
+  right hand: 24
+  eye: 14
+  hand: 12
+  left eye: 12
+  thumb: 11
   left leg: 9
-  Knee: 7
-  wrist: 6
-  forearm: 6
-  arm: 5
-  face: 4
+  left index finger: 9
+  face: 7
 ```
 
 ### IOGP-23: How many electrical incidents mention arc flash or electrocution?
@@ -2412,18 +2396,18 @@ Sample: ['INCIDENT::1272', 'INCIDENT::1273', 'INCIDENT::12861', 'INCIDENT::13871
 
 ```
 Matching incidents: 19
-Distinct EQUIPMENT values: 37
+Distinct EQUIPMENT values: 84
 Top 10:
-  ROV UHD 58: 1
-  bridge window heaters: 1
-  Connex: 1
+  LOTO: 4
+  cable: 2
+  feeder: 2
+  security post: 1
+  overhead crane: 1
+  Front G2i: 1
+  main power switch: 1
+  2 multi core instrument cable: 1
   power cable: 1
-  IRP: 1
-  feeder terminal: 1
-  feeder: 1
-  pump: 1
-  MTR2: 1
-  MTR1: 1
+  facility electrical panel: 1
 ```
 
 ### IOGP-25: How many incidents involve projectiles or flying debris?
@@ -2439,18 +2423,18 @@ Sample: ['INCIDENT::11280', 'INCIDENT::12640', 'INCIDENT::13462', 'INCIDENT::195
 
 ```
 Matching incidents: 322
-Distinct EQUIPMENT values: 352
+Distinct EQUIPMENT values: 677
 Top 10:
-  fire extinguisher: 38
-  fire blanket: 11
-  welding machine: 8
-  Gas hose: 7
-  torch: 7
-  welder: 7
-  flashback arrestor: 5
-  compressor: 5
-  cutting torch: 4
-  extinguisher: 4
+  fire extinguisher: 79
+  hose: 25
+  air compressor: 14
+  welding machine: 12
+  torch: 11
+  generator: 10
+  Scaffolding: 10
+  valve: 10
+  deck: 9
+  scaffolder: 9
 ```
 
 ### IOGP-27: How many incidents mention extreme weather or natural events?
@@ -2462,7 +2446,7 @@ Sample: ['INCIDENT::10173', 'INCIDENT::10178', 'INCIDENT::10232', 'INCIDENT::102
 ```
 
 ### IOGP-28: What are the year-over-year trends for vehicle incidents?
-**Type:** Aggregation | **Status:** ✅ | **Time:** 0.0s
+**Type:** Aggregation | **Status:** ✅ | **Time:** 0.1s
 
 ```
 Total incidents: 842
@@ -2485,10 +2469,18 @@ Yearly breakdown:
 Containment RCC values matched: ['Hazardous gases, vapours, aerosols (exposure to / spill / loss of containment /pollution)', 'Hazardous liquids (exposure to / spill / loss of containment /pollution)']
 Containment incidents: 1202
 -> Offshore containment: 50
--> With injuries: 1
+-> With injuries: 3
 Equipment in those incidents:
+  SDS: 2
   150T crane: 1
+  J-401: 1
+  main deck: 1
   main hoist winch drum: 1
+  boom rest: 1
+  piping: 1
+  iron pipework: 1
+  dewatering skid: 1
+  line: 1
 ```
 
 ### MH-02: What injury types are associated with equipment failures during maintenance operations?
@@ -2497,85 +2489,85 @@ Equipment in those incidents:
 ```
 Matching incidents: 29
 EQUIPMENT->INJURY_TYPE pairs (top 10):
-  whip check -> personal injury: 2
-  air hose -> personal injury: 1
-  fitting -> personal injury: 1
-  hose -> personal injury: 1
-  engine room water pump -> minor burn: 1
-  induction heater -> minor burn: 1
-  actuator box -> static electric shock: 1
-  gusset plate -> static electric shock: 1
-  PLS deck tensioner control cabin -> personal injury: 1
+  hose -> personal injury: 2
+  vessel -> personal injury: 2
+  Scaffolding -> personal injury: 1
+  middle centraliser -> personal injury: 1
+  floor level -> personal injury: 1
   needle gun -> finger contusion: 1
+  needle gun -> nail injury: 1
+  paint scraper -> finger contusion: 1
+  paint scraper -> nail injury: 1
+  pedestal grinder -> finger contusion: 1
 ```
 
 ### MH-03: Which clients have experienced vessel-related incidents resulting in back injuries?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 47
-Distinct ORGANIZATION values: 93
+Matching incidents: 62
+Distinct ORGANIZATION values: 111
 Top 10:
-  OCM: 9
-  TECHNIPFMC: 8
+  PETROBRAS: 6
+  OCM: 6
+  TECHNIPFMC: 6
+  WOODSIDE ENERGY LTD.: 6
+  Deep orient: 6
+  ISOS: 5
   HSE: 5
-  HSEA: 5
-  ISOS: 4
-  IP: 4
   TECHNIP MARINE OPERATION SERVICES: 4
-  WOODSIDE ENERGY LTD.: 4
-  PETROBRAS: 3
-  ENQUEST BRITAIN LTD.: 3
+  N/A - No Vendor: 4
+  Shell: 4
 ```
 
 ### MH-04: What are the most common injury types for each of the top 5 equipment categories?
-**Type:** Multi-hop | **Status:** ✅ | **Time:** 0.1s
+**Type:** Multi-hop | **Status:** ✅ | **Time:** 0.2s
 
 ```
 Top 5 equipment (by incident count):
 
-  forklift (771 incidents):
-    injuries: 20
-    injury: 7
-    pain: 5
+  crane (1069 incidents):
+    personal injury: 18
+    fracture: 12
+    abrasion: 9
+    LTI: 8
+    contusion: 7
+
+  another forklift (937 incidents):
+    pain: 9
+    contusion: 5
     abrasion: 5
-    personal injuries: 4
+    personnel injury: 4
+    discomfort: 3
 
-  crane (622 incidents):
-    injuries: 18
-    fracture: 5
-    abrasion: 4
-    personal injury: 4
-    contusion: 3
+  ROV (847 incidents):
+    personal injury: 12
+    cut: 9
+    pain: 6
+    LTI: 4
+    swelling: 4
 
-  ROV (290 incidents):
-    personal injury: 3
-    ferimentos pessoais: 2
-    bites: 1
-    personnel injury: 1
-    injury: 1
+  rigging (678 incidents):
+    laceration: 14
+    personal injury: 14
+    pain: 9
+    fracture: 9
+    abrasion: 7
 
-  pallet (186 incidents):
-    injuries: 5
-    injury: 3
-    laceration: 3
-    cut: 2
-    bone injury: 1
-
-  PPE (145 incidents):
-    cut: 5
-    wounds: 3
-    bruise: 3
-    fracture: 3
-    Chemical burn: 2
+  hose (678 incidents):
+    personal injury: 13
+    cut: 9
+    pain: 8
+    laceration: 5
+    sprain: 4
 ```
 
 ### MH-05: Find incidents where hand injuries occurred during work involving pipes at locations in Asia Pacific.
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 6
-Sample: ['INCIDENT::10789', 'INCIDENT::522669', 'INCIDENT::526879', 'INCIDENT::547023', 'INCIDENT::571988']
+Matching incidents: 21
+Sample: ['INCIDENT::10789', 'INCIDENT::504890', 'INCIDENT::506290', 'INCIDENT::508684', 'INCIDENT::509794']
 ```
 
 ### MH-06: What is the severity distribution of incidents involving trucks compared to those involving cranes?
@@ -2584,55 +2576,58 @@ Sample: ['INCIDENT::10789', 'INCIDENT::522669', 'INCIDENT::526879', 'INCIDENT::5
 ```
 Severity distribution comparison:
 
-  truck (428 incidents):
-    Severity 1: 54
-    Severity 2: 57
-    Severity 3: 17
-    Severity 4: 4
-    Mean severity: 1.78
+  truck (812 incidents):
+    Severity 1: 85
+    Severity 2: 102
+    Severity 3: 33
+    Severity 4: 5
+    Severity 5: 1
+    Mean severity: 1.83
 
-  crane (1444 incidents):
-    Severity 1: 131
-    Severity 2: 168
-    Severity 3: 89
-    Severity 4: 24
+  crane (1891 incidents):
+    Severity 1: 183
+    Severity 2: 219
+    Severity 3: 114
+    Severity 4: 29
     Severity 5: 3
-    Mean severity: 2.04
+    Mean severity: 2.00
 ```
 
 ### MH-07: Which locations have the highest concentration of near-miss incidents involving scaffolding?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 121
-Distinct LOCATION values: 33
+Matching incidents: 302
+Distinct LOCATION values: 46
 Top 10:
-  Sabetta: 12
-  Aberdeen: 9
-  Dubai: 9
-  Baku: 5
-  Amalapuram: 4
-  Qidong: 4
-  Panipat: 3
-  Abu Dhabi: 3
-  Milan: 2
-  Visakhapatnam: 2
+  Sabetta: 41
+  Aberdeen: 31
+  Qidong: 16
+  Baku: 13
+  Dubai: 13
+  Litvinov: 9
+  Pontal do Parana: 8
+  Newcastle: 6
+  Lake Charles: 5
+  Penglai: 5
 ```
 
 ### MH-08: Trace the relationship path between a specific piece of equipment (e.g., hydraulic valve) and all recorded injury outcomes across all incidents.
-**Type:** Multi-hop | **Status:** ⚠️ | **Time:** 0.2s
+**Type:** Multi-hop | **Status:** ✅ | **Time:** 0.2s
 
 ```
 Matching incidents: 1
-Distinct INJURY_TYPE values: 0
+Distinct INJURY_TYPE+INJURY+EVENT values: 2
 Top 10:
+  oil spray: 1
+  leak: 1
 ```
 
 ### MH-09: What eye injuries result from grinder incidents?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 16
+Matching incidents: 20
 Sample: ['INCIDENT::11564', 'INCIDENT::18679', 'INCIDENT::19308', 'INCIDENT::23430', 'INCIDENT::27724']
 ```
 
@@ -2640,64 +2635,64 @@ Sample: ['INCIDENT::11564', 'INCIDENT::18679', 'INCIDENT::19308', 'INCIDENT::234
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 77
-Distinct INJURY_TYPE values: 26
+Matching incidents: 145
+Distinct INJURY_TYPE values: 44
 Top 10:
-  injuries: 4
-  laceration: 3
-  contusion: 3
-  fracture: 2
-  bruise: 2
-  closed fracture: 2
-  spraining of ligaments: 1
-  under-nail hematoma: 1
-  abrasive injury: 1
-  insect bite: 1
+  fracture: 7
+  bruise: 6
+  laceration: 6
+  personal injury: 5
+  sprain: 5
+  pain: 5
+  contusion: 4
+  discomfort: 4
+  abrasion: 3
+  swelling: 3
 ```
 
 ### MH-11: What equipment is involved in finger or thumb injuries?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 1352
-Distinct EQUIPMENT values: 1569
+Matching incidents: 1455
+Distinct EQUIPMENT values: 2475
 Top 10:
-  gloves: 50
-  hammer: 25
-  PPE: 24
-  crane: 23
-  pallet: 21
-  forklift: 19
-  grinder: 17
-  pipe: 15
-  impact gloves: 12
-  overhead crane: 10
+  PPE: 69
+  hand gloves: 56
+  pipe: 49
+  hammer: 47
+  rigging: 43
+  flange: 39
+  crane: 38
+  pallet: 32
+  valve: 30
+  door: 27
 ```
 
 ### MH-12: Which countries have the most crane-related incidents?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 1444
-Distinct LOCATION values: 59
+Matching incidents: 1891
+Distinct LOCATION values: 47
 Top 10:
-  UK: 501
-  USA: 242
-  Norway: 80
-  Brazil: 65
-  India: 59
-  Russia: 59
-  Malaysia: 53
-  China: 38
-  Singapore: 27
-  UAE: 25
+  UK: 708
+  USA: 284
+  Norway: 100
+  Brazil: 95
+  Russia: 80
+  India: 69
+  Malaysia: 61
+  China: 45
+  Angola: 32
+  Singapore: 29
 ```
 
 ### MH-13: What incidents involve forklifts with foot or leg injuries?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 26
+Matching incidents: 29
 Sample: ['INCIDENT::11886', 'INCIDENT::15610', 'INCIDENT::18921', 'INCIDENT::19826', 'INCIDENT::22001']
 ```
 
@@ -2705,69 +2700,69 @@ Sample: ['INCIDENT::11886', 'INCIDENT::15610', 'INCIDENT::18921', 'INCIDENT::198
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 228
-Distinct EQUIPMENT values: 296
+Matching incidents: 352
+Distinct EQUIPMENT values: 748
 Top 10:
-  PPE: 10
-  crane: 8
-  x-ray: 7
-  forklift: 5
-  ladder: 4
-  ambulance: 4
-  sling: 4
-  crew bus: 4
-  x ray: 4
-  excavator: 3
+  x-raying: 43
+  crane: 19
+  PPE: 19
+  air compressor: 16
+  pipe: 16
+  ladder: 15
+  medical ambulance: 15
+  slinger: 12
+  rigging: 12
+  excavator: 11
 ```
 
 ### MH-15: Which body parts are affected in hammer-related incidents?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 146
-Distinct BODY_PART values: 67
+Matching incidents: 221
+Distinct BODY_PART values: 111
 Top 10:
-  left hand: 28
-  finger: 25
-  thumb: 10
-  Knee: 5
-  eye: 3
-  left leg: 3
-  back: 3
-  shoulder: 3
-  distal phalanx: 2
-  chest: 2
+  finger: 29
+  left hand: 24
+  right hand: 22
+  hand: 14
+  thumb: 11
+  left index finger: 8
+  left thumb: 5
+  back: 5
+  knee: 5
+  right index finger: 5
 ```
 
 ### MH-16: What burn injuries are associated with welding operations?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 16
-Sample: ['INCIDENT::11142', 'INCIDENT::19154', 'INCIDENT::19275', 'INCIDENT::28887', 'INCIDENT::506937']
+Matching incidents: 23
+Sample: ['INCIDENT::11142', 'INCIDENT::12111', 'INCIDENT::19154', 'INCIDENT::19275', 'INCIDENT::28012']
 ```
 
 ### MH-17: What incidents involve ROVs in Norway?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 26
-Sample: ['INCIDENT::11670', 'INCIDENT::15585', 'INCIDENT::20327', 'INCIDENT::22841', 'INCIDENT::30042']
+Matching incidents: 32
+Sample: ['INCIDENT::10016', 'INCIDENT::10021', 'INCIDENT::11670', 'INCIDENT::15585', 'INCIDENT::17892']
 ```
 
 ### MH-18: What crane incidents occurred in Brazil?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 71
-Sample: ['INCIDENT::10169', 'INCIDENT::13338', 'INCIDENT::14031', 'INCIDENT::14429', 'INCIDENT::14694']
+Matching incidents: 95
+Sample: ['INCIDENT::10169', 'INCIDENT::11261', 'INCIDENT::11560', 'INCIDENT::13338', 'INCIDENT::14031']
 ```
 
 ### MH-19: What forklift incidents occurred in the UK?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 102
+Matching incidents: 145
 Sample: ['INCIDENT::10170', 'INCIDENT::10333', 'INCIDENT::11665', 'INCIDENT::11848', 'INCIDENT::11875']
 ```
 
@@ -2775,55 +2770,55 @@ Sample: ['INCIDENT::10170', 'INCIDENT::10333', 'INCIDENT::11665', 'INCIDENT::118
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 44
-Sample: ['INCIDENT::501811', 'INCIDENT::502829', 'INCIDENT::503649', 'INCIDENT::505527', 'INCIDENT::507554']
+Matching incidents: 74
+Sample: ['INCIDENT::501681', 'INCIDENT::501811', 'INCIDENT::502829', 'INCIDENT::503175', 'INCIDENT::503649']
 ```
 
 ### MH-21: What injury types result from high-severity crane incidents?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 27
+Matching incidents: 32
 Distinct INJURY_TYPE values: 4
 Top 10:
-  amputation: 1
-  injury: 1
   potential shoulder injury: 1
-  involuntary movement: 1
+  personal injury: 1
+  pinch point injury: 1
+  amputation: 1
 ```
 
 ### MH-22: What equipment is involved in incidents at Aberdeen?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 2501
-Distinct EQUIPMENT values: 3183
+Matching incidents: 2499
+Distinct EQUIPMENT values: 6828
 Top 10:
-  crane: 171
-  ROV: 164
-  rigging: 34
-  PPE: 31
-  winch: 31
-  reel: 28
-  SOPEP equipment: 28
-  ROV XLX94: 27
-  kenz crane: 26
-  hydraulic hose: 21
+  ROV: 532
+  crane: 360
+  rigging: 349
+  deck: 323
+  vessel: 241
+  main deck: 223
+  hose: 208
+  barrier: 161
+  valve: 112
+  PPE: 94
 ```
 
 ### MH-23: What sling incidents involved hand or finger injuries?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 14
-Sample: ['INCIDENT::508701', 'INCIDENT::512454', 'INCIDENT::513353', 'INCIDENT::513470', 'INCIDENT::571735']
+Matching incidents: 37
+Sample: ['INCIDENT::16611', 'INCIDENT::18519', 'INCIDENT::18552', 'INCIDENT::20555', 'INCIDENT::21894']
 ```
 
 ### MH-24: What are the injury types from construction incidents resulting in fractures?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.1s
 
 ```
-Matching incidents: 135
+Matching incidents: 218
 Sample: ['INCIDENT::13286', 'INCIDENT::14265', 'INCIDENT::14990', 'INCIDENT::16634', 'INCIDENT::19923']
 ```
 
@@ -2831,75 +2826,75 @@ Sample: ['INCIDENT::13286', 'INCIDENT::14265', 'INCIDENT::14990', 'INCIDENT::166
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 61
-Sample: ['INCIDENT::12373', 'INCIDENT::13832', 'INCIDENT::14265', 'INCIDENT::14990', 'INCIDENT::16634']
+Matching incidents: 114
+Sample: ['INCIDENT::11707', 'INCIDENT::12373', 'INCIDENT::13832', 'INCIDENT::14068', 'INCIDENT::14265']
 ```
 
 ### MH-26: What back injuries are associated with manual handling root causes?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 97
+Matching incidents: 96
 Sample: ['INCIDENT::10371', 'INCIDENT::10797', 'INCIDENT::11066', 'INCIDENT::12298', 'INCIDENT::14291']
 ```
 
 ### MH-27: What crane incidents occurred during 2019?
-**Type:** Multi-hop | **Status:** ✅ | **Time:** 0.3s
+**Type:** Multi-hop | **Status:** ✅ | **Time:** 3.1s
 
 ```
-Matching incidents: 166
-Sample: ['INCIDENT::22601', 'INCIDENT::620267', 'INCIDENT::621368', 'INCIDENT::621392', 'INCIDENT::621599']
+Matching incidents: 208
+Sample: ['INCIDENT::22601', 'INCIDENT::620267', 'INCIDENT::621312', 'INCIDENT::621368', 'INCIDENT::621392']
 ```
 
 ### MH-28: What forklift incidents occurred during 2023?
-**Type:** Multi-hop | **Status:** ✅ | **Time:** 0.3s
+**Type:** Multi-hop | **Status:** ✅ | **Time:** 3.1s
 
 ```
-Matching incidents: 99
-Sample: ['INCIDENT::12422', 'INCIDENT::12495', 'INCIDENT::12535', 'INCIDENT::12642', 'INCIDENT::12794']
+Matching incidents: 119
+Sample: ['INCIDENT::12422', 'INCIDENT::12484', 'INCIDENT::12495', 'INCIDENT::12535', 'INCIDENT::12642']
 ```
 
 ### MH-29: What scaffold incidents occurred during 2020?
-**Type:** Multi-hop | **Status:** ✅ | **Time:** 0.3s
+**Type:** Multi-hop | **Status:** ✅ | **Time:** 3.2s
 
 ```
-Matching incidents: 40
-Sample: ['INCIDENT::666891', 'INCIDENT::667916', 'INCIDENT::669507', 'INCIDENT::671174', 'INCIDENT::672042']
+Matching incidents: 78
+Sample: ['INCIDENT::665507', 'INCIDENT::666570', 'INCIDENT::666736', 'INCIDENT::666891', 'INCIDENT::667301']
 ```
 
 ### MH-30: What ROV incidents occurred during 2017?
-**Type:** Multi-hop | **Status:** ✅ | **Time:** 0.3s
+**Type:** Multi-hop | **Status:** ✅ | **Time:** 3.1s
 
 ```
-Matching incidents: 82
-Sample: ['INCIDENT::521157', 'INCIDENT::522333', 'INCIDENT::524422', 'INCIDENT::526544', 'INCIDENT::526963']
+Matching incidents: 126
+Sample: ['INCIDENT::521157', 'INCIDENT::522333', 'INCIDENT::523047', 'INCIDENT::524382', 'INCIDENT::524422']
 ```
 
 ### MH-31: What injuries result from fall/slip RCC incidents with fractures?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 68
-Sample: ['INCIDENT::19923', 'INCIDENT::20793', 'INCIDENT::27374', 'INCIDENT::503927', 'INCIDENT::505042']
+Matching incidents: 110
+Sample: ['INCIDENT::13256', 'INCIDENT::19923', 'INCIDENT::20793', 'INCIDENT::27374', 'INCIDENT::27508']
 ```
 
 ### MH-32: What equipment is involved in incidents at Houston?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 1361
-Distinct EQUIPMENT values: 1244
+Matching incidents: 1358
+Distinct EQUIPMENT values: 1827
 Top 10:
-  forklift: 110
-  crane: 61
-  pallet: 35
-  ROV: 24
-  overhead crane: 20
-  forks: 19
-  stand up forklift: 15
-  tool: 14
-  HPU: 13
-  manlift: 12
+  another forklift: 134
+  crane: 83
+  pallet: 68
+  ROV: 59
+  hose: 47
+  HPU: 40
+  valve: 36
+  Truck: 30
+  slinger: 30
+  rigging: 27
 ```
 
 ### MH-33: What body parts are affected in incidents reported by YAMAL LNG?
@@ -2907,45 +2902,45 @@ Top 10:
 
 ```
 Matching incidents: 1302
-Distinct BODY_PART values: 302
+Distinct BODY_PART values: 304
 Top 10:
-  left hand: 169
-  left foot: 64
-  eye: 48
-  ankle: 47
-  left leg: 46
-  shoulder: 30
-  finger: 28
-  arm: 25
-  Knee: 23
-  left ankle joint: 22
+  right hand: 87
+  left hand: 81
+  finger: 42
+  right foot: 37
+  right ankle: 29
+  eye: 29
+  hand: 28
+  left foot: 27
+  left ankle: 22
+  left leg: 19
 ```
 
 ### MH-34: What injuries result from incidents at Rio de Janeiro?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 905
-Distinct INJURY_TYPE values: 97
+Matching incidents: 897
+Distinct INJURY_TYPE values: 82
 Top 10:
-  cut: 24
-  wounds: 22
-  injuries: 19
-  cutting: 12
-  injury: 11
-  surface cut: 7
-  minor damage: 5
-  abrasion: 5
-  edema: 3
-  tropear: 3
+  cut: 33
+  pain: 9
+  surface cut: 8
+  abrasion: 7
+  electric shock: 5
+  irritation: 5
+  edema: 5
+  paralyzed: 4
+  injured: 4
+  break: 3
 ```
 
 ### MH-35: What incidents involve grinders with hand or finger injuries?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 45
-Sample: ['INCIDENT::10299', 'INCIDENT::10636', 'INCIDENT::13662', 'INCIDENT::15891', 'INCIDENT::16261']
+Matching incidents: 63
+Sample: ['INCIDENT::10299', 'INCIDENT::10636', 'INCIDENT::11972', 'INCIDENT::13662', 'INCIDENT::15690']
 ```
 
 ### MH-36: What equipment is involved in incidents reported by PETROBRAS?
@@ -2953,37 +2948,37 @@ Sample: ['INCIDENT::10299', 'INCIDENT::10636', 'INCIDENT::13662', 'INCIDENT::158
 
 ```
 Matching incidents: 676
-Distinct EQUIPMENT values: 764
+Distinct EQUIPMENT values: 1420
 Top 10:
-  ROV: 42
-  crane: 25
-  guindaste: 14
-  ROV XLX94: 14
-  XLX94: 8
-  A&R: 7
-  UEH: 5
-  550Te crane: 5
-  XLX 93: 5
-  winch: 5
+  ROV: 86
+  crane: 41
+  hose: 32
+  main deck: 30
+  rigging: 29
+  deck: 28
+  HPU: 18
+  valve: 17
+  Work Table: 17
+  barrier: 17
 ```
 
 ### MH-37: What are the top injury types in incidents at Le Trait?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 1163
-Distinct INJURY_TYPE values: 116
+Matching incidents: 1135
+Distinct INJURY_TYPE values: 79
 Top 10:
-  pain: 55
-  back pain: 12
-  shock: 9
-  cut: 6
-  No injury: 6
-  cutting: 5
-  cervical pain: 3
-  loss of balance: 3
-  falling: 2
-  surface wound: 2
+  pain: 113
+  back pain: 15
+  cut: 12
+  discomfort: 9
+  shock: 8
+  scratch: 5
+  injured: 5
+  fracture: 4
+  foreign body: 3
+  swelling: 3
 ```
 
 ### MH-38: What equipment is involved in near-miss incidents at offshore locations?
@@ -2991,18 +2986,18 @@ Top 10:
 
 ```
 Matching incidents: 141
-Distinct EQUIPMENT values: 205
+Distinct EQUIPMENT values: 478
 Top 10:
-  crane: 13
-  ROV: 10
-  rigging: 5
-  chain hoist: 5
-  UEH: 4
-  reel: 3
-  SOPEP equipment: 3
-  top drive: 3
-  XLX94: 2
-  torque analyser: 2
+  rigging: 26
+  ROV: 25
+  crane: 21
+  main deck: 14
+  HPU: 11
+  deck: 10
+  hose: 10
+  barrier: 8
+  vessel: 7
+  reel: 6
 ```
 
 ### MH-39: What are the root causes of incidents in Russia?
@@ -3014,8 +3009,8 @@ Distinct ROOT_CAUSE_CATEGORY values: 43
 Top 10:
   Falls, slips and trips on same level (without potential to fall to lower level): 272
   Manual handling: 78
-  Fall to lower level / fall to water / loose materials (e.g. silos with granulate): 60
   Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects): 60
+  Fall to lower level / fall to water / loose materials (e.g. silos with granulate): 60
   Hazard Identification & Risk Assessment: 55
   Traffic Management / Routes / Pedestrian path: 48
   Uncontrolled chemical or physical reaction: 44
@@ -3028,49 +3023,54 @@ Top 10:
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 201
-Distinct BODY_PART values: 37
+Matching incidents: 209
+Distinct BODY_PART values: 52
 Top 10:
-  ankle: 6
-  left foot: 5
-  left hand: 4
-  left leg: 4
-  arm: 3
-  Knee: 3
+  left leg: 3
+  right foot: 3
+  left ankle: 2
+  hand: 2
+  arm: 2
+  ankle: 2
+  right ankle: 2
+  left foot: 2
   head: 2
-  Ulna: 1
-  rear wheel: 1
-  fourth finger: 1
+  leg: 2
 ```
 
 ### MH-41: What injury types result from incidents involving pallets?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 340
-Distinct INJURY_TYPE values: 60
+Matching incidents: 579
+Distinct INJURY_TYPE values: 80
 Top 10:
-  injuries: 11
-  cut: 8
-  injury: 6
-  laceration: 4
-  sharp pain: 3
-  contusion: 3
-  minor damage: 2
-  scrape: 2
-  fracture: 2
-  bruise: 2
+  pain: 17
+  cut: 15
+  laceration: 6
+  contusion: 5
+  bruise: 5
+  scratch: 4
+  fracture: 4
+  discomfort: 4
+  sharp pain: 4
+  RWC: 3
 ```
 
 ### MH-42: What injuries result from incidents involving pipes at offshore locations?
-**Type:** Multi-hop | **Status:** ⚠️ | **Time:** 0.0s
+**Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 8
-Distinct INJURY_TYPE values: 2
+Matching incidents: 19
+Distinct INJURY_TYPE values: 7
 Top 10:
-  danos leves: 1
+  pain: 2
+  superficial surface laceration: 1
+  personal injury: 1
   muscle bruise: 1
+  swollen knee: 1
+  skin irritation: 1
+  burn: 1
 ```
 
 ### MH-43: What equipment is involved in red-risk incidents?
@@ -3078,18 +3078,18 @@ Top 10:
 
 ```
 Matching incidents: 52
-Distinct EQUIPMENT values: 81
+Distinct EQUIPMENT values: 174
 Top 10:
+  flange: 5
+  barrier: 5
+  valve: 4
+  tubing hanger: 3
+  rig floor: 3
   crane: 3
-  Jack up drilling rig: 2
-  forklift: 2
-  7 inch 15k check valve assembly: 1
-  10k crossover: 1
-  BP1 hyperbaric chamber: 1
-  pump: 1
-  Extended boom forklift: 1
-  annular casing valve: 1
-  horizontal production valve: 1
+  another forklift: 3
+  BOP: 2
+  Hanger: 2
+  accumulator: 2
 ```
 
 ### MH-44: What are the root causes of incidents at Sabetta (Yamal LNG site)?
@@ -3101,12 +3101,12 @@ Distinct ROOT_CAUSE_CATEGORY values: 41
 Top 10:
   Falls, slips and trips on same level (without potential to fall to lower level): 264
   Manual handling: 77
-  Hazard Identification & Risk Assessment: 54
   Fall to lower level / fall to water / loose materials (e.g. silos with granulate): 54
+  Hazard Identification & Risk Assessment: 54
   Traffic Management / Routes / Pedestrian path: 45
   Uncontrolled chemical or physical reaction: 42
-  Stored energy (dropped objects): 39
   Uncontrolled moving objects/ parts (struck by other than machine parts and dropped objects): 39
+  Stored energy (dropped objects): 39
   Inadequate Supervision: 31
   Hazardous liquids (exposure to / spill / loss of containment /pollution): 27
 ```
@@ -3115,119 +3115,119 @@ Top 10:
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Start: 568 EQUIPMENT nodes matching 'crane'
-  --INVOLVED--> INCIDENT: 1444 nodes
-  --RESULTED_IN--> INJURY_TYPE: 113 nodes
-  Final: 113 INJURY_TYPE nodes, 113 distinct values
+Start: 642 EQUIPMENT nodes matching 'crane'
+  --INVOLVED--> INCIDENT: 1891 nodes
+  --RESULTED_IN--> INJURY_TYPE: 141 nodes
+  Final: 141 INJURY_TYPE nodes, 141 distinct values
 
 Top 10:
-  rib fissure: 1
-  chest contusion: 1
-  2nd grade thermal burn: 1
-  right foot contusion: 1
-  bruised wound: 1
-  pain: 1
-  sprained ankle: 1
-  minor damage: 1
-  extensive bruise: 1
-  ferimentos pessoais: 1
+  first degree burn: 1
+  lower back pain: 1
+  Multiple open fractures: 1
+  twinge: 1
+  difficulty in moving the eye or discomfort: 1
+  pinch laceration: 1
+  main injury: 1
+  risk of injury: 1
+  Chemical burn: 1
+  sharp pain: 1
 ```
 
 ### MH-46: What equipment is connected to fracture injuries via graph traversal?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Start: 82 INJURY_TYPE nodes matching 'fracture'
-  --RESULTED_IN--> INCIDENT: 228 nodes
-  --INVOLVED--> EQUIPMENT: 296 nodes
-  Final: 296 EQUIPMENT nodes, 296 distinct values
+Start: 289 INJURY_TYPE nodes matching 'fracture'
+  --RESULTED_IN--> INCIDENT: 352 nodes
+  --INVOLVED--> EQUIPMENT: 748 nodes
+  Final: 748 EQUIPMENT nodes, 748 distinct values
 
 Top 10:
-  excavator: 1
-  crew boat: 1
-  scaffolding platform ladder: 1
-  hydraulic lines: 1
-  valve_x000D_ support: 1
-  pulling winch LTA-5: 1
-  compression bandage: 1
-  skid: 1
-  rebar cutting machine: 1
-  fall arrestor: 1
+  crew bus parking area: 1
+  flowline: 1
+  man lift “HYUNDAY”: 1
+  crew bus stop: 1
+  MEWP: 1
+  tank: 1
+  impact protection gloves: 1
+  channel bar: 1
+  first aid box: 1
+  concrete slabs: 1
 ```
 
 ### MH-47: What body parts are connected to forklift equipment via graph traversal?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Start: 154 EQUIPMENT nodes matching 'forklift'
-  --INVOLVED--> INCIDENT: 947 nodes
-  --AFFECTED--> BODY_PART: 137 nodes
-  Final: 137 BODY_PART nodes, 137 distinct values
+Start: 145 EQUIPMENT nodes matching 'forklift'
+  --INVOLVED--> INCIDENT: 1110 nodes
+  --AFFECTED--> BODY_PART: 109 nodes
+  Final: 109 BODY_PART nodes, 109 distinct values
 
 Top 10:
-  piping: 1
-  upper body: 1
-  backside: 1
   neck: 1
-  cheek: 1
-  BUMPER: 1
-  guard rail: 1
-  Trailer tongue: 1
-  body: 1
-  bed: 1
+  left back part: 1
+  left-hand ring finger: 1
+  fingers of the right hand: 1
+  side: 1
+  pup joint: 1
+  right pinky finger: 1
+  left knee: 1
+  upper swing arm: 1
+  shear point body: 1
 ```
 
 ### MH-48: What root causes are connected to hand injuries via graph traversal?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Start: 117 BODY_PART nodes matching 'hand'
-  --AFFECTED--> INCIDENT: 1133 nodes
-  --CATEGORIZED_AS--> ROOT_CAUSE_CATEGORY: 46 nodes
-  Final: 46 ROOT_CAUSE_CATEGORY nodes, 46 distinct values
+Start: 193 BODY_PART nodes matching 'hand'
+  --AFFECTED--> INCIDENT: 1411 nodes
+  --CATEGORIZED_AS--> ROOT_CAUSE_CATEGORY: 50 nodes
+  Final: 50 ROOT_CAUSE_CATEGORY nodes, 50 distinct values
 
 Top 10:
-  Unprotected/unguarded moving machine parts (struck by/caught by): 1
-  Hazardous liquids (exposure to / spill / loss of containment /pollution): 1
-  Psycho social - Workload (Overload/Underload): 1
-  Tool condition: 1
-  Hazardous gases, vapours, aerosols (exposure to / spill / loss of containment /pollution): 1
-  Inadequate Supervision: 1
-  Posture (constraint or restricted environment): 1
-  Psycho social - Work time/ Shift pattern: 1
-  Repetitive/one sided physical demand: 1
   Stored energy (pressure, tension): 1
+  Traffic Management / Routes / Pedestrian path: 1
+  Stored energy (dropped objects): 1
+  Biological - Animals, Bacteria, Viruses and Funguses: 1
+  Psycho social - Workload (Overload/Underload): 1
+  Use of personal protective equipment: 1
+  Access/Egress: 1
+  Tool suitability: 1
+  Uncontrolled chemical or physical reaction: 1
+  Pinch point: 1
 ```
 
 ### MH-49: What locations have crane equipment via 2-hop graph traversal?
 **Type:** Multi-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Start: 568 EQUIPMENT nodes matching 'crane'
-  --INVOLVED--> INCIDENT: 1444 nodes
-  --OCCURRED_AT--> LOCATION: 1495 nodes
-  Final: 1495 LOCATION nodes, 1466 distinct values
+Start: 642 EQUIPMENT nodes matching 'crane'
+  --INVOLVED--> INCIDENT: 1891 nodes
+  --OCCURRED_AT--> LOCATION: 2039 nodes
+  Final: 2039 LOCATION nodes, 1987 distinct values
 
 Top 10:
   Singapore: 3
-  Angola: 2
-  Lysaker: 2
-  North Sea Atlantic: 2
-  Israel: 2
-  Floro: 2
-  Spain: 2
-  India: 2
-  Lerwick: 2
+  Malaysia: 2
+  France: 2
+  Dubai: 2
+  Tananger: 2
+  Johor Bahru: 2
   Houston: 2
+  Aberdeen: 2
+  Lysaker: 2
+  Orkanger: 2
 ```
 
 ### SC-01: In incident #623703, what equipment was involved?
-**Type:** Single-hop | **Status:** ⚠️ | **Time:** 0.0s
+**Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::623703: ['forklift']
+EQUIPMENT found for INCIDENT::623703: ['another forklift', 'manifold', 'mirror']
 Ground truth: ['forklift', 'manifold', 'mirror']
-Missing: ['manifold', 'mirror']
+Missing: none
 Extra (unexpected): none
 ```
 
@@ -3235,17 +3235,17 @@ Extra (unexpected): none
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::570187: ['Connector link', 'feeder box', 'feeder breaker']
-Ground truth: ['connector link', 'feeder box', 'feeder breaker']
+EQUIPMENT found for INCIDENT::570187: ['Connector link', 'EPMCC panel', 'electric heater feeder breaker', 'within feeder box']
+Ground truth: ['connector link', 'electric heater feeder breaker', 'feeder breaker']
 Missing: none
-Extra (unexpected): none
+Extra (unexpected): ['epmcc panel', 'within feeder box']
 ```
 
 ### SC-03: In incident #602346, what equipment was involved?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::602346: ['PGB', 'forklift']
+EQUIPMENT found for INCIDENT::602346: ['PGB', 'another forklift']
 Ground truth: ['forklift', 'pgb']
 Missing: none
 Extra (unexpected): none
@@ -3255,10 +3255,10 @@ Extra (unexpected): none
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::14338: ['press']
+EQUIPMENT found for INCIDENT::14338: ['large mold', 'mold', 'press']
 Ground truth: ['press']
 Missing: none
-Extra (unexpected): none
+Extra (unexpected): ['large mold', 'mold']
 ```
 
 ### SC-04b: In incident #14338, which body parts were affected?
@@ -3275,20 +3275,20 @@ Extra (unexpected): none
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::500389: ['chain', 'football float', 'marker buoys', 'odom weight']
+EQUIPMENT found for INCIDENT::500389: ['ROV', 'TMS’s', 'football float', 'marker buoys', 'odom weight', 'odom weight with chain', 'polyrope', 'vessel']
 Ground truth: ['chain', 'football float', 'marker buoys', 'odom weight', 'tms']
-Missing: ['tms']
-Extra (unexpected): none
+Missing: none
+Extra (unexpected): ['polyrope', 'rov', 'vessel']
 ```
 
 ### SC-06: In incident #8712, what equipment was involved?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::8712: ['CEU 25 barrier']
-Ground truth: ['ceu 25 barrier']
+EQUIPMENT found for INCIDENT::8712: ['barrier']
+Ground truth: []
 Missing: none
-Extra (unexpected): none
+Extra (unexpected): ['barrier']
 ```
 
 ### SC-06b: In incident #8712, which body parts were affected?
@@ -3305,10 +3305,10 @@ Extra (unexpected): none
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::511771: ['crane hook', 'wire rope sling']
+EQUIPMENT found for INCIDENT::511771: ['The Main Crane Hook', 'helmet', 'wire rope sling']
 Ground truth: ['crane hook', 'wire rope sling']
 Missing: none
-Extra (unexpected): none
+Extra (unexpected): ['helmet']
 ```
 
 ### SC-07b: In incident #511771, which body parts were affected?
@@ -3325,19 +3325,19 @@ Extra (unexpected): none
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::324: ['20T Forklift']
+EQUIPMENT found for INCIDENT::324: ['20T Forklift', 'another forklift']
 Ground truth: ['20t forklift']
 Missing: none
-Extra (unexpected): none
+Extra (unexpected): ['another forklift']
 ```
 
 ### SC-09: In incident #18312, what equipment was involved?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::18312: ['crane', 'plastic sun visor']
+EQUIPMENT found for INCIDENT::18312: ['crane']
 Ground truth: ['crane', 'plastic sun visor']
-Missing: none
+Missing: ['plastic sun visor']
 Extra (unexpected): none
 ```
 
@@ -3345,7 +3345,7 @@ Extra (unexpected): none
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-BODY_PART found for INCIDENT::18312: ['head']
+BODY_PART found for INCIDENT::18312: ['head', 'top of his head']
 Ground truth: ['head']
 Missing: none
 Extra (unexpected): none
@@ -3355,30 +3355,30 @@ Extra (unexpected): none
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::644762: ['STB chute', 'crane', 'deck winch', 'main lift shackle', 'reel', 'tri-plate']
-Ground truth: ['crane', 'deck winch', 'reel']
+EQUIPMENT found for INCIDENT::644762: ['19 reels', 'Helicopter', 'PPE', 'ancillary pipelay equipment', 'crane', 'deck winch', 'his steel toe cap boots', 'main lift shackle', 'rigging', 'tri-plate']
+Ground truth: ['crane', 'deck winch', 'main lift shackle', 'ppe', 'reel', 'tri-plate']
 Missing: none
-Extra (unexpected): ['main lift shackle', 'stb chute', 'tri-plate']
+Extra (unexpected): ['ancillary pipelay equipment', 'helicopter', 'his steel toe cap boots', 'rigging']
 ```
 
 ### SC-11: In incident #505133, what equipment was involved?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::505133: ['Billy Pugh personnel transfer basket', 'G1200 Helideck', 'helicopter', 'ladder', 'splint', 'stretcher']
-Ground truth: ['helicopter', 'ladder', 'stretcher']
+EQUIPMENT found for INCIDENT::505133: ['Billy Pugh', 'Deck F', 'G1200', 'G1200 AB', 'Helicopter', 'Surfer Landing Platform', 'Surfer S 226', 'engine', 'ladder', 'platform', 'rope', 'splint', 'stretcher']
+Ground truth: ['billy pugh', 'helicopter', 'ladder', 'splint', 'stretcher', 'surfer']
 Missing: none
-Extra (unexpected): ['billy pugh personnel transfer basket', 'g1200 helideck', 'splint']
+Extra (unexpected): ['deck f', 'engine', 'g1200', 'g1200 ab', 'platform', 'rope']
 ```
 
 ### SC-12: In incident #645871, what body parts were affected?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-BODY_PART found for INCIDENT::645871: ['arm', 'eye']
+BODY_PART found for INCIDENT::645871: ['arm', 'back', 'eye']
 Ground truth: ['arm', 'eye']
 Missing: none
-Extra (unexpected): none
+Extra (unexpected): ['back']
 ```
 
 ### SC-13: In incident #609327, what injury types resulted?
@@ -3395,29 +3395,29 @@ Extra (unexpected): none
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::569346: ['Negative side string', 'Sideboom', 'Superior CPX-94', 'ladder']
-Ground truth: ['ladder', 'sideboom']
-Missing: none
-Extra (unexpected): ['negative side string', 'superior cpx-94']
+EQUIPMENT found for INCIDENT::569346: ['Load. Moment Indicator', 'Superior CPX-94', 'boom block wire rope', 'cable', 'ladder', 'sideboom']
+Ground truth: ['hydraulic converted cat 594', 'ladder', 'load. moment indicator', 'sideboom', 'superior cpx-94']
+Missing: ['hydraulic converted cat 594']
+Extra (unexpected): ['boom block wire rope', 'cable']
 ```
 
 ### SC-15: In incident #569346, what body parts were affected?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-BODY_PART found for INCIDENT::569346: ['chin', 'jaw', 'lip', 'lower lip']
+BODY_PART found for INCIDENT::569346: ['chin', 'jaw', 'knee', 'lip', 'lower lip']
 Ground truth: ['chin', 'jaw', 'lip']
 Missing: none
-Extra (unexpected): ['lower lip']
+Extra (unexpected): ['knee']
 ```
 
 ### SC-16: In incident #569346, what injury types resulted?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-INJURY_TYPE found for INCIDENT::569346: ['laceration', 'three broken teeth']
+INJURY_TYPE found for INCIDENT::569346: ['laceration']
 Ground truth: ['laceration', 'three broken teeth']
-Missing: none
+Missing: ['three broken teeth']
 Extra (unexpected): none
 ```
 
@@ -3425,59 +3425,59 @@ Extra (unexpected): none
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::685931: ['bulker bags', 'ice compression pack', 'locking bar', 'safety helmet', 'splint and bandage', 'steel rack', 'waste rack lid']
-Ground truth: ['bulker bags', 'locking bar', 'safety helmet', 'steel rack']
+EQUIPMENT found for INCIDENT::685931: ['A steel Rack', 'The waste rack lid', 'bulker bags', 'ice compression pack', 'impact protection gloves', 'lid', 'locking bar', 'new bulker bag', 'safety helmet', 'securing arm', 'splint and bandage', 'steel lid']
+Ground truth: ['bulker bags', 'ice compression pack', 'locking bar', 'splint and bandage', 'steel lid', 'steel rack', 'waste rack lid']
 Missing: none
-Extra (unexpected): ['ice compression pack', 'splint and bandage', 'waste rack lid']
+Extra (unexpected): ['impact protection gloves', 'new bulker bag', 'safety helmet', 'securing arm']
 ```
 
 ### SC-18: In incident #632796, what equipment was involved?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::632796: ['HDA2006 224tn Hydraulic Jack', 'hydraulic hose', 'hydraulic jack', 'water guard']
-Ground truth: ['hydraulic hose', 'hydraulic jack']
+EQUIPMENT found for INCIDENT::632796: ['AQA Wellhead platform', 'Deck Workshop', 'HDA2006 224tn Hydraulic Jack', 'crew boat', 'hose', 'hydraulic jack', 'telephone', 'water guard']
+Ground truth: ['cabin telephone', 'hydraulic hose', 'hydraulic jack', 'water guard']
 Missing: none
-Extra (unexpected): ['hda2006 224tn hydraulic jack', 'water guard']
+Extra (unexpected): ['aqa wellhead platform', 'crew boat', 'deck workshop']
 ```
 
 ### SC-19: In incident #632796, what body parts were affected?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-BODY_PART found for INCIDENT::632796: ['back', 'left', 'lower back', 'lower back area', 'lower left side of his back']
+BODY_PART found for INCIDENT::632796: ['back', 'lower back area', 'lower side']
 Ground truth: ['back', 'lower back']
 Missing: none
-Extra (unexpected): ['left', 'lower back area', 'lower left side of his back']
+Extra (unexpected): ['lower side']
 ```
 
 ### SC-20: In incident #611828, what equipment was involved?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::611828: ['Sideboom', 'glasses', 'moving block part', 'safety helmet', 'sideboom_x000D_', 'sling', 'top hook block']
-Ground truth: ['safety helmet', 'sideboom', 'sling']
+EQUIPMENT found for INCIDENT::611828: ['EN388', 'PPE', 'block', 'glasses', 'rigging', 'safety helmet', 'sheeve', 'sideboom', 'slinger', 'the moving block part']
+Ground truth: ['block', 'glasses', 'moving block', 'ppe', 'safety helmet', 'sideboom', 'sling']
 Missing: none
-Extra (unexpected): ['glasses', 'moving block part', 'sideboom_x000d_', 'top hook block']
+Extra (unexpected): ['en388', 'rigging', 'sheeve']
 ```
 
 ### SC-21: In incident #563945, what equipment was involved?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::563945: ['davit', 'emergency lowering arm', 'ice pack', 'lifeboats']
+EQUIPMENT found for INCIDENT::563945: ['Ice pack', 'PWT', 'davit', 'emergency lowering arm', 'harness', 'main deck', 'platform', 'vessel hospital', 'vessel lifeboats', 'welding workshop']
 Ground truth: ['davit', 'ice pack', 'lifeboats']
 Missing: none
-Extra (unexpected): ['emergency lowering arm']
+Extra (unexpected): ['emergency lowering arm', 'harness', 'main deck', 'platform', 'pwt', 'vessel hospital', 'welding workshop']
 ```
 
 ### SC-22: In incident #564230, what injury types resulted?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-INJURY_TYPE found for INCIDENT::564230: ['bruising on the brain', 'contusion', 'dizziness', 'headache', 'nausea', 'neck pain', 'whiplash']
+INJURY_TYPE found for INCIDENT::564230: ['bruising on the brain', 'contusion', 'headache', 'nausea', 'neck pain', 'whiplash']
 Ground truth: ['contusion', 'dizziness', 'headache', 'nausea']
-Missing: none
+Missing: ['dizziness']
 Extra (unexpected): ['bruising on the brain', 'neck pain', 'whiplash']
 ```
 
@@ -3485,10 +3485,10 @@ Extra (unexpected): ['bruising on the brain', 'neck pain', 'whiplash']
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-INJURY_TYPE found for INCIDENT::696119: ['Cerebral Hematoma', 'Crack left pelvis', 'Dislocate left shoulder', 'dislocate left shoulder_x000D_', 'hematoma']
-Ground truth: ['cerebral hematoma', 'crack left pelvis', 'dislocate left shoulder']
-Missing: none
-Extra (unexpected): ['dislocate left shoulder_x000d_', 'hematoma']
+INJURY_TYPE found for INCIDENT::696119: ['Cerebral Hematoma', 'Right eye wound', 'hematoma']
+Ground truth: ['cerebral hematoma', 'crack left pelvis', 'dislocate left shoulder', 'hematoma', 'right eye wound']
+Missing: ['crack left pelvis', 'dislocate left shoulder']
+Extra (unexpected): none
 ```
 
 ### SC-24: In incident #560111, what injury types resulted?
@@ -3505,40 +3505,40 @@ Extra (unexpected): none
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-INJURY_TYPE found for INCIDENT::702644: ['breaks/fractures', 'bruising', 'skin abrasion', 'soft tissue damage']
+INJURY_TYPE found for INCIDENT::702644: ['bruising', 'fracture', 'superficial skin abrasion', 'swelling']
 Ground truth: ['breaks/fractures', 'bruising', 'skin abrasion', 'soft tissue damage']
-Missing: none
-Extra (unexpected): none
+Missing: ['soft tissue damage']
+Extra (unexpected): ['swelling']
 ```
 
 ### SC-26: In incident #16468, what locations were recorded?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-LOCATION found for INCIDENT::16468: ['Aberdeen', 'Deep Orient', 'Duty Mess', 'Europe', 'Larnaca base', 'Limassol', 'Limassol base', 'Mediterranean hospital', 'Mez deck', 'UK', 'deck level', 'hospital', 'main deck', 'quayside']
+LOCATION found for INCIDENT::16468: ['1st level platforms', 'Aberdeen', 'Bridge', 'DEEP ORIENT', 'De -watering spread', 'Deep Orient', 'Duty Mess', 'Europe', 'Karish North', 'Larnaca base', 'Limassol', 'Limassol base', 'Mediterranean hospital', 'North Quay', 'UK', 'mess room', 'quayside', 'work site']
 Ground truth: ['aberdeen', 'deep orient', 'europe', 'uk']
 Missing: none
-Extra (unexpected): ['deck level', 'duty mess', 'hospital', 'larnaca base', 'limassol', 'limassol base', 'main deck', 'mediterranean hospital', 'mez deck', 'quayside']
+Extra (unexpected): ['1st level platforms', 'bridge', 'de -watering spread', 'duty mess', 'karish north', 'larnaca base', 'limassol', 'limassol base', 'mediterranean hospital', 'mess room', 'north quay', 'quayside', 'work site']
 ```
 
 ### SC-27: In incident #546948, what locations were recorded?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-LOCATION found for INCIDENT::546948: ['4th floor', 'Doha', 'Doha Service Base', 'Middle East', 'PQ1-Q', 'PS1', 'PS1-A', 'PS1-C', 'PS1-G', 'PS1-Q', 'PS1G', 'PS1Q', 'Qatar']
+LOCATION found for INCIDENT::546948: ['Doha', 'Doha Service Base', 'Middle East', 'PQ1-Q accommodation', 'PS1-A', 'PS1-C', 'PS1-G', 'PS1-G control room', 'PS1-Q', 'PS1G', 'PS1Q', 'Qatar', 'accommodation', 'control room', 'medical facilities']
 Ground truth: ['doha', 'middle east', 'qatar']
 Missing: none
-Extra (unexpected): ['4th floor', 'doha service base', 'pq1-q', 'ps1', 'ps1-a', 'ps1-c', 'ps1-g', 'ps1-q', 'ps1g', 'ps1q']
+Extra (unexpected): ['accommodation', 'control room', 'medical facilities', 'pq1-q accommodation', 'ps1-a', 'ps1-c', 'ps1-g', 'ps1-g control room', 'ps1-q', 'ps1g', 'ps1q']
 ```
 
 ### SC-28: In incident #555852, what organizations were recorded?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-ORGANIZATION found for INCIDENT::555852: ['Client', 'ERTL', 'KVA', 'Operasjonsleder Haugesund Police', 'Police Security Service', 'Project', 'Project management', 'Regional Police', 'STATOIL ASA', 'Stakeholders', 'TECHNIPFMC', 'TPFMC Control', 'TechnipFMC ERTL', 'TechnipFMC QHSE Management', 'TechnipFMC management', 'local police']
+ORGANIZATION found for INCIDENT::555852: ['Communications and project', 'ERTL', 'KVA', 'Operasjonsleder Haugesund Police', 'Police Security Service (PST)', 'Project management', 'QHSE Management', 'Regional Police', 'STATOIL ASA', 'Stakeholders', 'TECHNIPFMC', 'TPFMC Control', 'TechnipFMC ERTL', 'TechnipFMC Management', 'TechnipFMC Norway', 'local police']
 Ground truth: ['ertl', 'kva', 'project management', 'statoil asa', 'technipfmc']
 Missing: none
-Extra (unexpected): ['client', 'local police', 'operasjonsleder haugesund police', 'police security service', 'project', 'regional police', 'stakeholders', 'technipfmc ertl', 'technipfmc management', 'technipfmc qhse management', 'tpfmc control']
+Extra (unexpected): ['communications and project', 'local police', 'operasjonsleder haugesund police', 'police security service (pst)', 'qhse management', 'regional police', 'stakeholders', 'tpfmc control']
 ```
 
 ### SC-29: In incident #594002, what equipment was involved?
@@ -3565,67 +3565,67 @@ Extra (unexpected): none
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::563298: ['light 4x4 truck', 'skid', 'truck platform']
+EQUIPMENT found for INCIDENT::563298: ['PPE', 'Steri strips', 'Truck', 'bandage', 'light 4x4 truck', 'rigging', 'skid', 'truck platform', 'x-raying']
 Ground truth: ['light 4x4 truck', 'skid', 'truck platform']
 Missing: none
-Extra (unexpected): none
+Extra (unexpected): ['bandage', 'ppe', 'rigging', 'steri strips', 'x-raying']
 ```
 
 ### SC-32: In incident #507347, what body parts were affected?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-BODY_PART found for INCIDENT::507347: ['Dislocated R Knee', 'Dislocated knee cap', 'Knee', 'left leg']
-Ground truth: ['knee', 'left leg']
+BODY_PART found for INCIDENT::507347: ['knee', 'leg', 'right knee']
+Ground truth: ['knee', 'leg', 'right knee']
 Missing: none
-Extra (unexpected): ['dislocated knee cap', 'dislocated r knee']
+Extra (unexpected): none
 ```
 
 ### SC-33: In incident #507347, what equipment was involved?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::507347: ['Full Leg Vacuum splint', 'ROV XLX94', 'Yokohama fenders', 'crutches']
-Ground truth: ['crutches', 'rov xlx94', 'yokohama fenders']
-Missing: none
-Extra (unexpected): ['full leg vacuum splint']
+EQUIPMENT found for INCIDENT::507347: ['Full Leg Vacuum splint', 'Hi level flood lighting', 'ROV', 'ROV XLX 85 & TMS', 'ROV XLX94', 'ROV hanger', 'TMS’s', 'Yokohama type fenders', 'bollard', 'crutches', 'medical ambulance', 'pallet', 'rigging', 'vessel']
+Ground truth: ['crutches', 'rov xlx 85', 'yokohama fender']
+Missing: ['yokohama fender']
+Extra (unexpected): ['bollard', 'full leg vacuum splint', 'hi level flood lighting', 'medical ambulance', 'pallet', 'rigging', 'rov hanger', 'rov xlx94', 'tms’s', 'vessel', 'yokohama type fenders']
 ```
 
 ### SC-34: In incident #19018, what equipment was involved?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::19018: ['CCTV', 'DVC', 'MCV-U', 'MVC', 'ROV', 'SDU', 'SDU-3', 'UEH', 'VCM', 'crane', 'u-VCM']
+EQUIPMENT found for INCIDENT::19018: ['CCTV', 'HUB', 'MCV', 'MCV-U', 'ROV', 'Spare SA blind stab', 'Umbilical 9F UEH SDU-3', 'VCM', 'camera', 'crane', 'slinger', 'u-VCM', 'umbilical', 'wet Christmas tree']
 Ground truth: ['crane', 'mcv-u', 'mvc', 'rov', 'u-vcm']
-Missing: none
-Extra (unexpected): ['cctv', 'dvc', 'sdu', 'sdu-3', 'ueh', 'vcm']
+Missing: ['mvc']
+Extra (unexpected): ['camera', 'cctv', 'hub', 'slinger', 'spare sa blind stab', 'umbilical', 'umbilical 9f ueh sdu-3', 'wet christmas tree']
 ```
 
 ### SC-35: In incident #664483, what injury types resulted?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-INJURY_TYPE found for INCIDENT::664483: ['confirmed fracture', 'dislocation']
-Ground truth: ['confirmed fracture', 'dislocation']
+INJURY_TYPE found for INCIDENT::664483: ['dislocated', 'dislocation and fracture', 'fracture']
+Ground truth: ['dislocated', 'dislocation and fracture', 'fracture']
 Missing: none
 Extra (unexpected): none
 ```
 
 ### SH-01: What incidents involved forklifts in 2022?
-**Type:** Single-hop | **Status:** ✅ | **Time:** 0.3s
+**Type:** Single-hop | **Status:** ✅ | **Time:** 3.1s
 
 ```
-Matching incidents: 71
-Sample: ['INCIDENT::10170', 'INCIDENT::10252', 'INCIDENT::10333', 'INCIDENT::1061', 'INCIDENT::1069']
+Matching incidents: 85
+Sample: ['INCIDENT::10170', 'INCIDENT::10233', 'INCIDENT::10252', 'INCIDENT::10333', 'INCIDENT::1061']
 ```
 
 ### SH-02: What equipment was involved in incident #29857?
-**Type:** Single-hop | **Status:** ⚠️ | **Time:** 0.0s
+**Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-EQUIPMENT found for INCIDENT::29857: ['ROV', 'lanyard', 'pry bar']
+EQUIPMENT found for INCIDENT::29857: ['Pry Bar', 'ROV', 'TMS’s', 'lanyard']
 Ground truth: ['lanyard', 'pry bar', 'rov', 'tms']
-Missing: ['tms']
+Missing: none
 Extra (unexpected): none
 ```
 
@@ -3633,38 +3633,38 @@ Extra (unexpected): none
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 1444
-Distinct BODY_PART values: 192
+Matching incidents: 1891
+Distinct BODY_PART values: 255
 Top 10:
-  finger: 35
-  left hand: 31
-  left foot: 20
-  left leg: 15
-  shoulder: 10
-  head: 10
-  arm: 9
-  thumb: 9
-  eye: 8
-  lower back: 7
+  finger: 37
+  head: 25
+  left hand: 21
+  right hand: 20
+  left foot: 17
+  leg: 16
+  lower back: 12
+  hand: 11
+  back: 10
+  right foot: 9
 ```
 
 ### SH-04: Which locations reported valve-related incidents?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 387
-Distinct LOCATION values: 36
+Matching incidents: 1149
+Distinct LOCATION values: 45
 Top 10:
-  USA: 172
-  UK: 61
-  Norway: 19
-  Canada: 16
-  France: 13
-  Brazil: 11
-  Argentina: 11
-  China: 10
-  India: 9
-  Russia: 7
+  USA: 414
+  UK: 252
+  Norway: 53
+  Brazil: 44
+  Argentina: 37
+  Canada: 35
+  France: 30
+  China: 26
+  India: 23
+  Malaysia: 20
 ```
 
 ### SH-05: What types of injuries resulted from incidents at offshore installations?
@@ -3672,18 +3672,18 @@ Top 10:
 
 ```
 Matching incidents: 1120
-Distinct INJURY_TYPE values: 124
+Distinct INJURY_TYPE values: 175
 Top 10:
-  cut: 16
-  laceration: 13
-  personal injury: 12
-  abrasion: 9
-  pain: 8
-  wounds: 6
-  swelling: 5
-  fracture: 4
-  bruising: 4
-  injury: 4
+  personal injury: 42
+  pain: 33
+  cut: 31
+  laceration: 17
+  swelling: 14
+  discomfort: 11
+  abrasion: 11
+  bruising: 10
+  FAC: 10
+  burn: 6
 ```
 
 ### SH-06: What incidents were reported by client SHELL OFFSHORE INC.?
@@ -3698,15 +3698,15 @@ Sample: ['INCIDENT::100', 'INCIDENT::1039', 'INCIDENT::11906', 'INCIDENT::12463'
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 157
-Sample: ['INCIDENT::10854', 'INCIDENT::12713', 'INCIDENT::12827', 'INCIDENT::13286', 'INCIDENT::13665']
+Matching incidents: 306
+Sample: ['INCIDENT::10349', 'INCIDENT::10671', 'INCIDENT::10854', 'INCIDENT::12594', 'INCIDENT::12713']
 ```
 
 ### SH-08: What incidents involved grinders?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 175
+Matching incidents: 233
 Sample: ['INCIDENT::10021', 'INCIDENT::10299', 'INCIDENT::10318', 'INCIDENT::10636', 'INCIDENT::11470']
 ```
 
@@ -3714,31 +3714,31 @@ Sample: ['INCIDENT::10021', 'INCIDENT::10299', 'INCIDENT::10318', 'INCIDENT::106
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 429
-Sample: ['INCIDENT::10504', 'INCIDENT::10570', 'INCIDENT::10674', 'INCIDENT::10800', 'INCIDENT::10884']
+Matching incidents: 1122
+Sample: ['INCIDENT::10224', 'INCIDENT::10234', 'INCIDENT::10296', 'INCIDENT::10504', 'INCIDENT::10507']
 ```
 
 ### SH-10: What incidents involved pumps?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 314
-Sample: ['INCIDENT::10234', 'INCIDENT::10375', 'INCIDENT::1073', 'INCIDENT::10923', 'INCIDENT::10963']
+Matching incidents: 418
+Sample: ['INCIDENT::10229', 'INCIDENT::10234', 'INCIDENT::10375', 'INCIDENT::1073', 'INCIDENT::10923']
 ```
 
 ### SH-11: What incidents involved ROVs?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 562
-Sample: ['INCIDENT::100', 'INCIDENT::1011', 'INCIDENT::10231', 'INCIDENT::103', 'INCIDENT::10369']
+Matching incidents: 849
+Sample: ['INCIDENT::100', 'INCIDENT::10016', 'INCIDENT::10021', 'INCIDENT::1011', 'INCIDENT::10231']
 ```
 
 ### SH-12: What incidents involved excavators?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 201
+Matching incidents: 209
 Sample: ['INCIDENT::12002', 'INCIDENT::1355', 'INCIDENT::16228', 'INCIDENT::16786', 'INCIDENT::18144']
 ```
 
@@ -3746,96 +3746,96 @@ Sample: ['INCIDENT::12002', 'INCIDENT::1355', 'INCIDENT::16228', 'INCIDENT::1678
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 684
-Sample: ['INCIDENT::10005', 'INCIDENT::10290', 'INCIDENT::10636', 'INCIDENT::10875', 'INCIDENT::11177']
+Matching incidents: 1148
+Sample: ['INCIDENT::10005', 'INCIDENT::10165', 'INCIDENT::10290', 'INCIDENT::10299', 'INCIDENT::10333']
 ```
 
 ### SH-14: What incidents involved slings?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 265
-Sample: ['INCIDENT::10252', 'INCIDENT::10838', 'INCIDENT::11365', 'INCIDENT::11702', 'INCIDENT::13421']
+Matching incidents: 555
+Sample: ['INCIDENT::10232', 'INCIDENT::10252', 'INCIDENT::10838', 'INCIDENT::10882', 'INCIDENT::11365']
 ```
 
 ### SH-15: What incidents involved compressors?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 209
-Sample: ['INCIDENT::10171', 'INCIDENT::10504', 'INCIDENT::11948', 'INCIDENT::12064', 'INCIDENT::14536']
+Matching incidents: 379
+Sample: ['INCIDENT::10171', 'INCIDENT::10504', 'INCIDENT::11948', 'INCIDENT::12064', 'INCIDENT::12831']
 ```
 
 ### SH-16: What incidents involved winches?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 278
-Sample: ['INCIDENT::10428', 'INCIDENT::10541', 'INCIDENT::11392', 'INCIDENT::11394', 'INCIDENT::12334']
+Matching incidents: 415
+Sample: ['INCIDENT::10428', 'INCIDENT::10507', 'INCIDENT::10541', 'INCIDENT::10786', 'INCIDENT::11261']
 ```
 
 ### SH-17: What body parts were affected in hose-related incidents?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 429
-Distinct BODY_PART values: 93
+Matching incidents: 1122
+Distinct BODY_PART values: 166
 Top 10:
-  eye: 12
+  face: 25
+  finger: 13
+  eye: 13
   left hand: 10
-  finger: 10
-  face: 9
-  ankle: 9
-  wrist: 7
-  left leg: 6
-  shoulder: 6
-  left foot: 5
-  palm: 5
+  head: 9
+  back: 8
+  hand: 7
+  right hand: 7
+  leg: 7
+  right eye: 6
 ```
 
 ### SH-18: What injury types resulted from pump-related incidents?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 314
-Distinct INJURY_TYPE values: 29
+Matching incidents: 418
+Distinct INJURY_TYPE values: 42
 Top 10:
+  cut: 9
+  pain: 8
+  personal injury: 8
+  burn: 5
+  fracture: 3
   laceration: 2
-  injuries: 2
-  minor burn: 2
-  fracture: 2
+  irritation: 2
+  discomfort: 2
   contusion: 2
-  chafing: 2
-  personal injury: 2
-  top of his finger: 1
-  trauma: 1
-  electrical arc burn: 1
+  deformity: 1
 ```
 
 ### SH-19: Which organizations reported excavator-related incidents?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 201
-Distinct ORGANIZATION values: 284
+Matching incidents: 209
+Distinct ORGANIZATION values: 308
 Top 10:
-  TRANS ADRIATIC PIPELINE AG: 70
+  TRANS ADRIATIC PIPELINE AG: 76
   PETRONAS: 17
+  CTR: 15
   THE BAHRAIN PETROLEUM COMPANY BSC: 14
   SASOL NORTH AMERICA, INC.: 12
   JSC YAMAL LNG: 9
-  SPIECAPAG: 8
   EXXONMOBIL: 8
-  CTR: 7
-  CPY: 7
-  TAP: 7
+  SPIECAPAG: 8
+  CPY: 8
+  TAP: 8
 ```
 
 ### SH-20: What incidents involved welding equipment?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 261
+Matching incidents: 339
 Sample: ['INCIDENT::10172', 'INCIDENT::10206', 'INCIDENT::10598', 'INCIDENT::11142', 'INCIDENT::11528']
 ```
 
@@ -3843,15 +3843,15 @@ Sample: ['INCIDENT::10172', 'INCIDENT::10206', 'INCIDENT::10598', 'INCIDENT::111
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 340
-Sample: ['INCIDENT::10367', 'INCIDENT::10901', 'INCIDENT::11027', 'INCIDENT::11295', 'INCIDENT::11302']
+Matching incidents: 579
+Sample: ['INCIDENT::1037', 'INCIDENT::10535', 'INCIDENT::10759', 'INCIDENT::10882', 'INCIDENT::11027']
 ```
 
 ### SH-22: What incidents involved fire extinguishers?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 148
+Matching incidents: 243
 Sample: ['INCIDENT::10176', 'INCIDENT::10248', 'INCIDENT::10504', 'INCIDENT::1067', 'INCIDENT::1068']
 ```
 
@@ -3859,31 +3859,31 @@ Sample: ['INCIDENT::10176', 'INCIDENT::10248', 'INCIDENT::10504', 'INCIDENT::106
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 241
-Sample: ['INCIDENT::10173', 'INCIDENT::10980', 'INCIDENT::11665', 'INCIDENT::1184', 'INCIDENT::12094']
+Matching incidents: 435
+Sample: ['INCIDENT::10165', 'INCIDENT::10173', 'INCIDENT::10197', 'INCIDENT::10296', 'INCIDENT::10980']
 ```
 
 ### SH-24: What incidents involved umbilicals?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 115
-Sample: ['INCIDENT::10980', 'INCIDENT::11112', 'INCIDENT::11906', 'INCIDENT::12909', 'INCIDENT::12933']
+Matching incidents: 177
+Sample: ['INCIDENT::10757', 'INCIDENT::11112', 'INCIDENT::11906', 'INCIDENT::11986', 'INCIDENT::1265']
 ```
 
 ### SH-25: What incidents affected the left hand?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 1015
-Sample: ['INCIDENT::10217', 'INCIDENT::10290', 'INCIDENT::10296', 'INCIDENT::10636', 'INCIDENT::10680']
+Matching incidents: 503
+Sample: ['INCIDENT::10598', 'INCIDENT::10636', 'INCIDENT::10680', 'INCIDENT::10943', 'INCIDENT::11027']
 ```
 
 ### SH-26: What incidents affected the thumb?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 253
+Matching incidents: 273
 Sample: ['INCIDENT::10348', 'INCIDENT::10702', 'INCIDENT::10881', 'INCIDENT::10943', 'INCIDENT::110']
 ```
 
@@ -3891,16 +3891,16 @@ Sample: ['INCIDENT::10348', 'INCIDENT::10702', 'INCIDENT::10881', 'INCIDENT::109
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 360
-Sample: ['INCIDENT::1057', 'INCIDENT::10689', 'INCIDENT::10789', 'INCIDENT::11583', 'INCIDENT::1175']
+Matching incidents: 510
+Sample: ['INCIDENT::1057', 'INCIDENT::10689', 'INCIDENT::10789', 'INCIDENT::11583', 'INCIDENT::11727']
 ```
 
 ### SH-28: What incidents resulted in sprains or strains?
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 156
-Sample: ['INCIDENT::12821', 'INCIDENT::12864', 'INCIDENT::13153', 'INCIDENT::13444', 'INCIDENT::13589']
+Matching incidents: 212
+Sample: ['INCIDENT::12110', 'INCIDENT::13153', 'INCIDENT::13589', 'INCIDENT::13665', 'INCIDENT::1408']
 ```
 
 ### SH-29: How many incidents involve confined spaces?
@@ -3947,8 +3947,8 @@ Sample: ['INCIDENT::12333', 'INCIDENT::20401', 'INCIDENT::22645', 'INCIDENT::291
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 897
-Sample: ['INCIDENT::10021', 'INCIDENT::10146', 'INCIDENT::103', 'INCIDENT::10355', 'INCIDENT::10503']
+Matching incidents: 114
+Sample: ['INCIDENT::10146', 'INCIDENT::103', 'INCIDENT::11655', 'INCIDENT::12923', 'INCIDENT::13299']
 ```
 
 ### SH-35: How many incidents mention fatigue as a factor?
@@ -4035,8 +4035,8 @@ Sample: ['INCIDENT::10965', 'INCIDENT::12666', 'INCIDENT::1278', 'INCIDENT::1324
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 8
-Sample: ['INCIDENT::15422', 'INCIDENT::19923', 'INCIDENT::505133', 'INCIDENT::533381', 'INCIDENT::581766']
+Matching incidents: 51
+Sample: ['INCIDENT::1288', 'INCIDENT::15422', 'INCIDENT::184', 'INCIDENT::19918', 'INCIDENT::19923']
 ```
 
 ### SH-46: What incidents were reported by PETROBRAS?
@@ -4051,7 +4051,7 @@ Sample: ['INCIDENT::10019', 'INCIDENT::1011', 'INCIDENT::10146', 'INCIDENT::1022
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 401
+Matching incidents: 402
 Sample: ['INCIDENT::10016', 'INCIDENT::10021', 'INCIDENT::10887', 'INCIDENT::1089', 'INCIDENT::10891']
 ```
 
@@ -4067,7 +4067,7 @@ Sample: ['INCIDENT::500290', 'INCIDENT::500716', 'INCIDENT::500842', 'INCIDENT::
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 1163
+Matching incidents: 1135
 Sample: ['INCIDENT::10141', 'INCIDENT::10178', 'INCIDENT::10185', 'INCIDENT::10225', 'INCIDENT::10281']
 ```
 
@@ -4075,12 +4075,12 @@ Sample: ['INCIDENT::10141', 'INCIDENT::10178', 'INCIDENT::10185', 'INCIDENT::102
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 223
-Sample: ['INCIDENT::10333', 'INCIDENT::10345', 'INCIDENT::12341', 'INCIDENT::12430', 'INCIDENT::12591']
+Matching incidents: 329
+Sample: ['INCIDENT::10333', 'INCIDENT::10345', 'INCIDENT::10379', 'INCIDENT::10428', 'INCIDENT::10812']
 ```
 
 ### SH-51: What incidents occurred in 2024?
-**Type:** Single-hop | **Status:** ✅ | **Time:** 0.2s
+**Type:** Single-hop | **Status:** ✅ | **Time:** 3.0s
 
 ```
 Matching incidents: 1461
@@ -4115,12 +4115,12 @@ Sample: ['INCIDENT::10166', 'INCIDENT::10167', 'INCIDENT::11126', 'INCIDENT::112
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 8
-Sample: ['INCIDENT::17567', 'INCIDENT::29469', 'INCIDENT::29471', 'INCIDENT::29472', 'INCIDENT::571228']
+Matching incidents: 13
+Sample: ['INCIDENT::17567', 'INCIDENT::29152', 'INCIDENT::29469', 'INCIDENT::29471', 'INCIDENT::29472']
 ```
 
 ### SH-56: What incidents occurred before 2016?
-**Type:** Single-hop | **Status:** ✅ | **Time:** 0.2s
+**Type:** Single-hop | **Status:** ✅ | **Time:** 3.1s
 
 ```
 Matching incidents: 0
@@ -4137,27 +4137,13 @@ Matching incidents: 0
 **Type:** Single-hop | **Status:** ✅ | **Time:** 0.0s
 
 ```
-Matching incidents: 67
-Sample: ['INCIDENT::10820', 'INCIDENT::10821', 'INCIDENT::10992', 'INCIDENT::12756', 'INCIDENT::1450']
+Matching incidents: 261
+Sample: ['INCIDENT::10234', 'INCIDENT::10992', 'INCIDENT::11132', 'INCIDENT::11662', 'INCIDENT::12265']
 ```
-
-## 3. Failing Queries
-
-- **MH-08** (Trace the relationship path between a specific piece of equipment (e.g., hydraulic valve) and all recorded injury outcomes across all incidents.): 1 incidents, 0 injury_type values
-- **MH-42** (What injuries result from incidents involving pipes at offshore locations?): 8 incidents, 2 injury_type values, top: danos leves
-- **SC-01** (In incident #623703, what equipment was involved?): 1 items: ['forklift']
-- **SH-02** (What equipment was involved in incident #29857?): 3 items: ['ROV', 'lanyard', 'pry bar']
 
 ## 4. Regression Diff (vs previous run)
 
-- **GL-17**: ❌ → ✅
-- **GL-18**: ❌ → ✅
-- **GL-19**: ❌ → ✅
-- **GL-20**: ❌ → ✅
-- **GL-21**: ❌ → ✅
-- **GL-22**: ❌ → ✅
-- **GL-23**: ❌ → ✅
-- **GL-24**: ❌ → ✅
+No regressions — all results stable.
 
 ---
 *Generated by pipeline/benchmark/run_benchmark.py*

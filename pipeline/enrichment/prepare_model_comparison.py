@@ -5,8 +5,8 @@ Samples 500 qualifying records and prints SLURM commands for each model.
 
 Usage:
     python pipeline/enrichment/prepare_model_comparison.py \
-        --nodes-csv pipeline/outputs/entities_pre_er.parquet \
-        --edges-csv pipeline/outputs/relations_pre_er.parquet \
+        --nodes-csv pipeline/er_execution/outputs/entities_post_er_loc_dedup.parquet \
+        --edges-csv pipeline/er_execution/outputs/relations_post_er_loc_dedup.parquet \
         --metadata-csv pipeline/outputs/metadata_parsed.parquet \
         --output comparison_subset_500.csv
 """
@@ -107,8 +107,8 @@ def main() -> None:
     # Print SLURM commands
     models = [
         ("qwen3:30b-a3b", "qwen3_30b_baseline"),
-        ("qwen3.5:9b", "qwen35_9b_dense"),
-        ("qwen3.5:35b-a3b", "qwen35_35b_moe"),
+        ("qwen3:14b", "qwen3_14b_dense"),
+        ("qwen3:8b", "qwen3_8b_dense"),
     ]
     print("\n# SLURM commands for model comparison:")
     for model, tag in models:
@@ -122,8 +122,8 @@ srun --partition=commons --gres=gpu:1 --time=04:00:00 --mem=64G \\
     sleep 10
     ollama pull {model}
     python pipeline/enrichment/run_l2_enrichment.py \\
-      --nodes-csv pipeline/outputs/entities_pre_er.parquet \\
-      --edges-csv pipeline/outputs/relations_pre_er.parquet \\
+      --nodes-csv pipeline/er_execution/outputs/entities_post_er_loc_dedup.parquet \\
+      --edges-csv pipeline/er_execution/outputs/relations_post_er_loc_dedup.parquet \\
       --metadata-csv pipeline/outputs/metadata_parsed.parquet \\
       --output-dir {out_dir} \\
       --model {model} \\

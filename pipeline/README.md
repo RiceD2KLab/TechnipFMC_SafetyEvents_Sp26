@@ -38,26 +38,26 @@ python -m pipeline.er_execution.run_er_execution        # apply merge decisions
 
 # L2 causal enrichment (requires Ollama or vLLM running)
 python pipeline/enrichment/run_l2_enrichment.py \
-    --nodes-csv pipeline/outputs/entities.parquet \
-    --edges-csv pipeline/outputs/relations.parquet \
+    --nodes-csv pipeline/er_execution/outputs/entities_post_er_loc_dedup.parquet \
+    --edges-csv pipeline/er_execution/outputs/relations_post_er_loc_dedup.parquet \
     --metadata-csv pipeline/outputs/metadata_parsed.parquet \
     --output-dir output/l2/ \
     --backend ollama --model qwen3:30b-a3b
 
 # Merge L2 edges into graph
 python pipeline/enrichment/merge_l2_edges.py \
-    --l2-edges output/l2_edges_merged.jsonl \
-    --entities-parquet pipeline/outputs/entities.parquet \
-    --relations-parquet pipeline/outputs/relations.parquet \
+    --l2-dir output/l2 \
+    --entities-parquet pipeline/er_execution/outputs/entities_post_er_loc_dedup.parquet \
+    --relations-parquet pipeline/er_execution/outputs/relations_post_er_loc_dedup.parquet \
     --output-dir pipeline/outputs/merged
 
 # Gate 3 evaluation
 python pipeline/evaluation/gate3_metrics.py \
-    output/l2_edges_merged.jsonl \
-    pipeline/annotation/l2_gt_v2_codex.jsonl
+    --predicted output/l2 \
+    --ground-truth pipeline/annotation/l2_gt_v2_codex.jsonl
 
-# Benchmark (52 golden set queries)
-cd pipeline && python -m benchmark.run_benchmark
+# Benchmark (258 golden set queries)
+python -m pipeline.benchmark.run_benchmark
 ```
 
 ## Directory Structure
@@ -104,17 +104,19 @@ pipeline/
 All entity types, relation types, and evaluation data are defined in `kg_schema/`.
 See [kg_schema/README.md](../kg_schema/README.md) for the full schema reference.
 
-**L1** (extracted by GLiNER + metadata): 7 entity types, 7 relation types
+**L1** (extracted by GLiNER + metadata + validation): 8 entity types, 7 relation types
 **L2** (extracted by LLM): 9 entity types, 4 relation types (CAUSAL, PRECEDED_BY, FAILED_CONTROL, MITIGATED_BY)
 
 ## Outputs
 
 | File | Description |
 |------|-------------|
-| `outputs/metadata_parsed.parquet` | Parsed incident metadata (23k records) |
-| `outputs/entities.parquet` | All entity nodes (type, value, source) |
-| `outputs/relations.parquet` | All edges (source, target, relation type) |
-| `outputs/merged/` | Post-L2-merge graph with causal edges |
+| `outputs/metadata_parsed.parquet` | Parsed incident metadata used by the current graph (19,820 rows) |
+| `outputs/entities.parquet` | Active L1+L2 entity table read by benchmark/dashboard (111,115 rows) |
+| `outputs/relations.parquet` | Active L1+L2 relation table (268,781 rows, including L2 evidence columns) |
+| `outputs/merged/` | Canonical L2 merge output copied into `outputs/` for consumers |
+| `er_execution/outputs/entities_post_er_loc_dedup.parquet` | Post-ER, location-deduped L1 base for L2 enrichment (56,366 rows) |
+| `er_execution/outputs/relations_post_er_loc_dedup.parquet` | Post-ER, location-deduped L1 relations for L2 enrichment (199,443 rows) |
 
 ## Dependencies
 

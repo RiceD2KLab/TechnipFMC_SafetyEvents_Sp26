@@ -46,13 +46,13 @@ For each schema entity type *k*, a weighted Jaccard overlap is computed over
 the sets of entity values linked to each incident.  Two weight configurations
 are evaluated as a built-in ablation:
 
-| Configuration | EQUIPMENT | INJURY_TYPE | BODY_PART | LOCATION | ORGANIZATION | ROOT_CAUSE_CATEGORY |
-|---------------|-----------|-------------|-----------|----------|--------------|---------------------|
-| domain-informed | 0.25 | 0.25 | 0.15 | 0.15 | 0.10 | 0.10 |
-| uniform        | 0.167 | 0.167 | 0.167 | 0.167 | 0.167 | 0.167 |
+| Configuration | EQUIPMENT | INJURY_TYPE | EVENT | BODY_PART | LOCATION | ORGANIZATION | ROOT_CAUSE_CATEGORY |
+|---------------|-----------|-------------|-------|-----------|----------|--------------|---------------------|
+| domain-informed | 0.22 | 0.22 | 0.12 | 0.12 | 0.12 | 0.10 | 0.10 |
+| uniform | 0.143 | 0.143 | 0.143 | 0.143 | 0.143 | 0.143 | 0.143 |
 
-Entity sets are built from the **post-ER** relations parquet, so Splink-merged
-surface forms are treated as identical before Jaccard computation.
+Entity sets are built from the configured **post-ER** relations parquet, so
+merged surface forms are treated as identical before Jaccard computation.
 
 **Source:** `structural_similarity.py`
 
@@ -166,8 +166,10 @@ The script prints a summary table to stdout and writes full results to
 ## Outputs
 
 ### `gold_standard_ids.json`
-List of 50 incident IDs selected by stratified sampling (incident_type ×
-severity_bin).  Fix this file to ensure reproducible evaluation across runs.
+List of selected incident IDs. By default the module derives seed IDs from
+`kg_schema/golden_set.csv` and fills the remaining slots by stratified sampling
+to the current golden-set size (258). Fix this file to ensure reproducible
+evaluation across runs.
 
 ### `text_embeddings.pkl`
 `Dict[str, np.ndarray]` mapping `record_no → unit-normalised embedding`.

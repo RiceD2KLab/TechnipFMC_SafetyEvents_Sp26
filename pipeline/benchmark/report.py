@@ -9,7 +9,7 @@ from pathlib import Path
 def generate_report(results, G, entities_df, metadata_df, output_path, relations_df=None):
     """Generate benchmark_results.md from query results."""
     lines = []
-    lines.append("# L1 Benchmark Query Results")
+    lines.append("# Benchmark Query Results")
     lines.append("")
     lines.append(f"**Generated:** {date.today().isoformat()}")
     lines.append(
@@ -51,11 +51,11 @@ def generate_report(results, G, entities_df, metadata_df, output_path, relations
     # ── Coverage summary ─────────────────────────────────────────────
     passing = sum(1 for r in results.values()
                   if r.get("coverage") == "\u2705")
-    failing = sum(1 for r in results.values()
-                  if r.get("coverage") in ("\u26a0\ufe0f", "\u274c"))
+    non_passing = sum(1 for r in results.values()
+                      if r.get("coverage") in ("\u26a0\ufe0f", "\u274c"))
     lines.append(
         f"**Overall:** {passing} \u2705 passing / "
-        f"{failing} \u26a0\ufe0f failing out of {len(results)} queries")
+        f"{non_passing} \u26a0\ufe0f non-passing out of {len(results)} queries")
     lines.append("")
 
     # ── Per-Query Detail ─────────────────────────────────────────────
