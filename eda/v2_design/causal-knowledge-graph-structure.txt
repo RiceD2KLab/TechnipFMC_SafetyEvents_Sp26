@@ -1,0 +1,34 @@
+causal-knowledge-graph/
+│
+├── README.md
+├── requirements.txt
+├── .gitignore
+├── .env.example
+│
+├── src/
+│   ├── entity_extraction/
+│   │   ├── __init__.py
+│   │   ├── pipeline.py        # 🔥 YOUR CODE (cleaned)
+│   │   ├── config.py
+│   │
+│   ├── graph/
+│   │   ├── build_graph.py
+│   │   ├── queries.py
+│   │
+│   ├── embeddings/
+│   │   ├── rdf2vec.py
+│   │
+│   ├── neo4j/
+│   │   ├── export.py
+│
+├── scripts/
+│   ├── run_pipeline.py        # entrypoint
+│
+├── data/
+│   └── (not committed)
+│
+├── outputs/
+│   └── parquet/
+│
+├── graph_snapshots/
+│   └── knowledge_graph.pkl

@@ -1,0 +1,28 @@
+import pandas as pd
+
+def load_qhse_catalogue(path):
+    df = pd.read_csv(path)
+    return df
+
+
+def build_schema_lookup(df):
+    """
+    Build mappings:
+    column → table
+    column → description
+    """
+    column_to_table = dict(zip(df["Name"], df["[Column] is part of [Table]"]))
+    column_to_desc = dict(zip(df["Name"], df["Description (No Formatting)"]))
+
+    return column_to_table, column_to_desc
+
+
+def map_entity_to_schema(entity_text, schema_lookup):
+    """
+    Very simple example — can be improved
+    """
+    for column in schema_lookup:
+        if column in entity_text:
+            return column
+
+    return None
